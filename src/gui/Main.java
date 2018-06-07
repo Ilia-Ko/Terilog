@@ -1,12 +1,14 @@
 package gui;
 
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -18,33 +20,9 @@ public class Main extends Application {
     private static final double DEF_FONT_SIZE = 1.0 / 60.0;
 
     // MENU structure
-    private static final String STR_SEPARATOR = "#separator";
-    private static final String[][] STR_MENUS = new String[][] {
-            {"File",
-                    "Ctrl+O\tOpen",
-                    "Ctrl+S\tSave",
-                    "Shft+S\tSave as...",
-                    STR_SEPARATOR,
-                    "F11   \tToggle fullscreen",
-                    "Ctrl+Q\tExit"},
-            {"Add",
-                    "N     \tHard N MOSFET",
-                    "P     \tHard P MOSFET",
-                    "Ctrl+N\tSoft N MOSFET",
-                    "Ctrl+P\tSoft P MOSFET",
-                    STR_SEPARATOR,
-                    "W     \tWire",
-                    "V     \tDC Voltage",
-                    "I     \tIndicator"},
-            {"About",
-                    "Help",
-                    "Credits"}
-    };
-
-    // event handlers
-    private static EventHandler[] MENU_EVENTS;
-
-    private Controller control;
+    static final String STR_SEPARATOR = "#separator";
+    private static final String[] STR_MENUS = new String[] {"File", "Add", "About"};
+    private static final int[] NUM_MENUS = new int[] {6, 8, 2};
 
     // dimensions
     private double maxWidth, maxHeight;
@@ -73,72 +51,44 @@ public class Main extends Application {
         defWidth = maxWidth / G;
         defHeight = maxHeight / G;
     }
-    private void initHandlers() {
-        control = new Controller(stage);
-
-        // init menu controls
-        int numItems = 0;
-        for (String[] STR_MENU : STR_MENUS) numItems += STR_MENU.length;
-        MENU_EVENTS = new EventHandler[numItems];
-        int i = 0;
-
-        // Menu.File
-        MENU_EVENTS[i++] = control::onMenuOpenClicked;
-        MENU_EVENTS[i++] = control::onMenuSaveClicked;
-        MENU_EVENTS[i++] = control::onMenuSaveAsClicked;
-        MENU_EVENTS[i++] = null; // separator
-        MENU_EVENTS[i++] = control::onMenuToggleFullscreenClicked;
-        MENU_EVENTS[i++] = control::onMenuExitClicked;
-
-        // Menu.Add
-        MENU_EVENTS[i++] = control::onMenuHardNClicked;
-        MENU_EVENTS[i++] = control::onMenuHardPClicked;
-        MENU_EVENTS[i++] = control::onMenuSoftNClicked;
-        MENU_EVENTS[i++] = control::onMenuSoftPClicked;
-        MENU_EVENTS[i++] = null; // separator
-        MENU_EVENTS[i++] = control::onMenuWireClicked;
-        MENU_EVENTS[i++] = control::onMenuVoltageClicked;
-        MENU_EVENTS[i++] = control::onMenuIndicatorClicked;
-
-        // Menu.About
-        MENU_EVENTS[i++] = control::onMenuHelpClicked;
-        MENU_EVENTS[i  ] = control::onMenuCreditsClicked;
-    }
 
     // dynamic gui
     private void constructGUI() {
-        // build menu:
+        // build menu
+        int k = 0;
         MenuBar menuBar = new MenuBar();
+        Control.TheAction[] actions = Control.TheAction.values();
         for (int i = 0; i < STR_MENUS.length; i++) {
-            Menu menu = new Menu(STR_MENUS[i][0]);
-            for (int j = 1; j < STR_MENUS[i].length; j++) {
+            Menu menu = new Menu(STR_MENUS[i]);
+            for (int j = 0; j < NUM_MENUS[i]; j++) {
                 MenuItem item;
-                if (STR_MENUS[i][j].equals(STR_SEPARATOR)) {
+                if (actions[k].getDescription().endsWith(STR_SEPARATOR)) {
                     item = new SeparatorMenuItem();
                 } else {
-                    item = new MenuItem(STR_MENUS[i][j]);
-                    item.setOnAction(MENU_EVENTS[i]);
+                    item = new MenuItem(actions[k].getDescription());
+                    item.setOnAction(actions[k]::commit);
                     item.setStyle(defFont);
                 }
+                k++;
                 menu.getItems().add(item);
             }
             menuBar.getMenus().add(menu);
         }
 
-        // build field:
+        // build field
         Canvas field = new Canvas(maxWidth, maxHeight);
         field.setStyle(defFont);
         field.setCursor(Cursor.CROSSHAIR);
-        field.setOnMouseClicked(control::onFieldClicked);
-        control.setField(field);
-        control.clearField();
+        field.setOnMouseClicked(Control::onFieldClicked);
+        Control.init(stage, field);
+        Control.clearField();
 
-        // wrap field with scroll pane:
+        // wrap field with scroll pane
         ScrollPane scroll = new ScrollPane(field);
         scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
 
-        // combine everything together:
+        // combine everything together
         root = new VBox(menuBar, scroll);
         root.setStyle(defFont);
         root.setMinWidth(minWidth);
@@ -147,10 +97,22 @@ public class Main extends Application {
         root.setPrefHeight(defHeight);
         root.setMaxWidth(maxWidth);
         root.setMaxHeight(maxWidth);
+
+        // setup keyboard callbacks
+        root.setOnKeyPressed(event -> {
+            for (Control.TheAction action : actions)
+                if (action.getCombo().match(event)) {
+                    action.commit(event);
+                    break;
+                }
+        });
+
     }
     private void setupStage() {
         // adjust window geometry
         stage.setResizable(true);
+        stage.setFullScreenExitHint("Press F11 to leave fullscreen mode.");
+        stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
         stage.setMinWidth(minWidth);
         stage.setMinHeight(minHeight);
         stage.setMaxWidth(maxWidth);
@@ -171,7 +133,6 @@ public class Main extends Application {
 
         // complete initialization
         initDimensions();
-        initHandlers();
 
         // dynamically generate GUI
         constructGUI();
