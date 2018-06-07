@@ -1,34 +1,49 @@
 package engine;
 
-import javafx.scene.canvas.GraphicsContext;
+import engine.interfaces.Informative;
+import engine.interfaces.Renderable;
 
-import java.nio.ByteBuffer;
+public abstract class Component implements Renderable, Informative {
 
-public abstract class Component {
+    public static final int AS_INPUT = 0;
+    public static final int AS_OUTPUT = 1;
 
     private String id;
     protected double x, y;
 
-    public Component(String uniqueID, double xPos, double yPos) {
+    protected Wire[] inputs, outputs;
+    protected int numInp, numOut;
+
+    public Component(boolean isReal, String uniqueID, double xPos, double yPos) {
         id = uniqueID;
+        x = xPos;
+        y = yPos;
+        numInp = 0;
+        numOut = 0;
+    }
+
+    // simulation
+    public abstract void connect(Wire wire, int type);
+    public abstract void simulate();
+
+    // render
+    @Override
+    public void setPos(double xPos, double yPos) {
         x = xPos;
         y = yPos;
     }
 
-    public abstract void render(GraphicsContext gc);
+    // save/load
+    public void saveGeneralInfo() {
 
-    // saving and loading from TLG files
-    public void save(ByteBuffer buffer) {
-        // write id
-        buffer.putInt(id.length());
-        buffer.put(id.getBytes());
-
-        // write position
-        buffer.putDouble(x);
-        buffer.putDouble(y);
     }
-    public void load(ByteBuffer buffer) {
-        // id has been already read
+    public void loadGeneralInfo() {
+
+    }
+
+    @Override
+    public String toString() {
+        return id;
     }
 
 }

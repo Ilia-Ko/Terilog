@@ -1,4 +1,4 @@
-package engine;
+package engine.interfaces;
 
 public interface Rotatable {
 

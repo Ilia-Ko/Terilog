@@ -1,5 +1,8 @@
 package gui;
 
+import engine.Circuit;
+import engine.interfaces.Renderable;
+import engine.transistors.HardN;
 import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.scene.canvas.Canvas;
@@ -10,14 +13,16 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.awt.*;
+
 @SuppressWarnings("unused")
 class Control {
 
-    // default grid
+    // defaults
     private static final double DEF_GRID_PERIOD = 0.004;
     private static final double DEF_GRID_POINT_THICKNESS = DEF_GRID_PERIOD / 20.0;
-    // default lines
     private static final double DEF_LINE_WIDTH = DEF_GRID_PERIOD / 10.0;
+    private static final double DEF_FLYING_OPACITY = 0.5;
 
     // colours
     private static final Color COL_CLEAR    = Color.rgb(219, 255, 244);
@@ -27,20 +32,67 @@ class Control {
     private static Canvas field;
 
     // general logic
+    private static Circuit circuit;
     private static double w, h; // field width and height
     private static double p; // field grid period
+    // adding a component
+    private static Robot robot;
+    private static double mouseX, mouseY;
     private static boolean isMouseEmpty; // whether a mouse holds a component
+    private static Renderable toBeInserted;
+    private static Canvas flyingCanvas;
+    private static OnObjectCreated onCreate;
 
     static void init(Stage stage, Canvas field) {
-        Control.stage = stage;
-        Control.field = field;
+        try {
+            robot = new Robot();
+        } catch (AWTException e) {
+            e.printStackTrace();
+        }
 
+        Control.stage = stage;
+        isMouseEmpty = true;
+
+        // init field
+        Control.field = field;
+        Control.field.setOnMouseMoved(event -> {
+            if (!isMouseEmpty) {
+                flyingCanvas.setLayoutX(event.getX() - flyingCanvas.getWidth() / 2.0);
+                flyingCanvas.setLayoutY(event.getY() - flyingCanvas.getHeight() / 2.0);
+            }
+            if (event.isShiftDown()) {
+                double x = event.getX();
+                double y = event.getY();
+                x = Math.round(x / p) * p;
+                y = Math.round(y / p) * p;
+                robot.mouseMove(Main.rnd(x), Main.rnd(y));
+            }
+        });
+        Control.field.setOnMouseClicked(event -> {
+            if (!isMouseEmpty) {
+                double x = event.getX();
+                double y = event.getY();
+                x = Math.round(x / p) * p;
+                y = Math.round(y / p) * p;
+                circuit.add(onCreate.createObject(x, y));
+            }
+        });
+        Control.field.setOnKeyPressed(event -> {
+            if (!isMouseEmpty && event.getCode() == KeyCode.ESCAPE) {
+                isMouseEmpty = true;
+                toBeInserted = null;
+                flyingCanvas = null;
+                onCreate = null;
+            }
+        });
+
+        circuit = new Circuit();
         w = field.getWidth();
         h = field.getHeight();
         p = w * DEF_GRID_PERIOD;
     }
 
-    // Field
+    // field
     static void onFieldClicked(Event event) {
 
     }
@@ -61,6 +113,16 @@ class Control {
         for (int i = 0; i < numHorizontalGridPoints; i++)
             for (int j = 0; j < numVerticalGridPoints; j++)
                 gc.fillOval(i * p, j * p, r, r);
+    }
+
+    // inserting a component
+    private static void begin(Renderable newObject) {
+        isMouseEmpty = false;
+        toBeInserted = newObject;
+        flyingCanvas = new Canvas(newObject.getWidth() * p, newObject.getHeight() * p);
+        flyingCanvas.setOpacity(0.5);
+        flyingCanvas.setVisible(true);
+        newObject.render(flyingCanvas.getGraphicsContext2D());
     }
 
     enum TheAction {
@@ -103,10 +165,15 @@ class Control {
         },
 
         // Menu.Add --> 8 items
-        HardN("Hard N MOSFET", new KeyCodeCombination(KeyCode.N)) {
+        Hard_N("Hard N MOSFET", new KeyCodeCombination(KeyCode.N)) {
             @Override
             void commit(Event event) {
-
+                onCreate = (x, y) -> {
+                    HardN hardN = new HardN(true);
+                    hardN.setPos(x, y);
+                    return hardN;
+                };
+                begin(new HardN(false));
             }
         },
         HardP("Hard P MOSFET", new KeyCodeCombination(KeyCode.P)) {
@@ -180,6 +247,12 @@ class Control {
         }
 
         abstract void commit(Event event);
+
+    }
+
+    private interface OnObjectCreated {
+
+        Renderable createObject(double x, double y);
 
     }
 

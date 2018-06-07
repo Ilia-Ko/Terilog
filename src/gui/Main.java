@@ -6,8 +6,6 @@ import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
@@ -16,7 +14,7 @@ import javafx.stage.Stage;
 public class Main extends Application {
 
     // general dimensions
-    private static final double G = 0.5 * (1.0 + Math.sqrt(5.0));
+    private static final double GOLD = 0.5 * (1.0 + Math.sqrt(5.0));
     private static final double DEF_FONT_SIZE = 1.0 / 60.0;
 
     // MENU structure
@@ -47,9 +45,9 @@ public class Main extends Application {
 
         // set default dimensions
         minHeight = defFontSize * 5.0;
-        minWidth = minHeight * G;
-        defWidth = maxWidth / G;
-        defHeight = maxHeight / G;
+        minWidth = minHeight * GOLD;
+        defWidth = maxWidth / GOLD;
+        defHeight = maxHeight / GOLD;
     }
 
     // dynamic gui
@@ -143,9 +141,6 @@ public class Main extends Application {
     }
 
     // utils
-    static void sout(String text) {
-        System.out.print(text);
-    }
     static int rnd(double val) {
         return (int) Math.round(val);
     }
