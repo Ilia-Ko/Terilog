@@ -2,6 +2,7 @@
   <dictionary name="ilia">
     <words>
       <w>mosfet</w>
+      <w>shft</w>
       <w>sout</w>
       <w>terilog</w>
     </words>

@@ -10,25 +10,23 @@ import javafx.stage.Stage;
 class Controller {
 
     // default grid
-    private static final int NUM_VERTICAL_GRID_POINTS = 1000;
-    private static final double GRID_POINT_THICKNESS = 1E-6;
+    private static final double DEF_GRID_PERIOD = 0.002;
+    private static final double GRID_POINT_THICKNESS = DEF_GRID_PERIOD * 0.01;
 
     // colours
     private static final Color COL_CLEAR    = Color.rgb(192, 192, 192);
     private static final Color COL_GRID     = Color.rgb(0, 0, 0);
 
-    // gui references
-    private Main main;
     private Stage stage;
     private Canvas field;
 
     // general logic
-    private double w, h;
+    private double w, h;    // field width and height
+    private double p;       // field grid period
     private boolean isFullscreen;
 
-    Controller(Main main, Stage stage) {
+    Controller(Stage stage) {
         // copy gui references
-        this.main = main;
         this.stage = stage;
 
         // init general logic
@@ -38,6 +36,7 @@ class Controller {
         this.field = field;
         w = field.getWidth();
         h = field.getHeight();
+        p = w * DEF_GRID_PERIOD;
     }
 
     // Menu.File
@@ -54,31 +53,34 @@ class Controller {
         isFullscreen = !isFullscreen;
         stage.hide();
         stage.setFullScreen(isFullscreen);
-        main.measureGUI();
-        main.resizeGUI();
     }
     void onMenuExitClicked(Event event) {
         Platform.exit();
+    }
+    // Menu.Add
+    void onMenuHardNClicked(Event event) {
+        Main.sout("Hard N clicked.\n");
+    }
+    void onMenuHardPClicked(Event event) {
+
+    }
+    void onMenuSoftNClicked(Event event) {
+
+    }
+    void onMenuSoftPClicked(Event event) {
+
+    }
+    void onMenuWireClicked(Event event) {
+
+    }
+    void onMenuVoltageClicked(Event event) {
+
     }
     // Menu.About
     void onMenuHelpClicked(Event event) {
 
     }
     void onMenuCreditsClicked(Event event) {
-
-    }
-
-    // Tools
-    void onToolHardNClicked(Event event) {
-        Main.sout("Hard N clicked.\n");
-    }
-    void onToolHardPClicked(Event event) {
-
-    }
-    void onToolSoftNClicked(Event event) {
-
-    }
-    void onToolSoftPClicked(Event event) {
 
     }
 
@@ -94,14 +96,14 @@ class Controller {
         gc.fillRect(0.0, 0.0, w, h);
 
         // draw grid points
-        int numHorizontalGridPoints = Main.rnd(w / h * NUM_VERTICAL_GRID_POINTS);
-        double d = h / NUM_VERTICAL_GRID_POINTS;
-        double r = h * GRID_POINT_THICKNESS;
+        int numHorizontalGridPoints = Main.rnd(w / p);
+        int numVerticalGridPoints = Main.rnd(h / p);
+        double r = p * GRID_POINT_THICKNESS;
         gc.setFill(COL_GRID);
         gc.setLineWidth(r);
-        for (int i = 0; i < NUM_VERTICAL_GRID_POINTS; i++)
-            for (int j = 0; j < numHorizontalGridPoints; j++)
-                gc.fillOval(i * d, j * d, r, r);
+        for (int i = 0; i < numHorizontalGridPoints; i++)
+            for (int j = 0; j < numVerticalGridPoints; j++)
+                gc.fillOval(i * p, j * p, r, r);
     }
 
 }
