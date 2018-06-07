@@ -3,6 +3,7 @@ package gui;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
@@ -42,6 +43,7 @@ public class Main extends Application {
 
     // event handlers
     private static EventHandler[] MENU_EVENTS;
+
     private Controller control;
 
     // dimensions
@@ -95,6 +97,8 @@ public class Main extends Application {
         MENU_EVENTS[i++] = control::onMenuSoftPClicked;
         MENU_EVENTS[i++] = null; // separator
         MENU_EVENTS[i++] = control::onMenuWireClicked;
+        MENU_EVENTS[i++] = control::onMenuVoltageClicked;
+        MENU_EVENTS[i++] = control::onMenuIndicatorClicked;
 
         // Menu.About
         MENU_EVENTS[i++] = control::onMenuHelpClicked;
@@ -124,6 +128,7 @@ public class Main extends Application {
         // build field:
         Canvas field = new Canvas(maxWidth, maxHeight);
         field.setStyle(defFont);
+        field.setCursor(Cursor.CROSSHAIR);
         field.setOnMouseClicked(control::onFieldClicked);
         control.setField(field);
         control.clearField();

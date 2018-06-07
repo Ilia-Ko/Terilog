@@ -4,17 +4,18 @@ import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 class Controller {
 
     // default grid
-    private static final double DEF_GRID_PERIOD = 0.002;
-    private static final double GRID_POINT_THICKNESS = DEF_GRID_PERIOD * 0.01;
+    private static final double DEF_GRID_PERIOD = 0.004;
+    private static final double GRID_POINT_THICKNESS = DEF_GRID_PERIOD * 0.05;
 
     // colours
-    private static final Color COL_CLEAR    = Color.rgb(192, 192, 192);
+    private static final Color COL_CLEAR    = Color.rgb(219, 255, 244);
     private static final Color COL_GRID     = Color.rgb(0, 0, 0);
 
     private Stage stage;
@@ -23,14 +24,14 @@ class Controller {
     // general logic
     private double w, h;    // field width and height
     private double p;       // field grid period
-    private boolean isFullscreen;
+    private boolean isMouseEmpty;   // whether a mouse holds a component
 
     Controller(Stage stage) {
         // copy gui references
         this.stage = stage;
 
         // init general logic
-        isFullscreen = false;
+        isMouseEmpty = true;
     }
     void setField(Canvas field) {
         this.field = field;
@@ -50,9 +51,7 @@ class Controller {
 
     }
     void onMenuToggleFullscreenClicked(Event event) {
-        isFullscreen = !isFullscreen;
-        stage.hide();
-        stage.setFullScreen(isFullscreen);
+        stage.setFullScreen(!stage.isFullScreen());
     }
     void onMenuExitClicked(Event event) {
         Platform.exit();
@@ -76,6 +75,7 @@ class Controller {
     void onMenuVoltageClicked(Event event) {
 
     }
+    void onMenuIndicatorClicked(Event event) {}
     // Menu.About
     void onMenuHelpClicked(Event event) {
 
@@ -98,7 +98,8 @@ class Controller {
         // draw grid points
         int numHorizontalGridPoints = Main.rnd(w / p);
         int numVerticalGridPoints = Main.rnd(h / p);
-        double r = p * GRID_POINT_THICKNESS;
+        double r = w * GRID_POINT_THICKNESS;
+        if (r < 1.0) r = 1.0;
         gc.setFill(COL_GRID);
         gc.setLineWidth(r);
         for (int i = 0; i < numHorizontalGridPoints; i++)
