@@ -1,29 +1,33 @@
 package engine;
 
-import engine.interfaces.Informative;
 import engine.interfaces.Renderable;
+import gui.Control;
 import javafx.scene.canvas.GraphicsContext;
 
-public class Wire implements Renderable, Informative {
+import java.util.ArrayList;
 
-    private static final String STR_ID_PREFIX = "HardN";
-    private static int numOfWires = 0;
+public class Wire implements Renderable {
 
-    private String id;
-    private double x, y;
-    private double[] xArr, yArr;
-    private int num;
-    private double width, height;
+    // rendering
+    private static final double CONNECTION_OPACITY = 1.0 / 3.0;
+    private static final double CONNECTION_SIZE = 3.0;
+    private static final int TOLERANCE = 2; // for inside checking
+
+    private int x, y, x1, y1; // x1, y1, x2 and y2 are relative to absolute (x, y)
+    private boolean bendsOutside;
     private LogicLevel signal, futureSignal;
+    private ArrayList<Wire> connected;
 
-    public Wire(double[] xVertices, double[] yVertices, int numVertices) {
-        id = genUniqueID();
-        xArr = xVertices;
-        yArr = yVertices;
-        num = numVertices;
-        assert xArr.length == num && yArr.length == num;
+    public Wire() {
+        x = 0;
+        y = 0;
+        x1 = 0;
+        y1 = 0;
+        bendsOutside = true;
+        connected = new ArrayList<>();
     }
 
+    // simulating
     public LogicLevel getSignal() {
         return signal;
     }
@@ -32,25 +36,91 @@ public class Wire implements Renderable, Informative {
     }
     public void propagateSignal() {
         signal = futureSignal;
+        for (Wire wire : connected) wire.setFutureSignal(signal);
+    }
+    public Wire[] getAffectedWires() {
+        return (Wire[]) connected.toArray();
+    }
+    public boolean isStable() {
+        return signal == futureSignal;
+    }
+
+    // connecting
+    public void connectWire(Wire wire) {
+        connected.add(wire);
+        wire.connectWire(this);
+    }
+    public void disconnectWire(Wire wire) {
+        connected.remove(wire);
+        wire.disconnectWire(this);
     }
 
     // rendering
-    @Override
-    public void render(GraphicsContext gc) {
-
+    public void update(int mx, int my) {
+        x1 = mx - x;
+        y1 = my - y;
+    }
+    public void flipBending() {
+        bendsOutside = !bendsOutside;
     }
     @Override
-    public void setPos(double xPos, double yPos) {
+    public void render(GraphicsContext gc) {
+        double lw = 4;
+        // transform
+        gc.translate(x, y);
+        gc.setFill(signal.colour());
+        gc.setLineWidth(lw);
+
+        // draw the wire
+        if (bendsOutside) {
+            gc.strokeLine(0, 0, x1, 0);
+            gc.strokeLine(x1, 0, x1, y1);
+        } else {
+            gc.strokeLine(0, 0, 0, y1);
+            gc.strokeLine(0, y1, x1, y1);
+        }
+
+        // draw connections
+        gc.setGlobalAlpha(gc.getGlobalAlpha() * CONNECTION_OPACITY);
+        gc.fillOval(0, 0, lw * CONNECTION_SIZE, lw * CONNECTION_SIZE);
+        gc.fillOval(x1, y1, lw * CONNECTION_SIZE, lw * CONNECTION_SIZE);
+        gc.setGlobalAlpha(gc.getGlobalAlpha() / CONNECTION_OPACITY);
+
+        // undo transform
+        gc.translate(-x, -y);
+    }
+    @Override
+    public void setPos(int xPos, int yPos) {
         x = xPos;
         y = yPos;
     }
     @Override
-    public double getWidth() {
-        return width;
+    public boolean inside(int mx, int my) {
+        mx -= x;
+        my -= y;
+        boolean inside;
+        boolean A = (mx >= -TOLERANCE);
+        boolean B = (my >= -TOLERANCE);
+        boolean C = (my <= +TOLERANCE);
+        boolean D = (mx <= +TOLERANCE);
+        boolean E = (mx <= x1 + TOLERANCE);
+        boolean F = (my <= y1 + TOLERANCE);
+        boolean G = (mx >= x1 - TOLERANCE);
+        boolean H = (my >= y1 - TOLERANCE);
+        if (bendsOutside)
+            inside = B && E && (A && C || F && G);
+        else
+            inside = A && F && (B && D || E && H);
+        return inside;
+    }
+
+    @Override
+    public int getWidth() {
+        return Math.abs(x1);
     }
     @Override
-    public double getHeight() {
-        return height;
+    public int getHeight() {
+        return Math.abs(y1);
     }
 
     // save/load
@@ -61,14 +131,6 @@ public class Wire implements Renderable, Informative {
     @Override
     public void loadSpecificInfo() {
 
-    }
-
-    private void updateWidthHeight() {
-
-    }
-
-    private static String genUniqueID() {
-        return String.format("%s-%d", STR_ID_PREFIX, numOfWires++);
     }
 
 }

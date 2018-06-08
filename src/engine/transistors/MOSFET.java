@@ -1,54 +1,33 @@
 package engine.transistors;
 
 import engine.*;
-import engine.interfaces.Mirrorable;
-import engine.interfaces.Rotatable;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
-public abstract class MOSFET extends Component implements Rotatable, Mirrorable {
+@SuppressWarnings("SuspiciousNameCombination")
+public abstract class MOSFET extends Component {
 
     private static final String TAG_VGSTH = "vgsth";
     private static final Color COL_LEGS = Color.rgb(0, 0, 0);
+    // size
+    private static final int WIDTH = 4;
+    private static final int HEIGHT = 2;
     // pins
     public static final int SOURCE = 0;
-    public static final int GATE = 1;
-    public static final int DRAIN = 0;
-
-    private int rotation;
-    private int mirrorV, mirrorH;
+    public static final int GATE   = 1;
+    public static final int DRAIN  = 2;
 
     int vgsth;
 
-    MOSFET(boolean isReal, String uniqueID, double xPos, double yPos, int rotation, boolean mirroredVertical, boolean mirroredHorizontal, int vgsth) {
-        super(isReal, uniqueID, xPos, yPos);
-
-        // init values
-        this.rotation = rotation;
-        if (mirroredVertical) mirrorV = -1;
-        else mirrorV = 1;
-        if (mirroredHorizontal) mirrorH = -1;
-        else mirrorH = 1;
+    MOSFET(int vgsth) {
+        super();
         this.vgsth = vgsth;
-
         inputs = new Wire[2];
         outputs = new Wire[1];
     }
 
-    abstract void finishRendering(GraphicsContext gc);
-
-    @Override
-    public void connect(Wire wire, int type) {
-        if (type == AS_INPUT) {
-            if (numInp < 2) inputs[(numInp++)-1] = wire;
-            else System.err.printf("WARNING: a MOSFET has only two inputs; connection from %s to %s not set.", wire, this);
-        } else if (type == AS_OUTPUT) {
-            if (numOut == 0) outputs[(numOut++)-1] = wire;
-            else System.err.printf("WARNING: a MOSFET has only one output; connection from %s to %s not set.", this, wire);
-        }
-    }
-
     // rendering
+    abstract void finishRendering(GraphicsContext gc);
     @Override
     public void render(GraphicsContext gc) {
         // transform
@@ -75,41 +54,30 @@ public abstract class MOSFET extends Component implements Rotatable, Mirrorable 
         finishRendering(gc);
 
         // transform back
-        gc.scale(-mirrorH, -mirrorV);
+        gc.scale(mirrorH, mirrorV);
         gc.rotate(-ROTATION_ANGLE * rotation);
         gc.translate(-x, -y);
     }
     @Override
-    public double getWidth() {
-        return 4.0;
+    public int getWidth() {
+        if (rotation % 2 == ROT_RIGHT) return WIDTH;
+        else return HEIGHT;
     }
     @Override
-    public double getHeight() {
-        return 2.0;
+    public int getHeight() {
+        if (rotation % 2 == ROT_RIGHT) return HEIGHT;
+        else return WIDTH;
     }
 
-    // rotating
+    // connecting
     @Override
-    public void rotateClockwise() {
-        rotation += 3;
-        rotation %= NUM_ROTATIONS;
-    }
-    @Override
-    public void rotateCounterClockwise() {
-        rotation += 1;
-        rotation %= NUM_ROTATIONS;
-    }
+    public void connect(Wire wire, int type) {
 
-    // mirroring
-    @Override
-    public void mirrorHorizontal() {
-        mirrorH *= -1;
     }
     @Override
-    public void mirrorVertical() {
-        mirrorV *= -1;
-    }
+    public void disconnect(Wire unit) {
 
+    }
 
     // save/load
     @Override

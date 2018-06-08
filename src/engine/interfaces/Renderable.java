@@ -2,12 +2,14 @@ package engine.interfaces;
 
 import javafx.scene.canvas.GraphicsContext;
 
-public interface Renderable {
+public interface Renderable extends Informative {
 
     void render(GraphicsContext gc);
-    void setPos(double xPos, double yPos);
+    void setPos(int xPos, int yPos);
 
-    double getWidth();
-    double getHeight();
+    boolean inside(int mx, int my);
+
+    int getWidth();
+    int getHeight();
 
 }

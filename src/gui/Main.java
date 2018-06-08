@@ -1,15 +1,15 @@
 package gui;
 
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Cursor;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.control.*;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+
+import java.io.IOException;
 
 public class Main extends Application {
 
@@ -17,30 +17,23 @@ public class Main extends Application {
     private static final double GOLD = 0.5 * (1.0 + Math.sqrt(5.0));
     private static final double DEF_FONT_SIZE = 1.0 / 60.0;
 
-    // MENU structure
-    static final String STR_SEPARATOR = "#separator";
-    private static final String[] STR_MENUS = new String[] {"File", "Add", "About"};
-    private static final int[] NUM_MENUS = new int[] {6, 8, 2};
-
     // dimensions
     private double maxWidth, maxHeight;
     private double defWidth, defHeight;
     private double minWidth, minHeight;
     private String defFont;
 
-    // gui components
-    private Stage stage;
-    private VBox root;
+    @Override
+    public void init() throws Exception {
+        super.init();
 
-    // initialization
-    private void initDimensions() {
         // take delicate care of DPI: (I hate when some apps look awful on Retina displays :)
         Rectangle2D rect = Screen.getPrimary().getBounds();
-        maxWidth    = rect.getWidth();
-        maxHeight   = rect.getHeight();
+        maxWidth = rect.getWidth();
+        maxHeight = rect.getHeight();
 
         // adjust font:
-        int defFontSize = rnd(maxHeight * DEF_FONT_SIZE);
+        int defFontSize = (int) Math.round(maxHeight * DEF_FONT_SIZE);
         defFont = "-fx-font: normal " + Integer.toString(defFontSize) + "px monospace";
 
         // set default dimensions
@@ -50,63 +43,8 @@ public class Main extends Application {
         defHeight = maxHeight / GOLD;
     }
 
-    // dynamic gui
-    private void constructGUI() {
-        // build menu
-        int k = 0;
-        MenuBar menuBar = new MenuBar();
-        Control.TheAction[] actions = Control.TheAction.values();
-        for (int i = 0; i < STR_MENUS.length; i++) {
-            Menu menu = new Menu(STR_MENUS[i]);
-            for (int j = 0; j < NUM_MENUS[i]; j++) {
-                MenuItem item;
-                if (actions[k].getDescription().endsWith(STR_SEPARATOR)) {
-                    item = new SeparatorMenuItem();
-                } else {
-                    item = new MenuItem(actions[k].getDescription());
-                    item.setOnAction(actions[k]::commit);
-                    item.setStyle(defFont);
-                }
-                k++;
-                menu.getItems().add(item);
-            }
-            menuBar.getMenus().add(menu);
-        }
-
-        // build field
-        Canvas field = new Canvas(maxWidth, maxHeight);
-        field.setStyle(defFont);
-        field.setCursor(Cursor.CROSSHAIR);
-        field.setOnMouseClicked(Control::onFieldClicked);
-        Control.init(stage, field);
-        Control.clearField();
-
-        // wrap field with scroll pane
-        ScrollPane scroll = new ScrollPane(field);
-        scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        scroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-
-        // combine everything together
-        root = new VBox(menuBar, scroll);
-        root.setStyle(defFont);
-        root.setMinWidth(minWidth);
-        root.setMinHeight(minHeight);
-        root.setPrefWidth(defHeight);
-        root.setPrefHeight(defHeight);
-        root.setMaxWidth(maxWidth);
-        root.setMaxHeight(maxWidth);
-
-        // setup keyboard callbacks
-        root.setOnKeyPressed(event -> {
-            for (Control.TheAction action : actions)
-                if (action.getCombo().match(event)) {
-                    action.commit(event);
-                    break;
-                }
-        });
-
-    }
-    private void setupStage() {
+    @Override
+    public void start(Stage stage) throws IOException {
         // adjust window geometry
         stage.setResizable(true);
         stage.setFullScreenExitHint("Press F11 to leave fullscreen mode.");
@@ -118,31 +56,21 @@ public class Main extends Application {
         stage.setX((maxWidth - defWidth) * 0.5);
         stage.setY((maxHeight - defHeight) * 0.5);
 
-        // setup window
+        // setup scene and controller
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("view/main.fxml"));
+        Parent root = loader.load();
+        root.setStyle(defFont);
+        Scene scene = new Scene(root, defWidth, defHeight);
+        Control control = loader.getController();
+        control.initialSetup(stage, defFont, maxWidth, maxHeight);
+
+        // make window
         stage.setTitle("TERILOG");
-        stage.setScene(new Scene(root, defWidth, defHeight));
+        stage.setScene(scene);
         stage.show();
-    }
-
-    // JavaFX
-    @Override
-    public void start(Stage primaryStage) {
-        stage = primaryStage;
-
-        // complete initialization
-        initDimensions();
-
-        // dynamically generate GUI
-        constructGUI();
-        setupStage();
     }
     public static void main(String[] args) {
         launch(args);
-    }
-
-    // utils
-    static int rnd(double val) {
-        return (int) Math.round(val);
     }
 
 }

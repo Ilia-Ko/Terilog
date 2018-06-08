@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.canvas.Canvas?>
+
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="gui.Control">
+
+    <MenuBar>
+        <Menu text="_File">
+            <MenuItem text="Open" accelerator="Ctrl+O" onAction="#menuOpen"/>
+            <MenuItem text="Save" accelerator="Ctrl+S" onAction="#menuSave"/>
+            <MenuItem text="Save as ..." accelerator="Shift+S" onAction="#menuSaveAs"/>
+            <SeparatorMenuItem/>
+            <MenuItem text="Toggle fullscreen" accelerator="F11" onAction="#menuToggle"/>
+            <MenuItem text="Quit" accelerator="Ctrl+Q" onAction="#menuQuit"/>
+        </Menu>
+        <Menu text="_Add">
+            <MenuItem text="Hard N" accelerator="N" onAction="#menuHardN"/>
+            <MenuItem text="Hard P" accelerator="P" onAction="#menuHardP"/>
+            <MenuItem text="Soft N" accelerator="Ctrl+N" onAction="#menuSoftN"/>
+            <MenuItem text="Soft P" accelerator="Ctrl+P" onAction="#menuSoftP"/>
+            <SeparatorMenuItem/>
+            <MenuItem text="Voltage" accelerator="V" onAction="#menuVoltage"/>
+            <MenuItem text="Indicator" accelerator="I" onAction="#menuIndicator"/>
+        </Menu>
+        <Menu text="_Simulate">
+            <MenuItem text="Start" accelerator="Space" onAction="#menuPlay" fx:id="menuPlay"/>
+            <MenuItem text="Settings" accelerator="F2" onAction="#menuSettings"/>
+        </Menu>
+        <Menu text="_Grid">
+            <MenuItem text="Grid size   " accelerator="Ctrl+G" onAction="#menuGrid"/>
+            <MenuItem text="Zoom +12%" accelerator="=" onAction="#menuZoomIn" fx:id="menuZoomIn"/>
+            <MenuItem text="Zoom -12%" accelerator="-" onAction="#menuZoomOut" fx:id="menuZoomOut"/>
+        </Menu>
+        <Menu text="_Help">
+            <MenuItem text="About" accelerator="F1" onAction="#menuAbout"/>
+            <MenuItem text="Credits" onAction="#menuCredits"/>
+        </Menu>
+    </MenuBar>
+
+    <StackPane>
+        <ScrollPane pannable="true">
+            <Canvas fx:id="field" onMouseMoved="#fieldMouseMoved" onMouseClicked="#fieldMouseClicked" onKeyPressed="#fieldKeyPressed"/>
+        </ScrollPane>
+        <Canvas fx:id="fly" opacity="0.5" visible="false"/>
+    </StackPane>
+
+</VBox>

@@ -27,5 +27,8 @@ public enum LogicLevel {
     public int volts() {
         return voltage;
     }
+    public Paint colour() {
+        return colour;
+    }
 
 }

@@ -4,6 +4,7 @@
       <w>mosfet</w>
       <w>renderable</w>
       <w>shft</w>
+      <w>simulatable</w>
       <w>sout</w>
       <w>terilog</w>
       <w>vgsth</w>
