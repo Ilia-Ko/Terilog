@@ -1,0 +1,84 @@
+TLG (Terilog) file stores the structure of a Circuit in the XML format.
+It consists of two main parts: logical structure - 'logic' section  and
+graphical structure - 'graph' section. Future evolution from 'logic' to
+ternary HDL language is possible.
+
+I. <logic> section. It is the list of Components and Nodes, connected to
+    each other and introduced by tags <comp> and <node>.
+    I.1. Defining a Component. Inside the tag <comp> parameters 'class=...'
+        and 'id=...' must be specified. Between <comp> and </comp> tags
+        there are some <pin> tags which declare pins of the component.
+        Every <pin> tag includes two parameters: 'type=...' and 'node=...'.
+        Parameter 'type' specifies the identity of the pin and 'node'
+        contains the 'id' of the node, connected to this pin. Here is the
+        full list of components and their pins:
+
+        | Class   | Pins                |
+        ---------------------------------
+        | HardN   | gate, source, drain |
+        | HardP   | gate, source, drain |
+        | SoftN   | gate, source, drain |
+        | SoftP   | gate, source, drain |
+        ---------------------------------
+        | Diode   | source, drain       |
+        | Recon   | gate, source, drain | - it is a Reconciliator
+        ---------------------------------
+        | V+      | drain               | - Vx are Voltages
+        | V0      | drain               |
+        | V-      | drain               |
+        ---------------------------------
+        | Ind     | source              | - it is an Indicator
+
+    I.2 Defining a node. Only 'id=...' parameter is required. Between
+        <node> and </node> tags the list of wires is placed. Every wire
+        is described with tag <wire/>, which contains 'id=...' parameter.
+
+II. <graph> section. Here grid dimensions, coordinates of components and
+    vertices of wires are specified.
+
+
+
+III. Example TLG:
+
+<circuit>
+
+    <logic>
+        <comp class="HardN" id="HN1">
+            <pin type="gate" node="n1"/>
+            <pin type="source" node="n2"/>
+            <pin type="drain" node="n3"/>
+        </comp>
+
+        <node id="n1">
+            <wire id="w11"/>
+            <wire id="w12"/>
+        </node>
+
+        <node id="n2">
+            <wire id="w21"/>
+            <wire id="w22"/>
+            <wire id="w23"/>
+        </node>
+
+        <node id="n3">
+            <wire id="w31"/>
+        </node>
+    </logic>
+
+    <graph>
+        <grid w="1728" h="1728"/>
+
+        <comp id="HN1" x="40" y="800" rot="right" mh="+1" mv="-1"/>
+
+        <wire id="w11" x="32" y="76" x1="23" y1="65" hf="true"/>
+        <wire id="w12" x="33" y="77" x1="24" y1="66" hf="false"/>
+
+        <wire id="w21" x="34" y="78" x1="25" y1="67" hf="true"/>
+        <wire id="w22" x="35" y="79" x1="26" y1="68" hf="false"/>
+        <wire id="w23" x="36" y="80" x1="27" y1="69" hf="false"/>
+
+        <wire id="w31" x="37" y="81" x1="28" y1="70" hf="true"/>
+    </graph>
+
+</circuit>
+
