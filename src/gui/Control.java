@@ -99,7 +99,7 @@ public class Control {
 
         // lay out flying wire
         if (holdingWire) {
-            flyWire.update(x, y);
+            flyWire.layoutAgain(x, y);
             updateFlyWire();
         }
     }
@@ -108,13 +108,13 @@ public class Control {
         int x = snapCoordinateToGrid(mouse.getX());
         int y = snapCoordinateToGrid(mouse.getY());
         if (holdingWire) {
-            flyWire.update(x, y);
-            circuit.addWire(flyWire);
+            flyWire.layoutAgain(x, y);
+            circuit.add(flyWire);
             holdingWire = false;
             fly.setVisible(false);
         } else if (holdingComp) {
             flyComp.setPos(x, y);
-            circuit.addComponent(flyComp);
+            circuit.add(flyComp);
         } else {
             Informative pointed = circuit.getPointedObject(x, y);
             if (pointed != null) {
@@ -130,7 +130,7 @@ public class Control {
             holdingComp = false;
             fly.setVisible(false);
         } else if (code == KeyCode.SPACE && holdingWire) {
-            flyWire.flipBending();
+            flyWire.flip();
             updateFlyWire();
         }
         if (holdingComp) {
@@ -355,6 +355,20 @@ public class Control {
     // menu.help
     @FXML private void menuAbout() {}
     @FXML private void menuCredits() {}
+
+    // informative
+    public int getGridWidth() {
+        return w;
+    }
+    public int getGridHeight() {
+        return h;
+    }
+    public void setGridDimensions(int width, int height) {
+        w = width;
+        h = height;
+        updateGridParameters();
+        renderField();
+    }
 
     // utilities
     private static int rnd(double val) {
