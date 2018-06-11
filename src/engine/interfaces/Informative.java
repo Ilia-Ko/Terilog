@@ -2,7 +2,12 @@ package engine.interfaces;
 
 public interface Informative {
 
-    void saveSpecificInfo();
-    void loadSpecificInfo();
+    String getPrefixID();
+
+    void setID(String id);
+    String getID();
+
+    String getX();
+    String getY();
 
 }
