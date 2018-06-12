@@ -12,22 +12,15 @@ public abstract class MOSFET extends Component {
     private static final int WIDTH = 4;
     private static final int HEIGHT = 2;
 
-    // unique for mosfets
-    int vgsth;
-    private Pin gate, source, drain;
+    Pin gate, source, drain;
 
-    MOSFET(int vgsth) {
-        super();
-        this.vgsth = vgsth;
-    }
+    // connectivity
     @Override protected Pin[] initPins() {
         gate = new Pin(this, Pin.INPUT, "gate");
         source = new Pin(this, Pin.INPUT, "source");
         drain = new Pin(this, Pin.OUTPUT, "drain");
         return new Pin[] {gate, source, drain};
     }
-
-    // connectivity
     @Override public Pin getPinByName(String pinName) {
         if (pinName.equals(gate.getName()))
             return gate;

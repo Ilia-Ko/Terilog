@@ -13,14 +13,14 @@ import java.util.ArrayList;
 public abstract class Component implements Renderable, Rotatable, Mirrorable, Informative {
 
     // subclasses   ->   I don't know how to conform OOP in this case! - TODO: rewrite in OOP style
-    static final String ATTR_NAME_OF_HARD_N = "hard-n";
-    static final String ATTR_NAME_OF_HARD_P = "hard-p";
-    static final String ATTR_NAME_OF_SOFT_N = "soft-n";
-    static final String ATTR_NAME_OF_SOFT_P = "soft-p";
-    static final String ATTR_NAME_OF_DIODE = "diode";
-    static final String ATTR_NAME_OF_RECONCILIATOR = "rec";
-    static final String ATTR_NAME_OF_VOLTAGE = "volts";
-    static final String ATTR_NAME_OF_INDICATOR = "ind";
+    protected static final String ATTR_NAME_OF_HARD_N = "hard-n";
+    protected static final String ATTR_NAME_OF_HARD_P = "hard-p";
+    protected static final String ATTR_NAME_OF_SOFT_N = "soft-n";
+    protected static final String ATTR_NAME_OF_SOFT_P = "soft-p";
+    protected static final String ATTR_NAME_OF_DIODE = "diode";
+    protected static final String ATTR_NAME_OF_RECONCILIATOR = "rec";
+    protected static final String ATTR_NAME_OF_VOLTAGE = "volts";
+    protected static final String ATTR_NAME_OF_INDICATOR = "ind";
 
     // rendering
     protected int x, y; // coordinates of the center of this component
@@ -133,7 +133,7 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
         mirrorH = Mirrorable.parseAttrName(mirrorNameH);
         mirrorV = Mirrorable.parseAttrName(mirrorNameV);
     }
-    abstract String getAttrClassName();
+    protected abstract String getAttrClassName();
 
     protected class Pin {
 
@@ -158,6 +158,11 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
             attrName = name;
         }
 
+        // simulation
+        public LogicLevel sig() {
+            return node.getCurrentSignal();
+        }
+
         // connectivity
         void connect(Node node) {
             this.node = node;
@@ -171,7 +176,7 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
         Component getParent() {
             return parent;
         }
-        Node getNode() {
+        public Node getNode() {
             return node;
         }
 

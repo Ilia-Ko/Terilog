@@ -5,53 +5,43 @@ import javafx.scene.paint.Paint;
 
 public enum LogicLevel {
 
-    POS("HIGH", "TRUE",     "+1",   '\u0031', +1, Color.rgb(128,  64,   0)) {
-        @Override
-        public boolean conflicts(LogicLevel signal) {
+    POS("HIGH", "TRUE",     "+1",   '\u0031', +1, true,  Color.rgb(128,  64,   0)) {
+        @Override public boolean conflicts(LogicLevel signal) {
             return signal != ZZZ && signal != POS;
         }
-        @Override
-        public boolean suppresses(LogicLevel signal) {
+        @Override public boolean suppresses(LogicLevel signal) {
             return signal == ZZZ;
         }
     },
-    NIL("MID",  "UNKNOWN",  "0",    '\u0030',  0, Color.rgb(  0, 128,   0)) {
-        @Override
-        public boolean conflicts(LogicLevel signal) {
+    NIL("MID",  "UNKNOWN",  "0",    '\u0030',  0, true,  Color.rgb(  0, 128,   0)) {
+        @Override public boolean conflicts(LogicLevel signal) {
             return signal != ZZZ && signal != NIL;
         }
-        @Override
-        public boolean suppresses(LogicLevel signal) {
+        @Override public boolean suppresses(LogicLevel signal) {
             return signal == ZZZ;
         }
     },
-    NEG("LOW",  "FALSE",    "-1",   '\u03bb', -1, Color.rgb(  0,  64, 128)) {
-        @Override
-        public boolean conflicts(LogicLevel signal) {
+    NEG("LOW",  "FALSE",    "-1",   '\u03bb', -1, true,  Color.rgb(  0,  64, 128)) {
+        @Override public boolean conflicts(LogicLevel signal) {
             return signal != ZZZ && signal != NEG;
         }
-        @Override
-        public boolean suppresses(LogicLevel signal) {
+        @Override public boolean suppresses(LogicLevel signal) {
             return signal == ZZZ;
         }
     },
-    ZZZ("Z",    "N/A",      "n/a",  '\u2205',  0, Color.rgb(128, 128, 128)) {
-        @Override
-        public boolean conflicts(LogicLevel signal) {
+    ZZZ("Z",    "N/A",      "n/a",  '\u2205',  0, false, Color.rgb(128, 128, 128)) {
+        @Override public boolean conflicts(LogicLevel signal) {
             return false;
         }
-        @Override
-        public boolean suppresses(LogicLevel signal) {
+        @Override public boolean suppresses(LogicLevel signal) {
             return false;
         }
     }, // undefined, non-critical, like QNaN in FPU
-    ERR("E",    "NAN",      "NaN",  '!',      22, Color.rgb(255,   0,   0)) {
-        @Override
-        public boolean conflicts(LogicLevel signal) {
+    ERR("E",    "NAN",      "NaN",  '!',      22, false, Color.rgb(255,   0,   0)) {
+        @Override public boolean conflicts(LogicLevel signal) {
             return true;
         }
-        @Override
-        public boolean suppresses(LogicLevel signal) {
+        @Override public boolean suppresses(LogicLevel signal) {
             return signal != ERR;
         }
     }; // undefined, critical, like SNaN in FPU
@@ -60,13 +50,15 @@ public enum LogicLevel {
     private char digit;
     private int voltage;
     private Paint colour;
+    private boolean stable;
 
-    LogicLevel(String name0, String name1, String name2, char name3, int val, Paint col) {
+    LogicLevel(String name0, String name1, String name2, char name3, int val, boolean isStable, Paint col) {
         standardName = name0;
         boolName = name1;
         mathName = name2;
         digit = name3;
         voltage = val;
+        stable = isStable;
         colour = col;
     }
 
@@ -90,6 +82,9 @@ public enum LogicLevel {
     }
     public Paint colour() {
         return colour;
+    }
+    public boolean stable() {
+        return stable;
     }
 
     // signal interaction

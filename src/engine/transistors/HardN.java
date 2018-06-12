@@ -1,28 +1,50 @@
 package engine.transistors;
 
+import engine.Component;
 import engine.LogicLevel;
+import engine.Node;
 import javafx.scene.canvas.GraphicsContext;
+
+import java.util.ArrayList;
 
 public class HardN extends MOSFET {
 
     private static final int VGSTH = 2;
 
-    public HardN() {
-        super(VGSTH);
+    // simulation
+    @Override public ArrayList<Node> simulate() {
+        // compute output signal
+        LogicLevel out;
+        if (gate.sig() == LogicLevel.ZZZ && source.sig() == LogicLevel.ZZZ)
+            out = LogicLevel.ZZZ;
+        else if (!gate.sig().stable() || !source.sig().stable())
+            out = LogicLevel.ERR;
+        else if (gate.sig().volts() - source.sig().volts() >= VGSTH)
+            out = source.sig();
+        else
+            out = LogicLevel.ZZZ;
+
+        // influence on the output node
+        drain.getNode().receiveSignal(this, out);
+
+        // report about affected nodes
+        ArrayList<Node> affected = new ArrayList<>();
+        affected.add(drain.getNode());
+        return affected;
     }
 
-    @Override
-    void finishRendering(GraphicsContext gc) {
+    // rendering
+    @Override void finishRendering(GraphicsContext gc) {
         gc.fillPolygon(new double[] {0.0, -0.2, +0.2},
                        new double[] {0.0, -0.2, -0.2}, 3);
     }
 
-    @Override
-    public void simulate() {
-        LogicLevel source = inputs[SOURCE].getSignal();
-        LogicLevel gate = inputs[GATE].getSignal();
-        if (gate.volts() - source.volts() == vgsth) outputs[DRAIN].setFutureSignal(source);
-        else outputs[DRAIN].setFutureSignal(LogicLevel.ZZZ);
+    // informative
+    @Override public String getPrefixID() {
+        return "HN";
+    }
+    @Override protected String getAttrClassName() {
+        return Component.ATTR_NAME_OF_HARD_N;
     }
 
 }
