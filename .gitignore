@@ -1,4 +1,6 @@
 .idea
 .classpath
 .project
-Terilog.iml
+*.iml
+*.iws
+*.ipr
