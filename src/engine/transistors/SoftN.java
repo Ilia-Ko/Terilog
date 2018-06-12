@@ -7,9 +7,9 @@ import javafx.scene.canvas.GraphicsContext;
 
 import java.util.ArrayList;
 
-public class HardN extends MOSFET {
+public class SoftN extends MOSFET {
 
-    private static final int VGSTH = 2;
+    private static final int VGSTH = 1;
 
     // simulation
     @Override public ArrayList<Node> simulate() {
@@ -37,14 +37,15 @@ public class HardN extends MOSFET {
     @Override void finishRendering(GraphicsContext gc) {
         gc.fillPolygon(new double[] {0.0, -0.2, +0.2},
                        new double[] {0.0, -0.2, -0.2}, 3);
+        gc.strokeOval(0.0, 0.0, getWidth() / 2.0, getHeight() / 2.0);
     }
 
     // informative
     @Override public String getPrefixID() {
-        return "hn";
+        return "sn";
     }
     @Override protected String getAttrClassName() {
-        return Component.ATTR_NAME_OF_HARD_N;
+        return Component.ATTR_NAME_OF_SOFT_N;
     }
 
 }
