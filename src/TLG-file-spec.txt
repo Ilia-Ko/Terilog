@@ -1,5 +1,7 @@
 TLG (Terilog) file stores the structure of a Circuit in the XML format.
-It consists of two main parts: logical structure - 'logic' section  and
+All information is stored inside <circuit> tags, which have the single
+attribute 'name=...'.
+Data consists of two main parts: logical structure - 'logic' section  and
 graphical structure - 'graph' section. Future evolution from 'logic' to
 ternary HDL language is possible.
 
@@ -13,21 +15,24 @@ I. <logic> section. It is the list of Components and Nodes, connected to
         contains the 'id' of the node, connected to this pin. Here is the
         full list of components and their pins:
 
-        | Class   | Pins                |
-        ---------------------------------
-        | HardN   | gate, source, drain |
-        | HardP   | gate, source, drain |
-        | SoftN   | gate, source, drain |
-        | SoftP   | gate, source, drain |
-        ---------------------------------
-        | Diode   | source, drain       |
-        | Recon   | gate, source, drain | - it is a Reconciliator
-        ---------------------------------
-        | V+      | drain               | - Vx are Voltages
-        | V0      | drain               |
-        | V-      | drain               |
-        ---------------------------------
-        | Ind     | source              | - it is an Indicator
+        ---------------------------------------------------
+        | Component:    | class=... | Pin types:          |
+        ---------------------------------------------------
+        | HardN         | hard-n    | gate, source, drain |
+        | HardP         | hard-p    | gate, source, drain |
+        | SoftN         | soft-n    | gate, source, drain |
+        | SoftP         | soft-p    | gate, source, drain |
+        ---------------------------------------------------
+        | Diode         | diode     | source, drain       |
+        | Reconciliator | rec       | gate, source, drain |
+        ---------------------------------------------------
+        | Voltage*      | volts     | drain               |
+        | Indicator     | ind       | source              |
+        ---------------------------------------------------
+
+        * Note: <volts> tag has an additional attribute 'sig=...', which
+        shows the LogicLevel of the voltage source, defined by this tag.
+        Attribute's value must be one of LogicLevel.get***Name().
 
     I.2 Defining a node. Only 'id=...' parameter is required. Between
         <node> and </node> tags the list of wires is placed. Every wire
@@ -40,7 +45,7 @@ II. <graph> section. Here grid dimensions, coordinates of components and
 
 III. Example TLG:
 
-<circuit>
+<circuit name="Example">
 
     <logic>
         <comp class="HardN" id="HN1">
@@ -68,7 +73,7 @@ III. Example TLG:
     <graph>
         <grid w="1728" h="1728"/>
 
-        <comp id="HN1" x="40" y="800" rot="right" mh="+1" mv="-1"/>
+        <comp id="HN1" x="40" y="800" rot="right" mh="yes" mv="no"/>
 
         <wire id="w11" x="32" y="76" x1="23" y1="65" hf="true"/>
         <wire id="w12" x="33" y="77" x1="24" y1="66" hf="false"/>

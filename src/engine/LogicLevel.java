@@ -56,13 +56,13 @@ public enum LogicLevel {
         }
     }; // undefined, critical, like SNaN in FPU
 
-    private String standartName, boolName, mathName;
+    private String standardName, boolName, mathName;
     private char digit;
     private int voltage;
     private Paint colour;
 
     LogicLevel(String name0, String name1, String name2, char name3, int val, Paint col) {
-        standartName = name0;
+        standardName = name0;
         boolName = name1;
         mathName = name2;
         digit = name3;
@@ -72,7 +72,7 @@ public enum LogicLevel {
 
     // names
     public String getStandartName() {
-        return standartName;
+        return standardName;
     }
     public String getBooleanName() {
         return boolName;

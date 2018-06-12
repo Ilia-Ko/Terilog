@@ -7,7 +7,4 @@ public interface Informative {
     void setID(String id);
     String getID();
 
-    String getX();
-    String getY();
-
 }

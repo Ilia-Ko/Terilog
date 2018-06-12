@@ -16,25 +16,29 @@ public interface Rotatable {
     void rotateClockwise();
     void rotateCounterClockwise();
 
-    static String getName(int rotation) {
-        if (rotation == DEFAULT)
-            return "none";
-        else if (rotation == ROT_UP)
-            return "up";
-        else if (rotation == ROT_LEFT)
-            return "left";
-        else
-            return "down";
+    static String getAttrName(int rotation) {
+        switch (rotation) {
+            case DEFAULT:
+                return "none";
+            case ROT_UP:
+                return "up";
+            case ROT_LEFT:
+                return "left";
+            default:
+                return "down";
+        }
     }
-    static int parseName(String name) {
-        if (name.equals("none") || name.equals("right"))
-            return ROT_RIGHT;
-        else if (name.equals("up"))
-            return ROT_UP;
-        else if (name.equals("left"))
-            return ROT_LEFT;
-        else
-            return ROT_DOWN;
+    static int parseAttrName(String name) {
+        switch (name) {
+            case "down":
+                return ROT_DOWN;
+            case "up":
+                return ROT_UP;
+            case "left":
+                return ROT_LEFT;
+            default:
+                return DEFAULT;
+        }
     }
 
 }

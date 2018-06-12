@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
 <?import javafx.scene.canvas.Canvas?>
-
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="gui.Control">
 
     <MenuBar>
@@ -20,6 +20,9 @@
             <MenuItem text="Hard P" accelerator="P" onAction="#menuHardP"/>
             <MenuItem text="Soft N" accelerator="Ctrl+N" onAction="#menuSoftN"/>
             <MenuItem text="Soft P" accelerator="Ctrl+P" onAction="#menuSoftP"/>
+            <SeparatorMenuItem/>
+            <MenuItem text="Diode" accelerator="D" onAction="#menuDiode"/>
+            <MenuItem text="Reconciliator" accelerator="R" onAction="#menuReconciliator"/>
             <SeparatorMenuItem/>
             <MenuItem text="Voltage" accelerator="V" onAction="#menuVoltage"/>
             <MenuItem text="Indicator" accelerator="I" onAction="#menuIndicator"/>

@@ -8,4 +8,4 @@ The main usage of Terilog is:
 3)  Loading arbitrary TLG files.
 4)  Simulating these circuits.
 
-TLG file format reference: see TLG-file-spec.txt
+TLG file format reference: see src/TLG-file-spec.txt

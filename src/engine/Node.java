@@ -18,31 +18,32 @@ public class Node implements Informative { // 'logical' class, no rendering
     private String id;
     private ArrayList<Wire> wires;
 
-    public Node() {
-        inputs = new ArrayList<Component>();
-        outputs = new ArrayList<Component>();
+    Node() {
+        inputs = new ArrayList<>();
+        outputs = new ArrayList<>();
+        wires = new ArrayList<>();
         inputSignals = null;
         currentSig = LogicLevel.ZZZ;
     }
 
     // simulation
-    public void reset() {
+    void reset() {
         inputSignals = new LogicLevel[inputs.size()];
         Arrays.fill(inputSignals, LogicLevel.NIL);
         currentSig = LogicLevel.NIL;
     }
-    public ArrayList<Node> propagate() {
+    ArrayList<Node> propagate() {
         /* Propagation is a part of destabilization of a circuit. When a node is unstable, it affects
         those components, whose inputs are connected to the node. It means, that these components should
         compute their outputs again. When they produce new signals, their outputs become unstable too.
         This function makes affected components to recalculate their outputs and returns the list of those
         nodes, who become unstable after the computation.
          */
-        ArrayList<Node> unstable = new ArrayList<Node>();
+        ArrayList<Node> unstable = new ArrayList<>();
         for (Component c : outputs) unstable.addAll(c.simulate());
         return unstable;
     }
-    public boolean stabilize() {
+    boolean stabilize() {
         /* Definition: a node is STABLE if and only if the result of interaction between input signals
         equals to the current signal on the node.
         Stabilization of a node is a part of the global stabilization process which flows parallel
@@ -60,12 +61,16 @@ public class Node implements Informative { // 'logical' class, no rendering
         if (sig.suppresses(currentSig)) currentSig = sig;
         return result;
     }
-    public LogicLevel getCurrentSignal() {
+    LogicLevel getCurrentSignal() {
         return currentSig;
+    }
+    public void receiveSignal(Component fromWho, LogicLevel signal) {
+        int address = inputs.indexOf(fromWho);
+        inputSignals[address] = signal;
     }
 
     // connectivity
-    public void addPin(Component.Pin pin) {
+    void addPin(Component.Pin pin) {
         int type = pin.getType();
         Component c = pin.getParent();
 
@@ -74,15 +79,14 @@ public class Node implements Informative { // 'logical' class, no rendering
         else if (type == Component.Pin.OUTPUT) // and vice versa
             inputs.add(c);
     }
-    public void addInputs(ArrayList<Component> ins) {
-        inputs.addAll(ins);
-    }
-    public void addOutputs(ArrayList<Component> outs) {
-        outputs.addAll(outs);
-    }
-    public void receiveSignal(Component fromWho, LogicLevel signal) {
-        int address = inputs.indexOf(fromWho);
-        inputSignals[address] = signal;
+    void delPin(Component.Pin pin) {
+        int type = pin.getType();
+        Component c = pin.getParent();
+
+        if (type == Component.Pin.INPUT) // if 'pin' is input (relative to a component)
+            outputs.remove(c); // then add it to outputs (relative to a node)
+        else if (type == Component.Pin.OUTPUT) // and vice versa
+            inputs.remove(c);
     }
 
     // informative
@@ -95,10 +99,10 @@ public class Node implements Informative { // 'logical' class, no rendering
     @Override public String getID() {
         return id;
     }
-    public void addWire(Wire w) {
+    void addWire(Wire w) {
         wires.add(w);
     }
-    public ArrayList<Wire> getWires() {
+    ArrayList<Wire> getWires() {
         return wires;
     }
 

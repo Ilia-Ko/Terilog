@@ -2,6 +2,7 @@ package gui;
 
 import engine.Circuit;
 import engine.Component;
+import engine.TerilogIO;
 import engine.Wire;
 import engine.interfaces.Informative;
 import engine.transistors.HardN;
@@ -11,15 +12,27 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
-import javafx.scene.input.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.xml.sax.SAXException;
 
-import java.awt.Robot;
-import java.awt.AWTException;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 
 public class Control {
 
@@ -52,6 +65,8 @@ public class Control {
 
     // circuit logic
     private Circuit circuit;
+    private TerilogIO ioSystem;
+    private File lastSave;
 
     // object insertion logic
     private boolean holdingWire, holdingComp;
@@ -72,12 +87,24 @@ public class Control {
         maxPeriod = p * MAX_GRID_PERIOD;
 
         // circuit logic
-        circuit = new Circuit();
+        circuit = new Circuit(this);
+        try {
+            ioSystem = new TerilogIO(circuit);
+        } catch (ParserConfigurationException | TransformerConfigurationException e) {
+            e.printStackTrace();
+            ioSystem = null;
+        }
+        lastSave = null;
 
         // init insertion logic
         holdingWire = false;
         holdingComp = false;
-        try { robot = new Robot(); } catch (AWTException e) { e.printStackTrace(); }
+        try {
+            robot = new Robot();
+        } catch (AWTException e) {
+            e.printStackTrace();
+            robot = null;
+        }
 
         // prepare field
         updateGridParameters();
@@ -116,11 +143,7 @@ public class Control {
             flyComp.setPos(x, y);
             circuit.add(flyComp);
         } else {
-            Informative pointed = circuit.getPointedObject(x, y);
-            if (pointed != null) {
-                if (mouse.getButton() == MouseButton.PRIMARY) showInfoToolTip(x, y, pointed);
-                else if (mouse.getButton() == MouseButton.SECONDARY) showActionToolTip(x, y, pointed);
-            }
+            // TODO: selection and hovering
         }
     }
     @FXML private void fieldKeyPressed(KeyEvent key) {
@@ -278,13 +301,54 @@ public class Control {
 
     // menu.file
     @FXML private void menuOpen() {
+        // configure file chooser
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Open TLG file");
+        chooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        chooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("TLG files", "*.tlg"));
 
+        // get file
+        File tlg = chooser.showOpenDialog(stage);
+
+        // load it
+        try {
+            ioSystem.loadTLG(tlg);
+        } catch (IOException e) {
+            e.printStackTrace();
+            // show IO alert
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle(Main.TITLE);
+            alert.setHeaderText("IO Error:");
+            alert.setContentText("Failed to open " + tlg.getAbsolutePath());
+            alert.showAndWait();
+        } catch (SAXException e) {
+            e.printStackTrace();
+            // show XML alert
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle(Main.TITLE);
+            alert.setHeaderText("XML error:");
+            alert.setContentText("Failed to parse " + tlg.getAbsolutePath());
+            alert.showAndWait();
+        }
     }
     @FXML private void menuSave() {
-
+        if (lastSave == null)
+            menuSaveAs();
+        else
+            updateSavedFile();
     }
     @FXML private void menuSaveAs() {
+        // configure file chooser
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Save TLG file");
+        chooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        chooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("TLG files", "*.tlg"));
 
+        // get file
+        lastSave = chooser.showSaveDialog(stage);
+
+        // save it
+        updateSavedFile();
     }
     @FXML private void menuToggle() {
         stage.setFullScreen(!stage.isFullScreen());
@@ -310,6 +374,8 @@ public class Control {
     @FXML private void menuHardP() {}
     @FXML private void menuSoftN() {}
     @FXML private void menuSoftP() {}
+    @FXML private void menuDiode() {}
+    @FXML private void menuReconciliator() {}
     @FXML private void menuVoltage() {}
     @FXML private void menuIndicator() {}
 
@@ -327,7 +393,7 @@ public class Control {
 
     // menu.grid
     @FXML private void menuGrid() {
-        showGridSizeDialog();
+
     }
     @FXML private void menuZoomIn() {
         double newPeriod = p * 1.12;
@@ -376,6 +442,19 @@ public class Control {
     }
     private int snapCoordinateToGrid(double c) {
         return rnd(Math.round(c / p) * p);
+    }
+    private void updateSavedFile() {
+        try {
+            ioSystem.saveTLG(lastSave);
+        } catch (TransformerException e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle(Main.TITLE);
+            alert.setHeaderText("IO error:");
+            alert.setContentText("Failed to save " + lastSave.getAbsolutePath());
+            alert.showAndWait();
+            lastSave = null;
+        }
     }
 
 }

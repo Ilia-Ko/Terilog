@@ -10,4 +10,17 @@ public interface Mirrorable {
     void mirrorHorizontal();
     void mirrorVertical();
 
+    static String getAttrName(int mirror) {
+        if (mirror == MIRRORED)
+            return "yes";
+        else
+            return "no";
+    }
+    static int parseAttrName(String name) {
+        if (name.equals("yes"))
+            return MIRRORED;
+        else
+            return DEFAULT;
+    }
+
 }

@@ -2,7 +2,7 @@ package engine.interfaces;
 
 import javafx.scene.canvas.GraphicsContext;
 
-public interface Renderable extends Informative {
+public interface Renderable {
 
     void render(GraphicsContext gc);
     void setPos(int xPos, int yPos);

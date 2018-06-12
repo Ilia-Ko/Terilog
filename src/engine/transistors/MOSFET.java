@@ -1,35 +1,53 @@
 package engine.transistors;
 
-import engine.*;
+import engine.Component;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 @SuppressWarnings("SuspiciousNameCombination")
 public abstract class MOSFET extends Component {
 
-    private static final String TAG_VGSTH = "vgsth";
     private static final Color COL_LEGS = Color.rgb(0, 0, 0);
     // size
     private static final int WIDTH = 4;
     private static final int HEIGHT = 2;
-    // pins
-    public static final int SOURCE = 0;
-    public static final int GATE   = 1;
-    public static final int DRAIN  = 2;
 
+    // unique for mosfets
     int vgsth;
+    private Pin gate, source, drain;
 
     MOSFET(int vgsth) {
         super();
         this.vgsth = vgsth;
-        inputs = new Wire[2];
-        outputs = new Wire[1];
+    }
+    @Override protected Pin[] initPins() {
+        gate = new Pin(this, Pin.INPUT, "gate");
+        source = new Pin(this, Pin.INPUT, "source");
+        drain = new Pin(this, Pin.OUTPUT, "drain");
+        return new Pin[] {gate, source, drain};
+    }
+
+    // connectivity
+    @Override public Pin getPinByName(String pinName) {
+        if (pinName.equals(gate.getName()))
+            return gate;
+        else if (pinName.equals(source.getName()))
+            return source;
+        else if (pinName.equals(drain.getName()))
+            return drain;
+        else
+            System.out.printf("WARNING: MOSFETs do not have pin '%s'.\n", pinName);
+        return null;
+    }
+
+    // simulation
+    @Override protected boolean isIndependent() {
+        return false;
     }
 
     // rendering
     abstract void finishRendering(GraphicsContext gc);
-    @Override
-    public void render(GraphicsContext gc) {
+    @Override protected void renderBody(GraphicsContext gc) {
         // transform
         gc.translate(x, y);
         gc.rotate(ROTATION_ANGLE * rotation);
@@ -58,35 +76,14 @@ public abstract class MOSFET extends Component {
         gc.rotate(-ROTATION_ANGLE * rotation);
         gc.translate(-x, -y);
     }
-    @Override
-    public int getWidth() {
+    @Override public int getWidth() {
         if (rotation % 2 == ROT_RIGHT) return WIDTH;
         else return HEIGHT;
     }
-    @Override
-    public int getHeight() {
+    @Override public int getHeight() {
         if (rotation % 2 == ROT_RIGHT) return HEIGHT;
         else return WIDTH;
     }
 
-    // connecting
-    @Override
-    public void connect(Wire wire, int type) {
-
-    }
-    @Override
-    public void disconnect(Wire unit) {
-
-    }
-
-    // save/load
-    @Override
-    public void saveSpecificInfo() {
-        TerilogIO.tag(TAG_VGSTH, Integer.toString(vgsth));
-    }
-    @Override
-    public void loadSpecificInfo() {
-
-    }
 
 }
