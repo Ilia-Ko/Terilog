@@ -4,7 +4,8 @@ import engine.interfaces.Informative;
 import engine.interfaces.Mirrorable;
 import engine.interfaces.Renderable;
 import engine.interfaces.Rotatable;
-import gui.Control;
+import gui.control.ControlMain;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
@@ -23,15 +24,19 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
     protected static final String ATTR_NAME_OF_INDICATOR = "ind";
 
     // rendering
-    protected int x, y; // coordinates of the center of this component
+    protected double p; // grid period
+    private Canvas basis; // canvas for rendering
+    private int x, y; // coordinates of the center of this component
     protected int rotation; // index of rotation of this component; see Rotatable
-    protected int mirrorV, mirrorH; // states of mirroring of this component; see Mirrorable
+    private int mirrorV, mirrorH; // states of mirroring of this component; see Mirrorable
 
     // others
     private Pin[] pins;
     private String id;
 
     protected Component() {
+        basis = new Canvas(getWidth(), getHeight());
+        basis.getGraphicsContext2D().save();
         x = 0;
         y = 0;
         rotation = Rotatable.DEFAULT;
@@ -64,16 +69,39 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
 
     // rendering
     protected abstract void renderBody(GraphicsContext gc);
-    @Override public void render(GraphicsContext gc) {
+    @Override public void render() {
+        // transform gc
+        GraphicsContext gc = basis.getGraphicsContext2D();
+        gc.rotate(Rotatable.ROTATION_ANGLE * rotation);
+        gc.scale(mirrorH, mirrorV);
         // render pins
-        for (Pin pin : pins) pin.render(gc);
+        for (Pin pin : pins) pin.render();
         // render component
         renderBody(gc);
+        // undo transform
+        gc.scale(-mirrorH, -mirrorV);
+        gc.rotate(-Rotatable.ROTATION_ANGLE * rotation);
+    }
+    @Override public void setGridPeriod(double period) {
+        p = period;
+        basis.setWidth(p * getWidth());
+        basis.setHeight(p * getHeight());
+        basis.setTranslateX(p * x);
+        basis.setTranslateY(p * y);
+        // rescale gc
+        GraphicsContext gc = basis.getGraphicsContext2D();
+        gc.restore();
+        gc.scale(p, p);
     }
     @Override public void setPos(int xPos, int yPos) {
+        for (Pin pin : pins) pin.translate(xPos - x, yPos - y);
         x = xPos;
         y = yPos;
-        for (Pin pin : pins) pin.setPos(x, y);
+        basis.setTranslateX(p * x);
+        basis.setTranslateY(p * y);
+    }
+    @Override public void setGlobalAlpha(double alpha) {
+        basis.getGraphicsContext2D().setGlobalAlpha(alpha);
     }
     @Override public boolean inside(int mx, int my) {
         mx -= x;
@@ -81,6 +109,9 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
         int w2 = getWidth() / 2;
         int h2 = getHeight() / 2;
         return (mx >= -w2) && (mx <= +w2) && (my >= -h2) && (my <= +h2);
+    }
+    @Override public Canvas getBasis() {
+        return basis;
     }
 
     // rotating
@@ -181,11 +212,12 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
         }
 
         // rendering
-        private void render(GraphicsContext gc) {
-            double r = Control.LINE_WIDTH * 2.0;
+        private void render() {
+            GraphicsContext gc = basis.getGraphicsContext2D();
+            double r = ControlMain.LINE_WIDTH * 2.0;
             // configure gc
             gc.setStroke(Color.BLACK);
-            gc.setLineWidth(Control.LINE_WIDTH);
+            gc.setLineWidth(ControlMain.LINE_WIDTH);
             if (isConnected)
                 gc.setFill(node.getCurrentSignal().colour());
             else
@@ -195,9 +227,13 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
             gc.strokeOval(x, y, r, r);
             gc.fillOval(x, y, r, r);
         }
-        private void setPos(int xPos, int yPos) {
+        public void setPos(int xPos, int yPos) {
             x = xPos;
             y = yPos;
+        }
+        private void translate(int dx, int dy) {
+            x += dx;
+            y += dy;
         }
         int getX() {
             return x;

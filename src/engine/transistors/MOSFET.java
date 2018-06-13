@@ -1,6 +1,7 @@
 package engine.transistors;
 
 import engine.Component;
+import gui.control.ControlMain;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
@@ -16,9 +17,16 @@ public abstract class MOSFET extends Component {
 
     // connectivity
     @Override protected Pin[] initPins() {
+        // create pins
         gate = new Pin(this, Pin.INPUT, "gate");
         source = new Pin(this, Pin.INPUT, "source");
         drain = new Pin(this, Pin.OUTPUT, "drain");
+
+        // place them
+        gate.setPos(WIDTH / 2, 0);
+        source.setPos(0, HEIGHT);
+        drain.setPos(WIDTH, HEIGHT);
+
         return new Pin[] {gate, source, drain};
     }
     @Override public Pin getPinByName(String pinName) {
@@ -41,33 +49,26 @@ public abstract class MOSFET extends Component {
     // rendering
     abstract void finishRendering(GraphicsContext gc);
     @Override protected void renderBody(GraphicsContext gc) {
-        // transform
-        gc.translate(x, y);
-        gc.rotate(ROTATION_ANGLE * rotation);
-        gc.scale(mirrorH, mirrorV);
+        gc.setStroke(COL_LEGS);
+        gc.setLineWidth(ControlMain.LINE_WIDTH);
 
-        // render transistor
-        gc.setFill(COL_LEGS);
         // legs:
         gc.strokeLine(-2, -1, +0, -1);
         gc.strokeLine(+1, -1, +2, -1);
         gc.strokeLine(-1, +0, -1, -1);
         gc.strokeLine(+0, +0, -1, -1);
         gc.strokeLine(+1, +0, +1, -1);
+
         // legs' caps:
         gc.strokeLine(-1.2, 0.0, -0.8, 0.0);
         gc.strokeLine(-0.2, 0.0, +0.2, 0.0);
         gc.strokeLine(+0.8, 0.0, +1.2, 0.0);
+
         // gate:
         gc.strokeLine(-1.0, 0.2, +1.0, 0.2);
         gc.strokeLine(+0.0, 0.2, +0.0, 1.0);
 
         finishRendering(gc);
-
-        // transform back
-        gc.scale(mirrorH, mirrorV);
-        gc.rotate(-ROTATION_ANGLE * rotation);
-        gc.translate(-x, -y);
     }
     @Override public int getWidth() {
         if (rotation % 2 == ROT_RIGHT) return WIDTH;

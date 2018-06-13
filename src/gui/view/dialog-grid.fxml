@@ -1,9 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<GridPane
+        xmlns="http://javafx.com/javafx"
+        xmlns:fx="http://javafx.com/fxml"
+        fx:controller="gui.control.ControlDlgGrid"
+        alignment="CENTER">
 
-<GridPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="gui.Control">
+    <Label
+        text="Grid width:"
+        GridPane.columnIndex="0"
+        GridPane.rowIndex="0"/>
 
-    <!--TODO: make fxml for dialog-->
+    <TextField
+        fx:id="txtWidth"
+        onKeyPressed="#txtWidthKeyPressed"
+        GridPane.columnIndex="1"
+        GridPane.rowIndex="0"/>
+
+    <Label
+        text="Grid height:"
+        GridPane.columnIndex="0"
+        GridPane.rowIndex="1"/>
+
+    <TextField
+        fx:id="txtHeight"
+        onKeyPressed="#txtHeightKeyPressed"
+        GridPane.columnIndex="1"
+        GridPane.rowIndex="1"/>
+
+    <Button
+        text="Apply"
+        onAction="#btnApplyClicked"
+        GridPane.columnIndex="0"
+        GridPane.rowIndex="2"/>
+
+    <Button
+        text="Close"
+        onAction="#btnCloseClicked"
+        GridPane.columnIndex="1"
+        GridPane.rowIndex="2"/>
 
 </GridPane>

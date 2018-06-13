@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="gui.Control">
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="gui.control.ControlMain">
 
     <MenuBar>
         <Menu text="_File">
@@ -42,11 +42,15 @@
         </Menu>
     </MenuBar>
 
-    <StackPane>
-        <ScrollPane pannable="true">
-            <Canvas fx:id="field" onMouseMoved="#fieldMouseMoved" onMouseClicked="#fieldMouseClicked" onKeyPressed="#fieldKeyPressed"/>
-        </ScrollPane>
-        <Canvas fx:id="fly" opacity="0.5" visible="false"/>
-    </StackPane>
+    <ScrollPane pannable="true">
+        <StackPane fx:id="stack"
+                   alignment="TOP_LEFT"
+                   onMouseMoved="#fieldMouseMoved"
+                   onMouseClicked="#fieldMouseClicked"
+                   onKeyPressed="#fieldKeyPressed">
+            <Canvas fx:id="field" mouseTransparent="true"/>
+            <Canvas fx:id="point" mouseTransparent="true" StackPane.alignment="TOP_LEFT" visible="false"/>
+        </StackPane>
+    </ScrollPane>
 
 </VBox>

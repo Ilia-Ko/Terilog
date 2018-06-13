@@ -1,7 +1,6 @@
 package engine;
 
-import gui.Control;
-import javafx.scene.canvas.GraphicsContext;
+import gui.control.ControlMain;
 
 import java.util.ArrayList;
 
@@ -12,7 +11,7 @@ public class Circuit {
 
     // construction logic
     private String name;
-    private Control control;
+    private ControlMain control;
     private ArrayList<Wire> wires;
 
     // simulation logic
@@ -20,7 +19,7 @@ public class Circuit {
     private ArrayList<Component> components, constants;
     private ArrayList<Node> nodes;
 
-    public Circuit(Control control) {
+    public Circuit(ControlMain control) {
         // construction logic
         name = DEF_NAME;
         this.control = control;
@@ -33,15 +32,18 @@ public class Circuit {
         nodes = new ArrayList<>();
     }
 
-    public void renderAll(GraphicsContext gc) {
-        for (Wire w : wires) w.render(gc);
-        for (Component c : components) c.render(gc);
+    // rendering
+    public void renderAll() {
+        for (Wire w : wires) w.render();
+        for (Component c : components) c.render();
+    }
+    public void updateGridPeriod(double period) {
+        for (Component comp : components) comp.setGridPeriod(period);
+        for (Wire wire : wires) wire.setGridPeriod(period);
     }
 
     // construction logic
     public void add(Wire wire) {
-        wires.add(wire);
-
         // check whether 'w' should be connected to existing wires
         boolean isNewNode = true;
         for (Wire old : wires)
@@ -64,9 +66,10 @@ public class Circuit {
             for (Component.Pin pin : c.getPins())
                 if (wire.inside(pin.getX(), pin.getY()))
                     c.connect(wire.getNode(), pin);
+
+        wires.add(wire);
     }
     public void add(Component comp) {
-        components.add(comp);
         if (comp.isIndependent()) constants.add(comp);
 
         // check whether 'c' should be connected to existing nodes (their wires)
@@ -76,6 +79,8 @@ public class Circuit {
                     comp.connect(wire.getNode(), pin);
                     break;
                 }
+
+        components.add(comp);
     }
 
     // simulation logic
@@ -110,6 +115,8 @@ public class Circuit {
                 complexity of the simulation algorithm.
          */
         do {
+            renderAll();
+
             // destabilizing pass: propagate changes from unstable nodes to affected components
             ArrayList<Node> tmp = new ArrayList<>(unstable);
             for (Node n : tmp)

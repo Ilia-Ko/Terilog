@@ -210,8 +210,8 @@ public class TerilogIO {
             w.setAttribute(ATTR_ID, wire.getID());
             w.setAttribute(ATTR_X, wire.getX());
             w.setAttribute(ATTR_Y, wire.getY());
-            w.setAttribute(ATTR_X1, wire.getX1());
-            w.setAttribute(ATTR_Y1, wire.getY1());
+            w.setAttribute(ATTR_X1, wire.getDX());
+            w.setAttribute(ATTR_Y1, wire.getDY());
             w.setAttribute(ATTR_HF, wire.getHorizontalFirst());
             graph.appendChild(w);
         }

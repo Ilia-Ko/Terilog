@@ -1,5 +1,6 @@
 package gui;
 
+import gui.control.ControlMain;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
@@ -13,7 +14,7 @@ import java.io.IOException;
 
 public class Main extends Application {
 
-    static final String TITLE = "TERILOG";
+    public static final String TITLE = "TERILOG";
 
     // general dimensions
     private static final double GOLD = 0.5 * (1.0 + Math.sqrt(5.0));
@@ -25,8 +26,7 @@ public class Main extends Application {
     private double minWidth, minHeight;
     private String defFont;
 
-    @Override
-    public void init() throws Exception {
+    @Override public void init() throws Exception {
         super.init();
 
         // take delicate care of DPI: (I hate when some apps look awful on Retina displays :)
@@ -44,9 +44,7 @@ public class Main extends Application {
         defWidth = maxWidth / GOLD;
         defHeight = maxHeight / GOLD;
     }
-
-    @Override
-    public void start(Stage stage) throws IOException {
+    @Override public void start(Stage stage) throws IOException {
         // adjust window geometry
         stage.setResizable(true);
         stage.setFullScreenExitHint("Press F11 to leave fullscreen mode.");
@@ -63,7 +61,7 @@ public class Main extends Application {
         Parent root = loader.load();
         root.setStyle(defFont);
         Scene scene = new Scene(root, defWidth, defHeight);
-        Control control = loader.getController();
+        ControlMain control = loader.getController();
         control.initialSetup(stage, defFont, maxWidth, maxHeight);
 
         // make window
@@ -71,6 +69,7 @@ public class Main extends Application {
         stage.setScene(scene);
         stage.show();
     }
+
     public static void main(String[] args) {
         launch(args);
     }
