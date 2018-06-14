@@ -19,8 +19,10 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
@@ -41,7 +43,7 @@ public class ControlMain {
     // dimensions
     private static final double GRID_PERIOD = 0.01; // relative to screen width
     public  static final double GRID_POINT_RADIUS = 1.0 / 18.0; // in periods
-    private static final double GRID_HOVER_RADIUS = GRID_POINT_RADIUS * 6.0; // in periods
+    private static final double GRID_HOVER_RADIUS = 0.5; // in periods
     public  static final double LINE_WIDTH = 1.0 / 12.0; // in periods
     private static final double GRID_PANE_GAP = 0.01;
     // opacity
@@ -60,6 +62,7 @@ public class ControlMain {
     @FXML private MenuItem menuPlay;
     @FXML private MenuItem menuZoomIn;
     @FXML private MenuItem menuZoomOut;
+    @FXML private ScrollPane scroll;
     @FXML private StackPane stack;
     @FXML private Canvas field; // field for circuit
     @FXML private Canvas point; // mouse hovering
@@ -113,6 +116,18 @@ public class ControlMain {
         flyComp = null;
         flyWire = null;
 
+        // handle some events
+        scroll.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            fieldKeyPressed(event);
+            if (event.getCode() == KeyCode.SPACE) event.consume();
+        });
+        scroll.addEventFilter(MouseEvent.ANY, event -> {
+            if (event.isPrimaryButtonDown()) {
+                fieldMouseClicked(event);
+                event.consume();
+            }
+        });
+
         // prepare field
         updateGridParameters();
         renderField();
@@ -138,10 +153,12 @@ public class ControlMain {
             flyWire.layoutAgain(mouseX, mouseY);
     }
     @FXML private void fieldMouseClicked(MouseEvent mouse) {
-        if (holdingWire) // add flying wire to circuit
-            finishWireInsertion();
-        else if (holdingComp) // add flying component to circuit
-            finishCompInsertion();
+        if (mouse.getButton() == MouseButton.PRIMARY) {
+            if (holdingWire) // add flying wire to circuit
+                finishWireInsertion();
+            else if (holdingComp) // add flying component to circuit
+                finishCompInsertion();
+        }
     }
     @FXML private void fieldKeyPressed(KeyEvent key) {
         KeyCode code = key.getCode();
@@ -149,7 +166,7 @@ public class ControlMain {
             if (holdingComp || holdingWire) breakInsertion();
         } else if (code == KeyCode.SPACE && holdingWire) { // flip a wire
             flyWire.flip();
-            flyWire.render();
+            key.consume();
         }
 
         // actions with flying component

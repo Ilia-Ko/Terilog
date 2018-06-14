@@ -82,6 +82,12 @@ public class Circuit {
 
         components.add(comp);
     }
+    public void del(Wire wire) {
+
+    }
+    public void del(Component comp) {
+
+    }
 
     // simulation logic
     public void startSimulation() {

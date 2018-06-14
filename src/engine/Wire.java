@@ -76,6 +76,7 @@ public class Wire implements Renderable, Informative {
     }
     public void flip() {
         horizontalFirst = !horizontalFirst;
+        render();
     }
     private void updateCanvasPos() {
         basis.setTranslateX((x + ctx - ENDPOINT_CIRCLE_RADIUS) * p);
