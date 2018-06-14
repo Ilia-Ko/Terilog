@@ -5,25 +5,29 @@ import engine.interfaces.Renderable;
 import gui.control.ControlMain;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
 
 public class Wire implements Renderable, Informative {
+
+    private static final double ENDPOINT_CIRCLE_RADIUS = ControlMain.GRID_POINT_RADIUS * 4;
 
     // rendering
     private Canvas basis;
     private double p;
-    private int x, y, dx, dy; // absolute values
+    private int x, y; // in periods, point (x, y) is the beginning of the wire (global position)
+    private int dx, dy; // in periods, point (x+dx, y+dy) is the end of the wire (global position)
+    private int ctx, cty; // in periods, translates for canvas position (relative to (x, y) point)
+    private double alpha;
     private boolean horizontalFirst; // layout form: true if horizontal line begins at (0, 0)
     private Node node; // the node, that contains this wire
 
     private String id;
 
     public Wire() {
-        basis = new Canvas();
-        x = 0;
-        y = 0;
-        dx = 0;
-        dy = 0;
+        double a = ENDPOINT_CIRCLE_RADIUS * 2;
+        basis = new Canvas(a, a);
+        x = 0;   y = 0;
+        dx = 0;  dy = 0;
+        ctx = 0; cty = 0;
         horizontalFirst = true;
         node = null;
     }
@@ -47,27 +51,58 @@ public class Wire implements Renderable, Informative {
         node.addWire(this);
     }
 
-    // laying out by the mouse
+    // wire insertion logic
     public void layoutAgain(int mx, int my) {
-        dx = mx - x;
-        dy = my - y;
+        // compute new pair (dx, dy) - vector to the end of the wire
+        int dx = mx - x;
+        int dy = my - y;
+
+        // if something changed
+        if (dx != this.dx || dy != this.dy) {
+            this.dx = dx;
+            this.dy = dy;
+
+            // flip canvas if the end of the wire crossed over at least one of coordinate axis
+            if (dx >= 0) ctx = 0;
+            else ctx = dx;
+
+            if (dy >= 0) cty = 0;
+            else cty = dy;
+
+            updateCanvasSize();
+            updateCanvasPos();
+            render();
+        }
     }
     public void flip() {
         horizontalFirst = !horizontalFirst;
     }
+    private void updateCanvasPos() {
+        basis.setTranslateX((x + ctx - ENDPOINT_CIRCLE_RADIUS) * p);
+        basis.setTranslateY((y + cty - ENDPOINT_CIRCLE_RADIUS) * p);
+    }
+    private void updateCanvasSize() {
+        basis.setWidth(p * (getWidth() + ENDPOINT_CIRCLE_RADIUS * 2));
+        basis.setHeight(p * (getHeight() + ENDPOINT_CIRCLE_RADIUS * 2));
+    }
 
     // rendering
     @Override public void render() {
-        // prepare gc
+        double r = ENDPOINT_CIRCLE_RADIUS;
+        double b = ControlMain.LINE_WIDTH;
+        double c = r * 2 - b;
+        double d = r - b / 2;
+
+        // configure gc
         GraphicsContext gc = basis.getGraphicsContext2D();
         gc.save();
-        if (dx < 0) gc.translate(-dx, 0);
-        if (dy < 0) gc.translate(0, -dy);
-        if (node != null)
-            gc.setStroke(node.getCurrentSignal().colour());
-        else
-            gc.setStroke(Color.GRAY);
-        gc.setLineWidth(ControlMain.LINE_WIDTH * p);
+        gc.scale(p, p);
+        gc.clearRect(0, 0, getWidth() + r * 2, getHeight() + r * 2);
+        gc.translate(r - ctx, r - cty);
+        gc.setGlobalAlpha(alpha);
+        gc.setLineWidth(b);
+        if (node != null) gc.setStroke(node.getCurrentSignal().colour());
+        else gc.setStroke(LogicLevel.ZZZ.colour());
 
         // draw the wire
         if (horizontalFirst) {
@@ -78,27 +113,25 @@ public class Wire implements Renderable, Informative {
             gc.strokeLine(0, dy, dx, dy);
         }
 
+        // draw ends of the wire
+        gc.strokeOval(-d, -d, c, c);
+        gc.strokeOval(dx - d, dy - d, c, c);
+
+        // reset gc
         gc.restore();
     }
     @Override public void setGridPeriod(double period) {
         p = period;
-        basis.setWidth(p * getWidth());
-        basis.setHeight(p * getHeight());
-        basis.setTranslateX(p * x);
-        basis.setTranslateY(p * y);
-        // rescale gc
-        GraphicsContext gc = basis.getGraphicsContext2D();
-        gc.restore();
-        gc.scale(p, p);
+        updateCanvasSize();
+        updateCanvasPos();
     }
-    @Override public void setPos(int xPos, int yPos) {
+    @Override public void setPos(int xPos, int yPos) { // set position of the beginning of the wire
         x = xPos;
         y = yPos;
-        basis.setTranslateX(x);
-        basis.setTranslateY(y);
+        updateCanvasPos();
     }
     @Override public void setGlobalAlpha(double alpha) {
-        basis.getGraphicsContext2D().setGlobalAlpha(alpha);
+        this.alpha = alpha;
     }
     @Override public boolean inside(int mx, int my) {
         boolean first, second;

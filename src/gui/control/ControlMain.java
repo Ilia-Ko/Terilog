@@ -21,7 +21,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
@@ -41,10 +40,10 @@ public class ControlMain {
 
     // dimensions
     private static final double GRID_PERIOD = 0.01; // relative to screen width
-    private static final double GRID_POINT_RADIUS = 1.0 / 12.0; // in periods
-    private static final double GRID_HOVER_RADIUS = GRID_POINT_RADIUS * 4.0; // in periods
+    public  static final double GRID_POINT_RADIUS = 1.0 / 18.0; // in periods
+    private static final double GRID_HOVER_RADIUS = GRID_POINT_RADIUS * 6.0; // in periods
+    public  static final double LINE_WIDTH = 1.0 / 12.0; // in periods
     private static final double GRID_PANE_GAP = 0.01;
-    public static final double LINE_WIDTH = 1.0 / 10.0; // in periods
     // opacity
     private static final double OPACITY_NORMAL = 1.0;
     private static final double OPACITY_FLYING = 0.5;
@@ -135,23 +134,19 @@ public class ControlMain {
 
         if (holdingComp) // move flying canvas with a component
             flyComp.setPos(mouseX, mouseY);
-        else if (holdingWire) { // lay out flying wire
+        else if (holdingWire) // lay out flying wire
             flyWire.layoutAgain(mouseX, mouseY);
-            flyWire.render();
-        }
     }
     @FXML private void fieldMouseClicked(MouseEvent mouse) {
         if (holdingWire) // add flying wire to circuit
             finishWireInsertion();
         else if (holdingComp) // add flying component to circuit
             finishCompInsertion();
-        else if (mouse.getButton() == MouseButton.PRIMARY) // simple left click
-            beginWireInsertion();
     }
     @FXML private void fieldKeyPressed(KeyEvent key) {
         KeyCode code = key.getCode();
         if (code == KeyCode.ESCAPE) { // stop insertion
-            breakInsertion();
+            if (holdingComp || holdingWire) breakInsertion();
         } else if (code == KeyCode.SPACE && holdingWire) { // flip a wire
             flyWire.flip();
             flyWire.render();
@@ -159,8 +154,8 @@ public class ControlMain {
 
         // actions with flying component
         if (holdingComp) {
-                 if (code == KeyCode.R) flyComp.rotateCounterClockwise();
-            else if (code == KeyCode.L) flyComp.rotateClockwise();
+                 if (code == KeyCode.R) flyComp.rotateClockwise();
+            else if (code == KeyCode.L) flyComp.rotateCounterClockwise();
             else if (code == KeyCode.X) flyComp.mirrorHorizontal();
             else if (code == KeyCode.Y) flyComp.mirrorVertical();
         }
@@ -168,27 +163,20 @@ public class ControlMain {
 
     // insertion
     private void beginCompInsertion() {
-        // set up basis
+        // setup basis
         Canvas basis = flyComp.getBasis();
         stack.getChildren().add(basis);
         StackPane.setAlignment(basis, Pos.TOP_LEFT);
 
+        // initialize component
         flyComp.setGlobalAlpha(OPACITY_FLYING);
         flyComp.setGridPeriod(p);
         flyComp.setPos(mouseX, mouseY);
         flyComp.render();
         holdingComp = true;
     }
-    private void finishCompInsertion() {
-        flyComp.setGlobalAlpha(OPACITY_NORMAL);
-        flyComp.render();
-        circuit.add(flyComp);
-        holdingComp = false;
-    }
     private void beginWireInsertion() {
-        flyWire = new Wire();
-
-        // set up basis
+        // setup basis
         Canvas basis = flyWire.getBasis();
         stack.getChildren().add(basis);
         StackPane.setAlignment(basis, Pos.TOP_LEFT);
@@ -200,6 +188,12 @@ public class ControlMain {
         flyWire.render();
         holdingWire = true;
     }
+    private void finishCompInsertion() {
+        flyComp.setGlobalAlpha(OPACITY_NORMAL);
+        flyComp.render();
+        circuit.add(flyComp);
+        holdingComp = false;
+    }
     private void finishWireInsertion() {
         flyWire.setGlobalAlpha(OPACITY_NORMAL);
         flyWire.render();
@@ -208,8 +202,8 @@ public class ControlMain {
     }
     private void breakInsertion() {
         // remove basis
-        stack.getChildren().remove(flyComp.getBasis());
-        stack.getChildren().remove(flyWire.getBasis());
+             if (holdingComp) stack.getChildren().remove(flyComp.getBasis());
+        else if (holdingWire) stack.getChildren().remove(flyWire.getBasis());
 
         // update flags
         holdingComp = false;
@@ -220,14 +214,29 @@ public class ControlMain {
 
     // rendering
     private void updateGridParameters() {
+        // update field
         field.setWidth(p * w);
         field.setHeight(p * h);
+
+        // update stack
         stack.setPrefWidth(p * w);
         stack.setPrefHeight(p * h);
+
+        // update circuit
         circuit.updateGridPeriod(p);
+        circuit.renderAll();
+
+        // update flying renderable
+        if (holdingComp) {
+            flyComp.setGridPeriod(p);
+            flyComp.render();
+        } else if (holdingWire) {
+            flyWire.setGridPeriod(p);
+            flyWire.render();
+        }
     }
     private void renderField() {
-        // begin rendering
+        // configure gc
         GraphicsContext gc = field.getGraphicsContext2D();
         gc.save();
         gc.scale(p, p);
@@ -238,28 +247,30 @@ public class ControlMain {
         gc.fillRect(0.0, 0.0, w, h);
 
         // draw grid points
+        double a = GRID_POINT_RADIUS;
         gc.setFill(COL_GRID);
         for (int i = 0; i <= w; i++)
             for (int j = 0; j <= h; j++)
-                gc.fillOval(i, j, GRID_POINT_RADIUS, GRID_POINT_RADIUS);
+                gc.fillOval(i - a, j - a, 2 * a, 2 * a);
 
         // finish rendering
         gc.restore();
     }
     private void renderPoint() {
-        double a = GRID_HOVER_RADIUS * p;
         double b = LINE_WIDTH * p;
+        double a = GRID_HOVER_RADIUS * p - b / 2;
+        double c = GRID_HOVER_RADIUS * p;
 
         // setup point
-        point.setWidth(2 * a + b);
-        point.setHeight(2 * a + b);
+        point.setWidth(2 * c);
+        point.setHeight(2 * c);
         point.toFront();
 
         // prepare gc
         GraphicsContext gc = point.getGraphicsContext2D();
         gc.setStroke(COL_HOVER);
         gc.setLineWidth(b);
-        gc.clearRect(0, 0, 2 * a + b, 2 * a + b);
+        gc.clearRect(0, 0, 2 * c, 2 * c);
 
         // stroke point
         gc.strokeOval(b / 2.0, b / 2.0, a * 2, a * 2);
@@ -334,7 +345,7 @@ public class ControlMain {
 
     // menu.add
     @FXML private void menuHardN() {
-        if (holdingComp) breakInsertion();
+        if (holdingComp || holdingWire) breakInsertion();
         flyComp = new HardN();
         beginCompInsertion();
     }
@@ -357,6 +368,13 @@ public class ControlMain {
     @FXML private void menuReconciliator() {}
     @FXML private void menuVoltage() {}
     @FXML private void menuIndicator() {}
+    @FXML private void menuWire() {
+        if (!holdingWire) {
+            if (holdingComp) breakInsertion();
+            flyWire = new Wire();
+            beginWireInsertion();
+        }
+    }
 
     // menu.simulate
     @FXML private void menuPlay() {

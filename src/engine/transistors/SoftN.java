@@ -34,10 +34,13 @@ public class SoftN extends MOSFET {
     }
 
     // rendering
-    @Override void finishRendering(GraphicsContext gc) {
-        gc.fillPolygon(new double[] {0.0, -0.2, +0.2},
-                       new double[] {0.0, -0.2, -0.2}, 3);
-        gc.strokeOval(0.0, 0.0, getWidth() / 2.0, getHeight() / 2.0);
+    @Override void renderSpecific(GraphicsContext gc) {
+        double a = 1.0 / 3.0;
+        gc.setFill(COL_LEGS);
+        gc.setStroke(COL_LEGS);
+        gc.fillPolygon(new double[] {2-a, 2+a, 2},
+                       new double[] {1+a, 1+a, 2-a}, 3);
+        gc.strokeOval(1-a, a, 2+a*2, a*4);
     }
 
     // informative

@@ -34,9 +34,11 @@ public class HardP extends MOSFET {
     }
 
     // rendering
-    @Override void finishRendering(GraphicsContext gc) {
-        gc.fillPolygon(new double[] {-0.2, +0.2,  0.0},
-                       new double[] {-0.2, -0.2, -0.4}, 3);
+    @Override void renderSpecific(GraphicsContext gc) {
+        double a = 1.0 / 3.0;
+        gc.setFill(COL_LEGS);
+        gc.fillPolygon(new double[] {2-a, 2+a, 2},
+                       new double[] {2-a, 2-a, 1+a}, 3);
     }
 
     // informative

@@ -4,16 +4,14 @@ import engine.interfaces.Informative;
 import engine.interfaces.Mirrorable;
 import engine.interfaces.Renderable;
 import engine.interfaces.Rotatable;
-import gui.control.ControlMain;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 
 public abstract class Component implements Renderable, Rotatable, Mirrorable, Informative {
 
-    // subclasses   ->   I don't know how to conform OOP in this case! - TODO: rewrite in OOP style
+    // subclasses   ->   I don't know how to conform OOP in this case! - TODO: rewrite in good OOP style
     protected static final String ATTR_NAME_OF_HARD_N = "hard-n";
     protected static final String ATTR_NAME_OF_HARD_P = "hard-p";
     protected static final String ATTR_NAME_OF_SOFT_N = "soft-n";
@@ -24,9 +22,10 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
     protected static final String ATTR_NAME_OF_INDICATOR = "ind";
 
     // rendering
-    protected double p; // grid period
+    private double p; // grid period
     private Canvas basis; // canvas for rendering
-    private int x, y; // coordinates of the center of this component
+    private int x, y; // coordinates of the top-left corner of this component
+    private double alpha;
     protected int rotation; // index of rotation of this component; see Rotatable
     private int mirrorV, mirrorH; // states of mirroring of this component; see Mirrorable
 
@@ -36,9 +35,7 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
 
     protected Component() {
         basis = new Canvas(getWidth(), getHeight());
-        basis.getGraphicsContext2D().save();
-        x = 0;
-        y = 0;
+        x = 0; y = 0;
         rotation = Rotatable.DEFAULT;
         mirrorV = Mirrorable.DEFAULT;
         mirrorH = Mirrorable.DEFAULT;
@@ -68,30 +65,27 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
     protected abstract boolean isIndependent(); // asks whether this Component has input nodes - 'depends' on them
 
     // rendering
-    protected abstract void renderBody(GraphicsContext gc);
     @Override public void render() {
-        // transform gc
+        // configure gc
         GraphicsContext gc = basis.getGraphicsContext2D();
-        gc.rotate(Rotatable.ROTATION_ANGLE * rotation);
-        gc.scale(mirrorH, mirrorV);
-        // render pins
-        for (Pin pin : pins) pin.render();
+        gc.save();
+        gc.setGlobalAlpha(alpha);
+        gc.scale(p, p);
+        gc.clearRect(0, 0, getWidth(), getHeight());
+
         // render component
         renderBody(gc);
-        // undo transform
-        gc.scale(-mirrorH, -mirrorV);
-        gc.rotate(-Rotatable.ROTATION_ANGLE * rotation);
+
+        // reset gc
+        gc.restore();
     }
+    protected abstract void renderBody(GraphicsContext gc);
     @Override public void setGridPeriod(double period) {
         p = period;
         basis.setWidth(p * getWidth());
         basis.setHeight(p * getHeight());
         basis.setTranslateX(p * x);
         basis.setTranslateY(p * y);
-        // rescale gc
-        GraphicsContext gc = basis.getGraphicsContext2D();
-        gc.restore();
-        gc.scale(p, p);
     }
     @Override public void setPos(int xPos, int yPos) {
         for (Pin pin : pins) pin.translate(xPos - x, yPos - y);
@@ -101,7 +95,7 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
         basis.setTranslateY(p * y);
     }
     @Override public void setGlobalAlpha(double alpha) {
-        basis.getGraphicsContext2D().setGlobalAlpha(alpha);
+        this.alpha = alpha;
     }
     @Override public boolean inside(int mx, int my) {
         mx -= x;
@@ -114,7 +108,7 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
         return basis;
     }
 
-    // rotating
+    // rotating: children should extend these methods
     @Override public void rotateClockwise() {
         rotation += 3;
         rotation %= NUM_ROTATIONS;
@@ -124,7 +118,7 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
         rotation %= NUM_ROTATIONS;
     }
 
-    // mirroring
+    // mirroring: children should extend these methods
     @Override public void mirrorHorizontal() {
         mirrorH *= -1;
     }
@@ -174,9 +168,8 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
 
         private Component parent;
         private Node node;
-        private int x, y; // relative to parent component
+        private int x, y;
         private int type;
-        private boolean isConnected;
         private String attrName;
 
         public Pin(Component parent, int type, String name) {
@@ -185,7 +178,6 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
             this.parent = parent;
             this.type = type;
             node = null;
-            isConnected = false;
             attrName = name;
         }
 
@@ -199,7 +191,6 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
             this.node = node;
         }
         void disconnect() {
-            isConnected = false;
             node = null;
         }
 
@@ -211,22 +202,7 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
             return node;
         }
 
-        // rendering
-        private void render() {
-            GraphicsContext gc = basis.getGraphicsContext2D();
-            double r = ControlMain.LINE_WIDTH * 2.0;
-            // configure gc
-            gc.setStroke(Color.BLACK);
-            gc.setLineWidth(ControlMain.LINE_WIDTH);
-            if (isConnected)
-                gc.setFill(node.getCurrentSignal().colour());
-            else
-                gc.setFill(Color.TRANSPARENT);
-
-            // render
-            gc.strokeOval(x, y, r, r);
-            gc.fillOval(x, y, r, r);
-        }
+        // positioning
         public void setPos(int xPos, int yPos) {
             x = xPos;
             y = yPos;

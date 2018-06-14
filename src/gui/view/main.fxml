@@ -8,24 +8,25 @@
 
     <MenuBar>
         <Menu text="_File">
-            <MenuItem text="Open" accelerator="Ctrl+O" onAction="#menuOpen"/>
-            <MenuItem text="Save" accelerator="Ctrl+S" onAction="#menuSave"/>
+            <MenuItem text="_Open" accelerator="Ctrl+O" onAction="#menuOpen"/>
+            <MenuItem text="_Save" accelerator="Ctrl+S" onAction="#menuSave"/>
             <MenuItem text="Save as ..." accelerator="Shift+S" onAction="#menuSaveAs"/>
             <SeparatorMenuItem/>
-            <MenuItem text="Toggle fullscreen" accelerator="F11" onAction="#menuToggle"/>
-            <MenuItem text="Quit" accelerator="Ctrl+Q" onAction="#menuQuit"/>
+            <MenuItem text="Toggle _fullscreen" accelerator="F11" onAction="#menuToggle"/>
+            <MenuItem text="_Quit" accelerator="Ctrl+Q" onAction="#menuQuit"/>
         </Menu>
         <Menu text="_Add">
-            <MenuItem text="Hard N" accelerator="N" onAction="#menuHardN"/>
-            <MenuItem text="Hard P" accelerator="P" onAction="#menuHardP"/>
+            <MenuItem text="Hard _N" accelerator="N" onAction="#menuHardN"/>
+            <MenuItem text="Hard _P" accelerator="P" onAction="#menuHardP"/>
             <MenuItem text="Soft N" accelerator="Ctrl+N" onAction="#menuSoftN"/>
             <MenuItem text="Soft P" accelerator="Ctrl+P" onAction="#menuSoftP"/>
             <SeparatorMenuItem/>
-            <MenuItem text="Diode" accelerator="D" onAction="#menuDiode"/>
-            <MenuItem text="Reconciliator" accelerator="R" onAction="#menuReconciliator"/>
+            <MenuItem text="_Diode" accelerator="D" onAction="#menuDiode"/>
+            <MenuItem text="_Reconciliator" accelerator="R" onAction="#menuReconciliator"/>
             <SeparatorMenuItem/>
-            <MenuItem text="Voltage" accelerator="V" onAction="#menuVoltage"/>
-            <MenuItem text="Indicator" accelerator="I" onAction="#menuIndicator"/>
+            <MenuItem text="_Indicator" accelerator="I" onAction="#menuIndicator"/>
+            <MenuItem text="_Voltage" accelerator="V" onAction="#menuVoltage"/>
+            <MenuItem text="_Wire" accelerator="W" onAction="#menuWire"/>
         </Menu>
         <Menu text="_Simulate">
             <MenuItem text="Start" accelerator="Space" onAction="#menuPlay" fx:id="menuPlay"/>

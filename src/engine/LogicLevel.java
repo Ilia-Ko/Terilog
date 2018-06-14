@@ -5,7 +5,7 @@ import javafx.scene.paint.Paint;
 
 public enum LogicLevel {
 
-    POS("HIGH", "TRUE",     "+1",   '\u0031', +1, true,  Color.rgb(128,  64,   0)) {
+    POS("HIGH", "TRUE",     "+1",   '\u0031', +1, true,  Color.rgb(128, 64, 0)) {
         @Override public boolean conflicts(LogicLevel signal) {
             return signal != ZZZ && signal != POS;
         }
@@ -13,7 +13,7 @@ public enum LogicLevel {
             return signal == ZZZ;
         }
     },
-    NIL("MID",  "UNKNOWN",  "0",    '\u0030',  0, true,  Color.rgb(  0, 128,   0)) {
+    NIL("MID",  "UNKNOWN",  "0",    '\u0030',  0, true,  Color.rgb(0, 128, 0)) {
         @Override public boolean conflicts(LogicLevel signal) {
             return signal != ZZZ && signal != NIL;
         }
@@ -21,7 +21,7 @@ public enum LogicLevel {
             return signal == ZZZ;
         }
     },
-    NEG("LOW",  "FALSE",    "-1",   '\u03bb', -1, true,  Color.rgb(  0,  64, 128)) {
+    NEG("LOW",  "FALSE",    "-1",   '\u03bb', -1, true,  Color.rgb(0, 64, 128)) {
         @Override public boolean conflicts(LogicLevel signal) {
             return signal != ZZZ && signal != NEG;
         }
@@ -29,7 +29,7 @@ public enum LogicLevel {
             return signal == ZZZ;
         }
     },
-    ZZZ("Z",    "N/A",      "n/a",  '\u2205',  0, false, Color.rgb(128, 128, 128)) {
+    ZZZ("Z",    "N/A",      "n/a",  '\u2205',  0, false, Color.rgb(0, 0, 0)) {
         @Override public boolean conflicts(LogicLevel signal) {
             return false;
         }
@@ -37,7 +37,7 @@ public enum LogicLevel {
             return false;
         }
     }, // undefined, non-critical, like QNaN in FPU
-    ERR("E",    "NAN",      "NaN",  '!',      22, false, Color.rgb(255,   0,   0)) {
+    ERR("E",    "NAN",      "NaN",  '!',      22, false, Color.rgb(255, 0, 0)) {
         @Override public boolean conflicts(LogicLevel signal) {
             return true;
         }
