@@ -83,10 +83,17 @@ public class Circuit {
         components.add(comp);
     }
     public void del(Wire wire) {
+        // disconnect wire from node
+        Node node = wire.getNode();
+        node.delWire(wire);
 
+        // disconnect component from node (previously connected by this wire)
+        for (Component comp : node.getComponents())
+            comp.disconnect(wire);
     }
     public void del(Component comp) {
-
+        components.remove(comp);
+        comp.disconnect();
     }
 
     // simulation logic

@@ -7,6 +7,7 @@ import engine.interfaces.Rotatable;
 import gui.control.ControlMain;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.ContextMenu;
 
 import java.util.ArrayList;
 
@@ -43,6 +44,11 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
         pins = initPins();
     }
     protected abstract Pin[] initPins();
+    public void initContextMenu(ControlMain control) {
+        ContextMenu menu = control.makeContextMenuFor(this);
+        basis.setOnContextMenuRequested(event -> menu.show(basis, event.getScreenX(), event.getScreenY()));
+    }
+    public abstract Component newCompOfTheSameClass();
 
     // connectivity
     public abstract Pin getPinByName(String pinName);
@@ -56,9 +62,15 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
         // find the pin
         for (Pin pin : pins)
             if (pin.getNode() == node) {
-                pin.disconnect();
                 node.delPin(pin);
+                pin.disconnect();
             }
+    }
+    void disconnect() {
+        for (Pin pin : pins) {
+            pin.getNode().delPin(pin);
+            pin.disconnect();
+        }
     }
 
     // simulation
@@ -130,9 +142,9 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
     }
 
     // rotating
-    @Override public void rotateClockwise() {
+    @Override public void rotateCW() {
         // rotate pins
-        for (Pin pin : pins) pin.rotateClockwise();
+        for (Pin pin : pins) pin.rotateCW();
 
         // compute new rotation
         rotation += 3;
@@ -144,9 +156,9 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
 
         render();
     }
-    @Override public void rotateCounterClockwise() {
+    @Override public void rotateCCW() {
         // rotate pins
-        for (Pin pin : pins) pin.rotateCounterClockwise();
+        for (Pin pin : pins) pin.rotateCCW();
 
         // compute new rotation
         rotation += 1;
@@ -161,20 +173,20 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
 
     // mirroring
     @Override public void mirrorHorizontal() {
-        // mirror
-        mirrorH *= -1;
-
         // mirror pins
         for (Pin pin : pins) pin.mirrorHorizontal();
+
+        // mirror
+        mirrorH *= -1;
 
         render();
     }
     @Override public void mirrorVertical() {
-        // mirror
-        mirrorV *= -1;
-
         // mirror pins
         for (Pin pin : pins) pin.mirrorVertical();
+
+        // mirror
+        mirrorV *= -1;
 
         render();
     }
@@ -286,7 +298,7 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
         }
 
         // rotating
-        @Override public void rotateClockwise() {
+        @Override public void rotateCW() {
             // get relative coordinates in parent
             int px = x - parent.x;
             int py = y - parent.y;
@@ -295,7 +307,7 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
             x = parent.x + parent.getHeight() - py;
             y = parent.y + px;
         }
-        @Override public void rotateCounterClockwise() {
+        @Override public void rotateCCW() {
             // get relative coordinates in parent
             int px = x - parent.x;
             int py = y - parent.y;

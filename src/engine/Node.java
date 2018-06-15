@@ -88,6 +88,15 @@ public class Node implements Informative { // 'logical' class, no rendering
         else if (type == Component.Pin.OUTPUT) // and vice versa
             inputs.remove(c);
     }
+    void delWire(Wire wire) {
+        wires.remove(wire);
+    }
+    ArrayList<Component> getComponents() {
+        ArrayList<Component> comps = new ArrayList<>();
+        comps.addAll(inputs);
+        comps.addAll(outputs);
+        return comps;
+    }
 
     // informative
     @Override public String getPrefixID() {

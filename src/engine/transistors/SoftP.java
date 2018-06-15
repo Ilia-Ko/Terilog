@@ -13,6 +13,10 @@ public class SoftP extends MOSFET {
     private static final Color COL_LEGS = Color.DARKRED;
     private static final int VGSTH = -1;
 
+    @Override public Component newCompOfTheSameClass() {
+        return new SoftP();
+    }
+
     // simulation
     @Override public ArrayList<Node> simulate() {
         // compute output signal

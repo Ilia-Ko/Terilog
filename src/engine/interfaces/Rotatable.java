@@ -13,8 +13,8 @@ public interface Rotatable {
 
     int DEFAULT = ROT_RIGHT; // default: no rotation
 
-    void rotateClockwise();
-    void rotateCounterClockwise();
+    void rotateCW();
+    void rotateCCW();
 
     static String getAttrName(int rotation) {
         switch (rotation) {

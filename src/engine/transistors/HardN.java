@@ -13,6 +13,10 @@ public class HardN extends MOSFET {
     private static final Color COL_LEGS = Color.DARKBLUE;
     private static final int VGSTH = 2;
 
+    @Override public Component newCompOfTheSameClass() {
+        return new HardN();
+    }
+
     // simulation
     @Override public ArrayList<Node> simulate() {
         // compute output signal

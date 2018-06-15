@@ -4,7 +4,6 @@ import engine.Circuit;
 import engine.Component;
 import engine.TerilogIO;
 import engine.Wire;
-import engine.interfaces.Informative;
 import engine.transistors.HardN;
 import engine.transistors.HardP;
 import engine.transistors.SoftN;
@@ -18,12 +17,10 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -117,12 +114,9 @@ public class ControlMain {
         flyWire = null;
 
         // handle some events
-        scroll.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            fieldKeyPressed(event);
-            if (event.getCode() == KeyCode.SPACE) event.consume();
-        });
+        scroll.addEventFilter(KeyEvent.KEY_PRESSED, this::fieldKeyPressed);
         scroll.addEventFilter(MouseEvent.ANY, event -> {
-            if (event.isPrimaryButtonDown()) {
+            if (event.getButton() == MouseButton.PRIMARY) {
                 fieldMouseClicked(event);
                 event.consume();
             }
@@ -134,8 +128,44 @@ public class ControlMain {
         renderField();
         renderPoint();
     }
+    public ContextMenu makeContextMenuFor(Component comp) {
+        // move
+        MenuItem itemMove = new MenuItem("Move");
+        itemMove.setAccelerator(KeyCombination.valueOf("M"));
+        itemMove.setOnAction(event -> {
+            stack.getChildren().remove(comp.getBasis());
+            circuit.del(comp);
+            flyComp = comp.newCompOfTheSameClass();
+            beginCompInsertion();
+        });
 
-    // circuit field actions
+        // delete
+        MenuItem itemDel = new MenuItem("Delete");
+        itemDel.setOnAction(event -> {
+            stack.getChildren().remove(comp.getBasis());
+            circuit.del(comp);
+        });
+
+        // rotate CW
+        MenuItem itemRotCW = new MenuItem("Rotate right (CW)");
+        itemRotCW.setOnAction(event -> comp.rotateCW());
+
+        // rotate CCW
+        MenuItem itemRotCCW = new MenuItem("Rotate left (CCW)");
+        itemRotCCW.setOnAction(event -> comp.rotateCCW());
+
+        // mirror horizontally
+        MenuItem itemMirrorH = new MenuItem("Mirror horizontally");
+        itemMirrorH.setOnAction(event -> comp.mirrorHorizontal());
+
+        // mirror vertically
+        MenuItem itemMirrorV = new MenuItem("Mirror vertically");
+        itemMirrorV.setOnAction(event -> comp.mirrorVertical());
+
+        return new ContextMenu(itemMove, itemDel, itemRotCW, itemRotCCW, itemMirrorH, itemMirrorV);
+    }
+
+    // some actions
     @FXML private void fieldMouseMoved(MouseEvent mouse) {
         // get snapped point
         int x = snapCoordinateToGrid(mouse.getX());
@@ -171,12 +201,13 @@ public class ControlMain {
         }
 
         // actions with flying component
-        if (holdingComp) {
-                 if (code == KeyCode.R) flyComp.rotateCounterClockwise();
-            else if (code == KeyCode.L) flyComp.rotateClockwise();
-            else if (code == KeyCode.X) flyComp.mirrorHorizontal();
-            else if (code == KeyCode.Y) flyComp.mirrorVertical();
-        }
+        if (holdingComp) componentKeyPressed(flyComp, code);
+    }
+    private void componentKeyPressed(Component comp, KeyCode code) {
+        if (code == KeyCode.R) comp.rotateCW();
+        else if (code == KeyCode.L) comp.rotateCCW();
+        else if (code == KeyCode.X) comp.mirrorHorizontal();
+        else if (code == KeyCode.Y) comp.mirrorVertical();
     }
 
     // insertion
@@ -185,6 +216,7 @@ public class ControlMain {
         Canvas basis = flyComp.getBasis();
         stack.getChildren().add(basis);
         StackPane.setAlignment(basis, Pos.TOP_LEFT);
+        basis.toFront();
 
         // initialize component
         flyComp.setGlobalAlpha(OPACITY_FLYING);
@@ -198,6 +230,8 @@ public class ControlMain {
         Canvas basis = flyWire.getBasis();
         stack.getChildren().add(basis);
         StackPane.setAlignment(basis, Pos.TOP_LEFT);
+        basis.toBack();
+        field.toBack();
 
         // initialize wire
         flyWire.setGlobalAlpha(OPACITY_FLYING); // make it 'transparent'
@@ -209,6 +243,7 @@ public class ControlMain {
     private void finishCompInsertion() {
         flyComp.setGlobalAlpha(OPACITY_NORMAL);
         flyComp.render();
+        flyComp.initContextMenu(this);
         circuit.add(flyComp);
         holdingComp = false;
     }
@@ -292,14 +327,6 @@ public class ControlMain {
 
         // stroke point
         gc.strokeOval(b / 2.0, b / 2.0, a * 2, a * 2);
-    }
-
-    // tooltips
-    private void showInfoToolTip(double x, double y, Informative object) {
-
-    }
-    private void showActionToolTip(double x, double y, Informative object) {
-
     }
 
     // menu.file
