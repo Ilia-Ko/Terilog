@@ -8,11 +8,11 @@ import javafx.scene.paint.Color;
 @SuppressWarnings("SuspiciousNameCombination")
 public abstract class MOSFET extends Component {
 
-    static final Color COL_LEGS = Color.rgb(0, 0, 0);
     // size
     private static final int WIDTH = 4;
     private static final int HEIGHT = 2;
 
+    // pins
     Pin gate, source, drain;
 
     // connectivity
@@ -48,7 +48,7 @@ public abstract class MOSFET extends Component {
 
     // rendering
     @Override protected void renderBody(GraphicsContext gc) {
-        gc.setStroke(COL_LEGS);
+        gc.setStroke(getLegsColour());
         gc.setLineWidth(ControlMain.LINE_WIDTH);
 
         // legs:
@@ -72,6 +72,7 @@ public abstract class MOSFET extends Component {
         renderSpecific(gc);
     }
     abstract void renderSpecific(GraphicsContext gc);
+    abstract Color getLegsColour();
     @Override public int getWidth() {
         if (rotation % 2 == ROT_RIGHT) return WIDTH;
         else return HEIGHT;
@@ -80,25 +81,11 @@ public abstract class MOSFET extends Component {
         if (rotation % 2 == ROT_RIGHT) return HEIGHT;
         else return WIDTH;
     }
-
-    // rotating: children should NOT reimplement these methods
-    @Override public void rotateClockwise() {
-        super.rotateClockwise();
-
+    @Override protected int getAbsoluteWidth() {
+        return WIDTH;
     }
-    @Override public void rotateCounterClockwise() {
-        super.rotateCounterClockwise();
-
-    }
-
-    // mirroring: children should NOT reimplement these methods
-    @Override public void mirrorHorizontal() {
-        super.mirrorHorizontal();
-
-    }
-    @Override public void mirrorVertical() {
-        super.mirrorVertical();
-
+    @Override protected int getAbsoluteHeight() {
+        return HEIGHT;
     }
 
 }

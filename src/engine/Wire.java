@@ -8,8 +8,6 @@ import javafx.scene.canvas.GraphicsContext;
 
 public class Wire implements Renderable, Informative {
 
-    private static final double ENDPOINT_CIRCLE_RADIUS = ControlMain.GRID_POINT_RADIUS * 4;
-
     // rendering
     private Canvas basis;
     private double p;
@@ -23,8 +21,7 @@ public class Wire implements Renderable, Informative {
     private String id;
 
     public Wire() {
-        double a = ENDPOINT_CIRCLE_RADIUS * 2;
-        basis = new Canvas(a, a);
+        basis = new Canvas();
         x = 0;   y = 0;
         dx = 0;  dy = 0;
         ctx = 0; cty = 0;
@@ -79,29 +76,26 @@ public class Wire implements Renderable, Informative {
         render();
     }
     private void updateCanvasPos() {
-        basis.setTranslateX((x + ctx - ENDPOINT_CIRCLE_RADIUS) * p);
-        basis.setTranslateY((y + cty - ENDPOINT_CIRCLE_RADIUS) * p);
+        basis.setTranslateX((x + ctx - ControlMain.LINE_WIDTH / 2) * p);
+        basis.setTranslateY((y + cty - ControlMain.LINE_WIDTH / 2) * p);
     }
     private void updateCanvasSize() {
-        basis.setWidth(p * (getWidth() + ENDPOINT_CIRCLE_RADIUS * 2));
-        basis.setHeight(p * (getHeight() + ENDPOINT_CIRCLE_RADIUS * 2));
+        basis.setWidth(p * (getWidth() + ControlMain.LINE_WIDTH));
+        basis.setHeight(p * (getHeight() + ControlMain.LINE_WIDTH));
     }
 
     // rendering
     @Override public void render() {
-        double r = ENDPOINT_CIRCLE_RADIUS;
-        double b = ControlMain.LINE_WIDTH;
-        double c = r * 2 - b;
-        double d = r - b / 2;
+        double l = ControlMain.LINE_WIDTH;
 
         // configure gc
         GraphicsContext gc = basis.getGraphicsContext2D();
         gc.save();
         gc.scale(p, p);
-        gc.clearRect(0, 0, getWidth() + r * 2, getHeight() + r * 2);
-        gc.translate(r - ctx, r - cty);
+        gc.clearRect(0, 0, getWidth() + l, getHeight() + l);
+        gc.translate(-ctx + l / 2, -cty + l / 2);
         gc.setGlobalAlpha(alpha);
-        gc.setLineWidth(b);
+        gc.setLineWidth(l);
         if (node != null) gc.setStroke(node.getCurrentSignal().colour());
         else gc.setStroke(LogicLevel.ZZZ.colour());
 
@@ -113,10 +107,6 @@ public class Wire implements Renderable, Informative {
             gc.strokeLine(0, 0, 0, dy);
             gc.strokeLine(0, dy, dx, dy);
         }
-
-        // draw ends of the wire
-        gc.strokeOval(-d, -d, c, c);
-        gc.strokeOval(dx - d, dy - d, c, c);
 
         // reset gc
         gc.restore();

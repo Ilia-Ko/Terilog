@@ -12,7 +12,7 @@ public interface Renderable {
     boolean inside(int mx, int my); // everything in periods
 
     Canvas getBasis();
-    int getWidth(); // in periods
-    int getHeight(); // in periods
+    int getWidth(); // in periods, current width (affected by rotation)
+    int getHeight(); // in periods, current height (affected by rotation)
 
 }

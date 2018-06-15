@@ -127,6 +127,7 @@ public class ControlMain {
                 event.consume();
             }
         });
+        scroll.requestFocus();
 
         // prepare field
         updateGridParameters();
@@ -171,8 +172,8 @@ public class ControlMain {
 
         // actions with flying component
         if (holdingComp) {
-                 if (code == KeyCode.R) flyComp.rotateClockwise();
-            else if (code == KeyCode.L) flyComp.rotateCounterClockwise();
+                 if (code == KeyCode.R) flyComp.rotateCounterClockwise();
+            else if (code == KeyCode.L) flyComp.rotateClockwise();
             else if (code == KeyCode.X) flyComp.mirrorHorizontal();
             else if (code == KeyCode.Y) flyComp.mirrorVertical();
         }

@@ -34,8 +34,8 @@ public class Circuit {
 
     // rendering
     public void renderAll() {
-        for (Wire w : wires) w.render();
-        for (Component c : components) c.render();
+        for (Component comp : components) comp.render();
+        for (Wire wire : wires) wire.render();
     }
     public void updateGridPeriod(double period) {
         for (Component comp : components) comp.setGridPeriod(period);

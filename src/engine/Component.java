@@ -4,6 +4,7 @@ import engine.interfaces.Informative;
 import engine.interfaces.Mirrorable;
 import engine.interfaces.Renderable;
 import engine.interfaces.Rotatable;
+import gui.control.ControlMain;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 
@@ -34,7 +35,7 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
     private String id;
 
     protected Component() {
-        basis = new Canvas(getWidth(), getHeight());
+        basis = new Canvas();
         x = 0; y = 0;
         rotation = Rotatable.DEFAULT;
         mirrorV = Mirrorable.DEFAULT;
@@ -66,12 +67,30 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
 
     // rendering
     @Override public void render() {
+        double w = getWidth() + Pin.PIN_CIRCLE_RADIUS * 2;
+        double h = getHeight() + Pin.PIN_CIRCLE_RADIUS * 2;
+        double aw2 = -getAbsoluteWidth() / 2;
+        double ah2 = -getAbsoluteHeight() / 2;
+
         // configure gc
         GraphicsContext gc = basis.getGraphicsContext2D();
         gc.save();
         gc.setGlobalAlpha(alpha);
         gc.scale(p, p);
-        gc.clearRect(0, 0, getWidth(), getHeight());
+        gc.clearRect(0, 0, w, h);
+
+        // render pins
+        for (Pin pin : pins) pin.render(gc);
+
+        // perform mirroring
+        gc.scale(mirrorH, mirrorV);
+        double tx = w * (NOT_MIRRORED - mirrorH) * 0.5;
+        double ty = h * (NOT_MIRRORED - mirrorV) * 0.5;
+        gc.translate(-tx, -ty);
+        // perform rotation
+        gc.translate(w / 2, h / 2);
+        gc.rotate(-ROTATION_ANGLE * rotation);
+        gc.translate(aw2, ah2);
 
         // render component
         renderBody(gc);
@@ -80,19 +99,21 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
         gc.restore();
     }
     protected abstract void renderBody(GraphicsContext gc);
+    protected abstract int getAbsoluteWidth(); // in periods, width not affected by rotation
+    protected abstract int getAbsoluteHeight(); // in periods, height not affected by rotation
     @Override public void setGridPeriod(double period) {
         p = period;
-        basis.setWidth(p * getWidth());
-        basis.setHeight(p * getHeight());
-        basis.setTranslateX(p * x);
-        basis.setTranslateY(p * y);
+        basis.setWidth(p * (getWidth() + Pin.PIN_CIRCLE_RADIUS * 2));
+        basis.setHeight(p * (getHeight() + Pin.PIN_CIRCLE_RADIUS * 2));
+        basis.setTranslateX(p * (x - Pin.PIN_CIRCLE_RADIUS));
+        basis.setTranslateY(p * (y - Pin.PIN_CIRCLE_RADIUS));
     }
     @Override public void setPos(int xPos, int yPos) {
         for (Pin pin : pins) pin.translate(xPos - x, yPos - y);
         x = xPos;
         y = yPos;
-        basis.setTranslateX(p * x);
-        basis.setTranslateY(p * y);
+        basis.setTranslateX(p * (x - Pin.PIN_CIRCLE_RADIUS));
+        basis.setTranslateY(p * (y - Pin.PIN_CIRCLE_RADIUS));
     }
     @Override public void setGlobalAlpha(double alpha) {
         this.alpha = alpha;
@@ -108,22 +129,54 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
         return basis;
     }
 
-    // rotating: children should extend these methods
+    // rotating
     @Override public void rotateClockwise() {
+        // rotate pins
+        for (Pin pin : pins) pin.rotateClockwise();
+
+        // compute new rotation
         rotation += 3;
         rotation %= NUM_ROTATIONS;
+
+        // adjust canvas size
+        basis.setWidth((getWidth() + Pin.PIN_CIRCLE_RADIUS * 2) * p);
+        basis.setHeight((getHeight() + Pin.PIN_CIRCLE_RADIUS * 2) * p);
+
+        render();
     }
     @Override public void rotateCounterClockwise() {
+        // rotate pins
+        for (Pin pin : pins) pin.rotateCounterClockwise();
+
+        // compute new rotation
         rotation += 1;
         rotation %= NUM_ROTATIONS;
+
+        // adjust canvas size
+        basis.setWidth((getWidth() + Pin.PIN_CIRCLE_RADIUS * 2) * p);
+        basis.setHeight((getHeight() + Pin.PIN_CIRCLE_RADIUS * 2) * p);
+
+        render();
     }
 
-    // mirroring: children should extend these methods
+    // mirroring
     @Override public void mirrorHorizontal() {
+        // mirror
         mirrorH *= -1;
+
+        // mirror pins
+        for (Pin pin : pins) pin.mirrorHorizontal();
+
+        render();
     }
     @Override public void mirrorVertical() {
+        // mirror
         mirrorV *= -1;
+
+        // mirror pins
+        for (Pin pin : pins) pin.mirrorVertical();
+
+        render();
     }
 
     // informative
@@ -160,7 +213,9 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
     }
     protected abstract String getAttrClassName();
 
-    protected class Pin {
+    protected class Pin implements Rotatable, Mirrorable {
+
+        private static final double PIN_CIRCLE_RADIUS = ControlMain.GRID_POINT_RADIUS * 4;
 
         // these pin types are relative to the component
         public static final int INPUT = 0;
@@ -168,7 +223,7 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
 
         private Component parent;
         private Node node;
-        private int x, y;
+        private int x, y; // global coordinates (absolute values in periods)
         private int type;
         private String attrName;
 
@@ -183,7 +238,10 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
 
         // simulation
         public LogicLevel sig() {
-            return node.getCurrentSignal();
+            if (node != null)
+                return node.getCurrentSignal();
+            else
+                return LogicLevel.ZZZ;
         }
 
         // connectivity
@@ -202,7 +260,7 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
             return node;
         }
 
-        // positioning
+        // positioning and rendering
         public void setPos(int xPos, int yPos) {
             x = xPos;
             y = yPos;
@@ -216,6 +274,51 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
         }
         int getY() {
             return y;
+        }
+        private void render(GraphicsContext gc) {
+            gc.setFill(sig().colour());
+
+            double b = ControlMain.LINE_WIDTH;
+            double c = PIN_CIRCLE_RADIUS * 2 - b;
+            double px = x - parent.x;
+            double py = y - parent.y;
+            gc.fillOval(px + b / 2, py + b / 2, c, c);
+        }
+
+        // rotating
+        @Override public void rotateClockwise() {
+            // get relative coordinates in parent
+            int px = x - parent.x;
+            int py = y - parent.y;
+
+            // rotate clockwise
+            x = parent.x + parent.getHeight() - py;
+            y = parent.y + px;
+        }
+        @Override public void rotateCounterClockwise() {
+            // get relative coordinates in parent
+            int px = x - parent.x;
+            int py = y - parent.y;
+
+            // rotate counterclockwise
+            x = parent.x + py;
+            y = parent.y + parent.getWidth() - px;
+        }
+
+        // mirroring
+        @Override public void mirrorHorizontal() {
+            // get relative x-coordinate in parent
+            int px = x - parent.x;
+
+            // mirror horizontal
+            x = parent.x + parent.getWidth() - px;
+        }
+        @Override public void mirrorVertical() {
+            // get relative y-coordinate in parent
+            int py = y - parent.y;
+
+            // mirror horizontal
+            y = parent.y + parent.getHeight() - py;
         }
 
         // informative

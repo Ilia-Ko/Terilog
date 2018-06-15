@@ -4,11 +4,13 @@ import engine.Component;
 import engine.LogicLevel;
 import engine.Node;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 
 public class SoftN extends MOSFET {
 
+    private static final Color COL_LEGS = Color.DARKBLUE;
     private static final int VGSTH = 1;
 
     // simulation
@@ -41,6 +43,9 @@ public class SoftN extends MOSFET {
         gc.fillPolygon(new double[] {2-a, 2+a, 2},
                        new double[] {1+a, 1+a, 2-a}, 3);
         gc.strokeOval(1-a, a, 2+a*2, a*4);
+    }
+    @Override Color getLegsColour() {
+        return COL_LEGS;
     }
 
     // informative
