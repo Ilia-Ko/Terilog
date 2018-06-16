@@ -66,18 +66,10 @@ public class Voltage extends Component {
         return menu;
     }
 
-    // connectivity
-    @Override public Pin getPinByName(String pinName) {
-        if (pinName.equals(drain.getName()))
-            return drain;
-        else
-            return null;
-    }
-
     // simulation
     @Override public ArrayList<Node> simulate() {
         // send signal
-        drain.getNode().receiveSignal(this, level);
+        drain.sendSig(level);
 
         // report about affected node
         ArrayList<Node> affected = new ArrayList<>();
@@ -89,7 +81,6 @@ public class Voltage extends Component {
     }
 
     // rendering
-
     @Override public void render() {
         double r = Pin.PIN_CIRCLE_RADIUS;
         double a = SIZE + r * 2;

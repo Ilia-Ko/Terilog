@@ -4,6 +4,7 @@ import engine.Circuit;
 import engine.Component;
 import engine.TerilogIO;
 import engine.Wire;
+import engine.lumped.Indicator;
 import engine.lumped.Voltage;
 import engine.transistors.HardN;
 import engine.transistors.HardP;
@@ -14,6 +15,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -126,6 +128,7 @@ public class ControlMain {
             point.setVisible(true);
         });
         field.setOnMouseExited(event -> point.setVisible(false));
+        field.setCursor(Cursor.CROSSHAIR);
 
         // prepare field
         updateGridParameters();
@@ -227,8 +230,7 @@ public class ControlMain {
         }
     }
     private void moveComp(Component comp) {
-        stack.getChildren().remove(comp.getBasis());
-        circuit.del(comp);
+        deleteComp(comp);
         flyComp = comp.newCompOfTheSameClass();
         beginCompInsertion();
     }
@@ -244,6 +246,7 @@ public class ControlMain {
         stack.getChildren().add(basis);
         StackPane.setAlignment(basis, Pos.TOP_LEFT);
         basis.setMouseTransparent(true);
+        basis.setCursor(Cursor.CLOSED_HAND);
 
         // initialize component
         flyComp.setGlobalAlpha(OPACITY_FLYING);
@@ -442,9 +445,13 @@ public class ControlMain {
         flyComp = new Voltage();
         beginCompInsertion();
     }
-    @FXML private void menuIndicator() {}
+    @FXML private void menuIndicator() {
+        breakInsertion();
+        flyComp = new Indicator();
+        beginCompInsertion();
+    }
     @FXML private void menuWire() {
-        if (!holdingWire) {
+        if (!holdingWire && field.isHover()) {
             if (holdingComp) breakInsertion();
             flyWire = new Wire();
             beginWireInsertion();

@@ -33,7 +33,7 @@ public class SoftN extends MOSFET {
             out = LogicLevel.ZZZ;
 
         // influence on the output node
-        drain.getNode().receiveSignal(this, out);
+        drain.sendSig(out);
 
         // report about affected nodes
         ArrayList<Node> affected = new ArrayList<>();

@@ -1,6 +1,7 @@
 package engine;
 
 import engine.interfaces.Informative;
+import engine.lumped.Indicator;
 import engine.lumped.Voltage;
 import engine.transistors.HardN;
 import engine.transistors.HardP;
@@ -339,6 +340,9 @@ public class TerilogIO {
                 comp = new Voltage();
                 LogicLevel signal = LogicLevel.parseName(c.getAttribute(ATTR_SIGNAL));
                 ((Voltage) comp).setLogicLevel(signal);
+                break;
+            case Indicator.ATTR_CLASS_NAME:
+                comp = new Indicator();
                 break;
             // case ...
             default:

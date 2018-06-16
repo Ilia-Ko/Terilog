@@ -15,7 +15,7 @@ public abstract class MOSFET extends Component {
     // pins
     Pin gate, source, drain;
 
-    // connectivity
+    // initialization
     @Override protected Pin[] initPins() {
         // create pins
         gate = new Pin(this, Pin.INPUT, "gate");
@@ -28,17 +28,6 @@ public abstract class MOSFET extends Component {
         drain.setPos(4, 2);
 
         return new Pin[] {gate, source, drain};
-    }
-    @Override public Pin getPinByName(String pinName) {
-        if (pinName.equals(gate.getName()))
-            return gate;
-        else if (pinName.equals(source.getName()))
-            return source;
-        else if (pinName.equals(drain.getName()))
-            return drain;
-        else
-            System.out.printf("WARNING: MOSFETs do not have pin '%s'.\n", pinName);
-        return null;
     }
 
     // simulation

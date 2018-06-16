@@ -33,7 +33,7 @@ public class SoftP extends MOSFET {
             out = LogicLevel.ZZZ;
 
         // influence on the output node
-        drain.getNode().receiveSignal(this, out);
+        drain.sendSig(out);
 
         // report about affected nodes
         ArrayList<Node> affected = new ArrayList<>();
@@ -55,9 +55,7 @@ public class SoftP extends MOSFET {
     }
 
     // informative
-
-    @Override
-    public String toString() {
+    @Override public String toString() {
         return "Soft P";
     }
     @Override public String getPrefixID() {

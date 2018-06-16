@@ -61,7 +61,12 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
     }
 
     // connectivity
-    public abstract Pin getPinByName(String pinName);
+    Pin getPinByName(String pinName) {
+        for (Pin pin : pins)
+            if (pin.getName().equals(pinName))
+                return pin;
+        return null;
+    }
     void connect(Node node, Pin pin) {
         pin.connect(node);
         node.addPin(pin);
@@ -279,6 +284,9 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
             else
                 return LogicLevel.ZZZ;
         }
+        public void sendSig(LogicLevel signal) {
+            if (node != null) node.receiveSignal(parent, signal);
+        }
 
         // connectivity
         void connect(Node node) {
@@ -362,7 +370,7 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
         int getType() {
             return type;
         }
-        public String getName() {
+        String getName() {
             return attrName;
         }
 
