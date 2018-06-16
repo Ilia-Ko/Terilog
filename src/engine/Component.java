@@ -8,6 +8,7 @@ import gui.control.ControlMain;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Tooltip;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
@@ -60,6 +61,7 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
         });
         basis.setOnContextMenuRequested(event -> menu.show(basis, event.getScreenX(), event.getScreenY()));
         basis.setOnKeyPressed(key -> control.componentKeyPressed(this, key.getCode()));
+        Tooltip.install(basis, new Tooltip(toString()));
     }
     public abstract Component newCompOfTheSameClass();
 
@@ -212,6 +214,8 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
     // informative
     @Override public void setID(String id) {
         this.id = id;
+        Tooltip tooltip = new Tooltip(String.format("%s (id='%s')", toString(), id));
+        Tooltip.install(basis, tooltip);
     }
     @Override public String getID() {
         return id;
