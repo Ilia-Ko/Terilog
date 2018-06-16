@@ -4,6 +4,7 @@ import engine.Circuit;
 import engine.Component;
 import engine.TerilogIO;
 import engine.Wire;
+import engine.lumped.Voltage;
 import engine.transistors.HardN;
 import engine.transistors.HardP;
 import engine.transistors.SoftN;
@@ -139,7 +140,7 @@ public class ControlMain {
 
         // delete
         MenuItem itemDel = new MenuItem("Remove");
-        itemDel.setAccelerator(new KeyCodeCombination(KeyCode.DELETE));
+        itemDel.setAccelerator(KeyCombination.valueOf("Delete"));
         itemDel.setOnAction(event -> deleteComp(comp));
 
         // rotate CW
@@ -415,28 +416,32 @@ public class ControlMain {
 
     // menu.add
     @FXML private void menuHardN() {
-        if (holdingComp || holdingWire) breakInsertion();
+        breakInsertion();
         flyComp = new HardN();
         beginCompInsertion();
     }
     @FXML private void menuHardP() {
-        if (holdingComp) breakInsertion();
+        breakInsertion();
         flyComp = new HardP();
         beginCompInsertion();
     }
     @FXML private void menuSoftN() {
-        if (holdingComp) breakInsertion();
+        breakInsertion();
         flyComp = new SoftN();
         beginCompInsertion();
     }
     @FXML private void menuSoftP() {
-        if (holdingComp) breakInsertion();
+        breakInsertion();
         flyComp = new SoftP();
         beginCompInsertion();
     }
     @FXML private void menuDiode() {}
     @FXML private void menuReconciliator() {}
-    @FXML private void menuVoltage() {}
+    @FXML private void menuVoltage() {
+        breakInsertion();
+        flyComp = new Voltage();
+        beginCompInsertion();
+    }
     @FXML private void menuIndicator() {}
     @FXML private void menuWire() {
         if (!holdingWire) {

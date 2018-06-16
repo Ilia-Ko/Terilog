@@ -10,9 +10,12 @@ import java.util.ArrayList;
 
 public class HardP extends MOSFET {
 
+    public static final String ATTR_CLASS_NAME = "hard-p";
+
     private static final Color COL_LEGS = Color.DARKRED;
     private static final int VGSTH = -2;
 
+    // initialization
     @Override public Component newCompOfTheSameClass() {
         return new HardP();
     }
@@ -23,7 +26,7 @@ public class HardP extends MOSFET {
         LogicLevel out;
         if (gate.sig() == LogicLevel.ZZZ && source.sig() == LogicLevel.ZZZ)
             out = LogicLevel.ZZZ;
-        else if (!gate.sig().stable() || !source.sig().stable())
+        else if (gate.sig().isUnstable() || source.sig().isUnstable())
             out = LogicLevel.ERR;
         else if (gate.sig().volts() - source.sig().volts() <= VGSTH)
             out = source.sig();
@@ -51,11 +54,14 @@ public class HardP extends MOSFET {
     }
 
     // informative
+    @Override public String toString() {
+        return "Hard P";
+    }
     @Override public String getPrefixID() {
         return "hp";
     }
     @Override protected String getAttrClassName() {
-        return Component.ATTR_NAME_OF_HARD_P;
+        return ATTR_CLASS_NAME;
     }
 
 }

@@ -10,6 +10,8 @@ import java.util.ArrayList;
 
 public class SoftP extends MOSFET {
 
+    public static final String ATTR_CLASS_NAME = "soft-p";
+
     private static final Color COL_LEGS = Color.DARKRED;
     private static final int VGSTH = -1;
 
@@ -23,7 +25,7 @@ public class SoftP extends MOSFET {
         LogicLevel out;
         if (gate.sig() == LogicLevel.ZZZ && source.sig() == LogicLevel.ZZZ)
             out = LogicLevel.ZZZ;
-        else if (!gate.sig().stable() || !source.sig().stable())
+        else if (gate.sig().isUnstable() || source.sig().isUnstable())
             out = LogicLevel.ERR;
         else if (gate.sig().volts() - source.sig().volts() <= VGSTH)
             out = source.sig();
@@ -53,11 +55,16 @@ public class SoftP extends MOSFET {
     }
 
     // informative
+
+    @Override
+    public String toString() {
+        return "Soft P";
+    }
     @Override public String getPrefixID() {
         return "sp";
     }
     @Override protected String getAttrClassName() {
-        return Component.ATTR_NAME_OF_SOFT_P;
+        return ATTR_CLASS_NAME;
     }
 
 }

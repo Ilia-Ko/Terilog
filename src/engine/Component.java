@@ -15,29 +15,20 @@ import java.util.ArrayList;
 
 public abstract class Component implements Renderable, Rotatable, Mirrorable, Informative {
 
-    // subclasses   ->   I don't know how to conform OOP in this case! - TODO: rewrite in good OOP style
-    protected static final String ATTR_NAME_OF_HARD_N = "hard-n";
-    protected static final String ATTR_NAME_OF_HARD_P = "hard-p";
-    protected static final String ATTR_NAME_OF_SOFT_N = "soft-n";
-    protected static final String ATTR_NAME_OF_SOFT_P = "soft-p";
-    protected static final String ATTR_NAME_OF_DIODE = "diode";
-    protected static final String ATTR_NAME_OF_RECONCILIATOR = "rec";
-    protected static final String ATTR_NAME_OF_VOLTAGE = "volts";
-    protected static final String ATTR_NAME_OF_INDICATOR = "ind";
-
     // rendering
-    private double p; // grid period
+    protected double p; // grid period
     private Canvas basis; // canvas for rendering
     private int x, y; // coordinates of the top-left corner of this component
-    private double alpha;
+    protected double alpha;
     protected int rotation; // index of rotation of this component; see Rotatable
     private int mirrorV, mirrorH; // states of mirroring of this component; see Mirrorable
-    private boolean isHovered;
+    protected boolean isHovered;
 
     // others
     private Pin[] pins;
     private String id;
 
+    // initialization
     protected Component() {
         basis = new Canvas();
         x = 0; y = 0;
@@ -48,7 +39,8 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
         pins = initPins();
     }
     protected abstract Pin[] initPins();
-    public void initEvents(ControlMain control) {ContextMenu menu = control.makeContextMenuFor(this);
+    public void initEvents(ControlMain control) {
+        ContextMenu menu = initContextMenu(control);
         basis.setMouseTransparent(false);
         basis.setOnMouseEntered(event -> {
             basis.requestFocus();
@@ -59,11 +51,14 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
             isHovered = false;
             render();
         });
-        basis.setOnContextMenuRequested(event -> menu.show(basis, event.getScreenX(), event.getScreenY()));
         basis.setOnKeyPressed(key -> control.componentKeyPressed(this, key.getCode()));
+        basis.setOnContextMenuRequested(event -> menu.show(basis, event.getScreenX(), event.getScreenY()));
         Tooltip.install(basis, new Tooltip(toString()));
     }
     public abstract Component newCompOfTheSameClass();
+    protected ContextMenu initContextMenu(ControlMain control) {
+        return control.makeContextMenuFor(this);
+    }
 
     // connectivity
     public abstract Pin getPinByName(String pinName);
@@ -93,8 +88,8 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
     @Override public void render() {
         double w = getWidth() + Pin.PIN_CIRCLE_RADIUS * 2;
         double h = getHeight() + Pin.PIN_CIRCLE_RADIUS * 2;
-        double aw2 = -getAbsoluteWidth() / 2;
-        double ah2 = -getAbsoluteHeight() / 2;
+        double aw2 = getAbsoluteWidth() / 2;
+        double ah2 = getAbsoluteHeight() / 2;
 
         // configure gc
         GraphicsContext gc = basis.getGraphicsContext2D();
@@ -114,15 +109,16 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
         // render pins
         for (Pin pin : pins) pin.render(gc);
 
-        // perform mirroring
-        gc.scale(mirrorH, mirrorV);
-        double tx = w * (NOT_MIRRORED - mirrorH) * 0.5;
-        double ty = h * (NOT_MIRRORED - mirrorV) * 0.5;
-        gc.translate(-tx, -ty);
+
         // perform rotation
         gc.translate(w / 2, h / 2);
         gc.rotate(-ROTATION_ANGLE * rotation);
-        gc.translate(aw2, ah2);
+        gc.translate(-aw2, -ah2);
+        // perform mirroring
+        gc.scale(mirrorH, mirrorV);
+        double tx = aw2 * (NOT_MIRRORED - mirrorH);
+        double ty = ah2 * (NOT_MIRRORED - mirrorV);
+        gc.translate(-tx, -ty);
 
         // render component
         renderBody(gc);
@@ -197,7 +193,10 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
         for (Pin pin : pins) pin.mirrorHorizontal();
 
         // mirror
-        mirrorH *= -1;
+        if (rotation % 2 == ROT_RIGHT)
+            mirrorH *= -1;
+        else
+            mirrorV *= -1;
 
         render();
     }
@@ -206,7 +205,10 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
         for (Pin pin : pins) pin.mirrorVertical();
 
         // mirror
-        mirrorV *= -1;
+        if (rotation % 2 == ROT_RIGHT)
+            mirrorV *= -1;
+        else
+            mirrorH *= -1;
 
         render();
     }
@@ -249,7 +251,7 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
 
     protected class Pin implements Rotatable, Mirrorable {
 
-        private static final double PIN_CIRCLE_RADIUS = ControlMain.GRID_POINT_RADIUS * 4;
+        public static final double PIN_CIRCLE_RADIUS = ControlMain.GRID_POINT_RADIUS * 4;
 
         // these pin types are relative to the component
         public static final int INPUT = 0;
@@ -310,7 +312,7 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
         int getY() {
             return y;
         }
-        private void render(GraphicsContext gc) {
+        public void render(GraphicsContext gc) {
             gc.setFill(sig().colour());
 
             double b = ControlMain.LINE_WIDTH;

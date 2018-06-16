@@ -1,7 +1,11 @@
 package engine;
 
 import engine.interfaces.Informative;
+import engine.lumped.Voltage;
 import engine.transistors.HardN;
+import engine.transistors.HardP;
+import engine.transistors.SoftN;
+import engine.transistors.SoftP;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -34,6 +38,7 @@ public class TerilogIO {
     private static final String ATTR_CLASS = "class";
     private static final String ATTR_TYPE = "type";
     private static final String ATTR_NODE = "node";
+    private static final String ATTR_SIGNAL = "sig";
     private static final String ATTR_W = "w";
     private static final String ATTR_H = "h";
     private static final String ATTR_X = "x";
@@ -314,15 +319,31 @@ public class TerilogIO {
         return node;
     }
     private Component parseComponent(Element c) {
-        // create a component of a certain class - I don't know how to do it in 'genuine OOP' style!
+        // create a component of a certain class - I don't know how to do it in 'good OOP' style!
         Component comp;
         String className = c.getAttribute(ATTR_CLASS);
-        if (className.equals(Component.ATTR_NAME_OF_HARD_N))
-            comp = new HardN();
-        // else if ...
-        else {
-            System.out.printf("WARNING: component with attribute 'class=\"%s\"' not recognized.", className);
-            return null;
+        switch (className) {
+            case HardN.ATTR_CLASS_NAME:
+                comp = new HardN();
+                break;
+            case HardP.ATTR_CLASS_NAME:
+                comp = new HardP();
+                break;
+            case SoftN.ATTR_CLASS_NAME:
+                comp = new SoftN();
+                break;
+            case SoftP.ATTR_CLASS_NAME:
+                comp = new SoftP();
+                break;
+            case Voltage.ATTR_CLASS_NAME:
+                comp = new Voltage();
+                LogicLevel signal = LogicLevel.parseName(c.getAttribute(ATTR_SIGNAL));
+                ((Voltage) comp).setLogicLevel(signal);
+                break;
+            // case ...
+            default:
+                System.out.printf("WARNING: component with attribute 'class=\"%s\"' not recognized.", className);
+                return null;
         }
 
         // set id
