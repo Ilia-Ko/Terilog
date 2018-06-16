@@ -62,14 +62,6 @@ public abstract class MOSFET extends Component {
     }
     abstract void renderSpecific(GraphicsContext gc);
     abstract Color getLegsColour();
-    @Override public int getWidth() {
-        if (rotation % 2 == ROT_RIGHT) return WIDTH;
-        else return HEIGHT;
-    }
-    @Override public int getHeight() {
-        if (rotation % 2 == ROT_RIGHT) return HEIGHT;
-        else return WIDTH;
-    }
     @Override protected int getAbsoluteWidth() {
         return WIDTH;
     }

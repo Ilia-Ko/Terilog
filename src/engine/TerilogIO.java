@@ -1,7 +1,9 @@
 package engine;
 
 import engine.interfaces.Informative;
+import engine.lumped.Diode;
 import engine.lumped.Indicator;
+import engine.lumped.Reconciliator;
 import engine.lumped.Voltage;
 import engine.transistors.HardN;
 import engine.transistors.HardP;
@@ -336,6 +338,12 @@ public class TerilogIO {
             case SoftP.ATTR_CLASS_NAME:
                 comp = new SoftP();
                 break;
+            case Diode.ATTR_CLASS_NAME:
+                comp = new Diode();
+                break;
+            case Reconciliator.ATTR_CLASS_NAME:
+                comp = new Reconciliator();
+                break;
             case Voltage.ATTR_CLASS_NAME:
                 comp = new Voltage();
                 LogicLevel signal = LogicLevel.parseName(c.getAttribute(ATTR_SIGNAL));
@@ -344,7 +352,6 @@ public class TerilogIO {
             case Indicator.ATTR_CLASS_NAME:
                 comp = new Indicator();
                 break;
-            // case ...
             default:
                 System.out.printf("WARNING: component with attribute 'class=\"%s\"' not recognized.", className);
                 return null;
@@ -369,7 +376,7 @@ public class TerilogIO {
                     continue;
                 }
                 Node node = findNodeByID(p.getAttribute(ATTR_NODE));
-                comp.connect(node, comp.getPinByName(type));
+                // TODO: establish connection ideology
             }
 
         return comp;

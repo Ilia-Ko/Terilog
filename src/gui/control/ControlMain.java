@@ -4,7 +4,9 @@ import engine.Circuit;
 import engine.Component;
 import engine.TerilogIO;
 import engine.Wire;
+import engine.lumped.Diode;
 import engine.lumped.Indicator;
+import engine.lumped.Reconciliator;
 import engine.lumped.Voltage;
 import engine.transistors.HardN;
 import engine.transistors.HardP;
@@ -438,8 +440,16 @@ public class ControlMain {
         flyComp = new SoftP();
         beginCompInsertion();
     }
-    @FXML private void menuDiode() {}
-    @FXML private void menuReconciliator() {}
+    @FXML private void menuDiode() {
+        breakInsertion();
+        flyComp = new Diode();
+        beginCompInsertion();
+    }
+    @FXML private void menuReconciliator() {
+        breakInsertion();
+        flyComp = new Reconciliator();
+        beginCompInsertion();
+    }
     @FXML private void menuVoltage() {
         breakInsertion();
         flyComp = new Voltage();

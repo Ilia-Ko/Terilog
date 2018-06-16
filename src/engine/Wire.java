@@ -6,6 +6,8 @@ import gui.control.ControlMain;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 
+import java.util.ArrayList;
+
 public class Wire implements Renderable, Informative {
 
     // rendering
@@ -16,20 +18,34 @@ public class Wire implements Renderable, Informative {
     private int ctx, cty; // in periods, translates for canvas position (relative to (x, y) point)
     private double alpha;
     private boolean horizontalFirst; // layout form: true if horizontal line begins at (0, 0)
+
+    // connectivity
+    private ArrayList<Component.Pin> pins;
     private Node node; // the node, that contains this wire
 
     private String id;
 
     public Wire() {
+        // rendering
         basis = new Canvas();
         x = 0;   y = 0;
         dx = 0;  dy = 0;
         ctx = 0; cty = 0;
         horizontalFirst = true;
+
+        // connectivity
         node = null;
+        pins = new ArrayList<>();
     }
 
     // connectivity
+    // TODO: establish connection ideology
+    void connect(Node node) {
+        this.node = node;
+    }
+    void connect(Component.Pin pin) {
+        pins.add(pin);
+    }
     int[][] getPoints() {
         int[][] points = new int[3][];
         points[0] = new int[] {x, y};
@@ -42,10 +58,6 @@ public class Wire implements Renderable, Informative {
     }
     Node getNode() {
         return node;
-    }
-    void connect(Node node) {
-        this.node = node;
-        node.addWire(this);
     }
 
     // wire insertion logic
@@ -96,7 +108,7 @@ public class Wire implements Renderable, Informative {
         gc.translate(-ctx + l / 2, -cty + l / 2);
         gc.setGlobalAlpha(alpha);
         gc.setLineWidth(l);
-        if (node != null) gc.setStroke(node.getCurrentSignal().colour());
+        if (node != null) gc.setStroke(node.getSignal().colour());
         else gc.setStroke(LogicLevel.ZZZ.colour());
 
         // draw the wire

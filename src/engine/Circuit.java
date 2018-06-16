@@ -43,6 +43,7 @@ public class Circuit {
     }
 
     // construction logic
+    // TODO: establish connection ideology
     public void add(Wire wire) {
         // check whether 'w' should be connected to existing wires
         boolean isNewNode = true;
@@ -62,25 +63,12 @@ public class Circuit {
         }
 
         // check whether 'w' should be connected to existing components
-        for (Component c : components)
-            for (Component.Pin pin : c.getPins())
+        for (Component comp : components)
+            for (Component.Pin pin : comp.getPins())
                 if (wire.inside(pin.getX(), pin.getY()))
-                    c.connect(wire.getNode(), pin);
+                    pin.connect(wire);
 
         wires.add(wire);
-    }
-    public void add(Component comp) {
-        if (comp.isIndependent()) constants.add(comp);
-
-        // check whether 'c' should be connected to existing nodes (their wires)
-        for (Component.Pin pin : comp.getPins())
-            for (Wire wire : wires)
-                if (wire.inside(pin.getX(), pin.getY())) {
-                    comp.connect(wire.getNode(), pin);
-                    break;
-                }
-
-        components.add(comp);
     }
     public void del(Wire wire) {
         // disconnect wire from node
@@ -90,6 +78,19 @@ public class Circuit {
         // disconnect component from node (previously connected by this wire)
         for (Component comp : node.getComponents())
             comp.disconnect(wire);
+    }
+    public void add(Component comp) {
+        if (comp.isIndependent()) constants.add(comp);
+
+        // check whether 'comp' should be connected to existing nodes (their wires)
+        for (Component.Pin pin : comp.getPins())
+            for (Wire wire : wires)
+                if (wire.inside(pin.getX(), pin.getY())) {
+                    pin.connect(wire);
+                    break;
+                }
+
+        components.add(comp);
     }
     public void del(Component comp) {
         components.remove(comp);

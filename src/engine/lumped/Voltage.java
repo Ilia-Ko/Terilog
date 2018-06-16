@@ -38,7 +38,7 @@ public class Voltage extends Component {
         render();
     }
     @Override protected Pin[] initPins() {
-        drain = new Pin(this, Pin.OUTPUT, "drain");
+        drain = new Pin(this, "drain");
         drain.setPos(SIZE / 2, SIZE);
         return new Pin[] {drain};
     }
@@ -132,12 +132,6 @@ public class Voltage extends Component {
         return SIZE;
     }
     @Override protected int getAbsoluteHeight() {
-        return SIZE;
-    }
-    @Override public int getWidth() {
-        return SIZE;
-    }
-    @Override public int getHeight() {
         return SIZE;
     }
 

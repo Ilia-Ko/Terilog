@@ -20,7 +20,7 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
     private Canvas basis; // canvas for rendering
     private int x, y; // coordinates of the top-left corner of this component
     protected double alpha;
-    protected int rotation; // index of rotation of this component; see Rotatable
+    private int rotation; // index of rotation of this component; see Rotatable
     private int mirrorV, mirrorH; // states of mirroring of this component; see Mirrorable
     protected boolean isHovered;
 
@@ -66,10 +66,6 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
             if (pin.getName().equals(pinName))
                 return pin;
         return null;
-    }
-    void connect(Node node, Pin pin) {
-        pin.connect(node);
-        node.addPin(pin);
     }
     void disconnect(Wire wire) {
         Node node = wire.getNode();
@@ -134,6 +130,18 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
     protected abstract void renderBody(GraphicsContext gc);
     protected abstract int getAbsoluteWidth(); // in periods, width not affected by rotation
     protected abstract int getAbsoluteHeight(); // in periods, height not affected by rotation
+    @Override public int getWidth() {
+        if (rotation % 2 == 0)
+            return getAbsoluteWidth();
+        else
+            return getAbsoluteHeight();
+    }
+    @Override public int getHeight() {
+        if (rotation % 2 == 0)
+            return getAbsoluteHeight();
+        else
+            return getAbsoluteWidth();
+    }
     @Override public void setGridPeriod(double period) {
         p = period;
         basis.setWidth(p * (getWidth() + Pin.PIN_CIRCLE_RADIUS * 2));
@@ -258,21 +266,15 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
 
         public static final double PIN_CIRCLE_RADIUS = ControlMain.GRID_POINT_RADIUS * 4;
 
-        // these pin types are relative to the component
-        public static final int INPUT = 0;
-        public static final int OUTPUT = 1;
-
         private Component parent;
         private Node node;
         private int x, y; // global coordinates (absolute values in periods)
-        private int type;
         private String attrName;
 
-        public Pin(Component parent, int type, String name) {
+        public Pin(Component parent, String name) {
             x = 0;
             y = 0;
             this.parent = parent;
-            this.type = type;
             node = null;
             attrName = name;
         }
@@ -280,17 +282,20 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
         // simulation
         public LogicLevel sig() {
             if (node != null)
-                return node.getCurrentSignal();
+                return node.getSignal();
             else
                 return LogicLevel.ZZZ;
         }
         public void sendSig(LogicLevel signal) {
-            if (node != null) node.receiveSignal(parent, signal);
+            if (node != null) node.putSignal(parent, signal);
         }
 
         // connectivity
-        void connect(Node node) {
-            this.node = node;
+        // TODO: establish connection ideology
+        void connect(Wire wire) {
+            node = wire.getNode();
+            node.addPin(this);
+
         }
         void disconnect() {
             if (node != null) node.delPin(this);
@@ -305,7 +310,7 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
             return node;
         }
 
-        // positioning and rendering
+        // rendering
         public void setPos(int xPos, int yPos) {
             x = xPos;
             y = yPos;
@@ -367,9 +372,6 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
         }
 
         // informative
-        int getType() {
-            return type;
-        }
         String getName() {
             return attrName;
         }

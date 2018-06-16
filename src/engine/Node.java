@@ -8,29 +8,27 @@ import java.util.Arrays;
 public class Node implements Informative { // 'logical' class, no rendering
 
     // simulation
-    private ArrayList<Component> inputs; // those components, who puts a signal to this node
-    private ArrayList<Component> outputs; // those components, who gets a signal from this node
+    private ArrayList<Component> components; // components, connected to this node
 
-    private LogicLevel[] inputSignals; // input signals from components
-    private LogicLevel currentSig; // the current signal on the node
+    private LogicLevel[] signals; // input signals from components
+    private LogicLevel sigResult; // the current signal on the node
 
     // informative
     private String id;
     private ArrayList<Wire> wires;
 
     Node() {
-        inputs = new ArrayList<>();
-        outputs = new ArrayList<>();
+        components = new ArrayList<>();
         wires = new ArrayList<>();
-        inputSignals = null;
-        currentSig = LogicLevel.ZZZ;
+        signals = null;
+        sigResult = LogicLevel.ZZZ;
     }
 
     // simulation
     void reset() {
-        inputSignals = new LogicLevel[inputs.size()];
-        Arrays.fill(inputSignals, LogicLevel.NIL);
-        currentSig = LogicLevel.NIL;
+        signals = new LogicLevel[components.size()];
+        Arrays.fill(signals, LogicLevel.ZZZ);
+        sigResult = LogicLevel.ZZZ;
     }
     ArrayList<Node> propagate() {
         /* Propagation is a part of destabilization of a circuit. When a node is unstable, it affects
@@ -40,7 +38,7 @@ public class Node implements Informative { // 'logical' class, no rendering
         nodes, who become unstable after the computation.
          */
         ArrayList<Node> unstable = new ArrayList<>();
-        for (Component c : outputs) unstable.addAll(c.simulate());
+        for (Component c : components) unstable.addAll(c.simulate());
         return unstable;
     }
     boolean stabilize() {
@@ -51,51 +49,40 @@ public class Node implements Informative { // 'logical' class, no rendering
         Note: if at least two input signals conflicts to each other, the result of their interaction
         is LogicLevel.ERR signal, which suppresses everything.
         */
-        LogicLevel sig = inputSignals[0];
-        for (LogicLevel signal : inputSignals)
+        LogicLevel sig = signals[0];
+        for (LogicLevel signal : signals)
             if (sig.conflicts(signal)) {
                 sig = LogicLevel.ERR;
                 break;
             }
-        boolean result = (currentSig == sig);
-        if (sig.suppresses(currentSig)) currentSig = sig;
+        boolean result = (sigResult == sig);
+        if (sig.suppresses(sigResult)) sigResult = sig;
         return result;
     }
-    LogicLevel getCurrentSignal() {
-        return currentSig;
+    LogicLevel getSignal() {
+        return sigResult;
     }
-    public void receiveSignal(Component fromWho, LogicLevel signal) {
-        int address = inputs.indexOf(fromWho);
-        inputSignals[address] = signal;
+    void putSignal(Component fromWho, LogicLevel signal) {
+        int address = components.indexOf(fromWho);
+        signals[address] = signal;
     }
 
     // connectivity
-    void addPin(Component.Pin pin) {
-        int type = pin.getType();
-        Component c = pin.getParent();
+    // TODO: establish connection ideology
+    void connect(Component.Pin pin) {
 
-        if (type == Component.Pin.INPUT) // if 'pin' is input (relative to a component)
-            outputs.add(c); // then add it to outputs (relative to a node)
-        else if (type == Component.Pin.OUTPUT) // and vice versa
-            inputs.add(c);
+    }
+    void addPin(Component.Pin pin) {
+        components.add(pin.getParent());
     }
     void delPin(Component.Pin pin) {
-        int type = pin.getType();
-        Component c = pin.getParent();
-
-        if (type == Component.Pin.INPUT) // if 'pin' is input (relative to a component)
-            outputs.remove(c); // then add it to outputs (relative to a node)
-        else if (type == Component.Pin.OUTPUT) // and vice versa
-            inputs.remove(c);
+        components.remove(pin.getParent());
     }
     void delWire(Wire wire) {
         wires.remove(wire);
     }
     ArrayList<Component> getComponents() {
-        ArrayList<Component> comps = new ArrayList<>();
-        comps.addAll(inputs);
-        comps.addAll(outputs);
-        return comps;
+        return components;
     }
 
     // informative

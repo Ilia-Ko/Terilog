@@ -23,8 +23,8 @@ I. <logic> section. It is the list of Components and Nodes, connected to
         | SoftN         | soft-n    | gate, source, drain |
         | SoftP         | soft-p    | gate, source, drain |
         ---------------------------------------------------
-        | Diode         | diode     | source, drain       |
-        | Reconciliator | rec       | gate, source, drain |
+        | Diode         | diode     | cathode, anode      |
+        | Reconciliator | rec       | source, pull, drain |
         ---------------------------------------------------
         | Voltage*      | volts     | drain               |
         | Indicator     | ind       | source              |

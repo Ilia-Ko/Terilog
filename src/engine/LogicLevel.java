@@ -81,7 +81,7 @@ public enum LogicLevel {
         return colour;
     }
     public boolean isUnstable() {
-        return !unstable;
+        return unstable;
     }
 
     // signal interaction

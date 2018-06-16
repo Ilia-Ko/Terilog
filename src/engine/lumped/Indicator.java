@@ -89,12 +89,6 @@ public class Indicator extends Component {
     @Override protected int getAbsoluteHeight() {
         return RADIUS * 2;
     }
-    @Override public int getWidth() {
-        return RADIUS * 2;
-    }
-    @Override public int getHeight() {
-        return RADIUS * 2;
-    }
 
     // informative
     @Override public String toString() {
