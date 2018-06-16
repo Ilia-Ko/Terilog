@@ -114,14 +114,17 @@ public class ControlMain {
         flyWire = null;
 
         // handle some events
-        scroll.addEventFilter(KeyEvent.KEY_PRESSED, this::fieldKeyPressed);
         scroll.addEventFilter(MouseEvent.ANY, event -> {
             if (event.getButton() == MouseButton.PRIMARY) {
                 fieldMouseClicked(event);
                 event.consume();
             }
         });
-        scroll.requestFocus();
+        field.setOnMouseEntered(event -> {
+            field.requestFocus();
+            point.setVisible(true);
+        });
+        field.setOnMouseExited(event -> point.setVisible(false));
 
         // prepare field
         updateGridParameters();
@@ -132,34 +135,31 @@ public class ControlMain {
         // move
         MenuItem itemMove = new MenuItem("Move");
         itemMove.setAccelerator(KeyCombination.valueOf("M"));
-        itemMove.setOnAction(event -> {
-            stack.getChildren().remove(comp.getBasis());
-            circuit.del(comp);
-            flyComp = comp.newCompOfTheSameClass();
-            beginCompInsertion();
-        });
+        itemMove.setOnAction(event -> moveComp(comp));
 
         // delete
-        MenuItem itemDel = new MenuItem("Delete");
-        itemDel.setOnAction(event -> {
-            stack.getChildren().remove(comp.getBasis());
-            circuit.del(comp);
-        });
+        MenuItem itemDel = new MenuItem("Remove");
+        itemDel.setAccelerator(new KeyCodeCombination(KeyCode.DELETE));
+        itemDel.setOnAction(event -> deleteComp(comp));
 
         // rotate CW
         MenuItem itemRotCW = new MenuItem("Rotate right (CW)");
+        itemRotCW.setAccelerator(KeyCombination.valueOf("R"));
         itemRotCW.setOnAction(event -> comp.rotateCW());
 
         // rotate CCW
         MenuItem itemRotCCW = new MenuItem("Rotate left (CCW)");
+        itemRotCCW.setAccelerator(KeyCombination.valueOf("L"));
         itemRotCCW.setOnAction(event -> comp.rotateCCW());
 
         // mirror horizontally
         MenuItem itemMirrorH = new MenuItem("Mirror horizontally");
+        itemMirrorH.setAccelerator(KeyCombination.valueOf("X"));
         itemMirrorH.setOnAction(event -> comp.mirrorHorizontal());
 
         // mirror vertically
         MenuItem itemMirrorV = new MenuItem("Mirror vertically");
+        itemMirrorV.setAccelerator(KeyCombination.valueOf("Y"));
         itemMirrorV.setOnAction(event -> comp.mirrorVertical());
 
         return new ContextMenu(itemMove, itemDel, itemRotCW, itemRotCCW, itemMirrorH, itemMirrorV);
@@ -195,7 +195,7 @@ public class ControlMain {
         KeyCode code = key.getCode();
         if (code == KeyCode.ESCAPE) { // stop insertion
             if (holdingComp || holdingWire) breakInsertion();
-        } else if (code == KeyCode.SPACE && holdingWire) { // flip a wire
+        } else if (code == KeyCode.SPACE && holdingWire) { // flip flying wire
             flyWire.flip();
             key.consume();
         }
@@ -203,11 +203,37 @@ public class ControlMain {
         // actions with flying component
         if (holdingComp) componentKeyPressed(flyComp, code);
     }
-    private void componentKeyPressed(Component comp, KeyCode code) {
-        if (code == KeyCode.R) comp.rotateCW();
-        else if (code == KeyCode.L) comp.rotateCCW();
-        else if (code == KeyCode.X) comp.mirrorHorizontal();
-        else if (code == KeyCode.Y) comp.mirrorVertical();
+    public void componentKeyPressed(Component comp, KeyCode code) {
+        switch (code) {
+            case M:
+                moveComp(comp);
+                break;
+            case DELETE:
+                deleteComp(comp);
+                break;
+            case R:
+                comp.rotateCW();
+                break;
+            case L:
+                comp.rotateCCW();
+                break;
+            case X:
+                comp.mirrorHorizontal();
+                break;
+            case Y:
+                comp.mirrorVertical();
+                break;
+        }
+    }
+    private void moveComp(Component comp) {
+        stack.getChildren().remove(comp.getBasis());
+        circuit.del(comp);
+        flyComp = comp.newCompOfTheSameClass();
+        beginCompInsertion();
+    }
+    private void deleteComp(Component comp) {
+        stack.getChildren().remove(comp.getBasis());
+        circuit.del(comp);
     }
 
     // insertion
@@ -216,7 +242,7 @@ public class ControlMain {
         Canvas basis = flyComp.getBasis();
         stack.getChildren().add(basis);
         StackPane.setAlignment(basis, Pos.TOP_LEFT);
-        basis.toFront();
+        basis.setMouseTransparent(true);
 
         // initialize component
         flyComp.setGlobalAlpha(OPACITY_FLYING);
@@ -230,8 +256,7 @@ public class ControlMain {
         Canvas basis = flyWire.getBasis();
         stack.getChildren().add(basis);
         StackPane.setAlignment(basis, Pos.TOP_LEFT);
-        basis.toBack();
-        field.toBack();
+        basis.setMouseTransparent(true);
 
         // initialize wire
         flyWire.setGlobalAlpha(OPACITY_FLYING); // make it 'transparent'
@@ -243,7 +268,7 @@ public class ControlMain {
     private void finishCompInsertion() {
         flyComp.setGlobalAlpha(OPACITY_NORMAL);
         flyComp.render();
-        flyComp.initContextMenu(this);
+        flyComp.initEvents(this);
         circuit.add(flyComp);
         holdingComp = false;
     }

@@ -44,12 +44,11 @@
     </MenuBar>
 
     <ScrollPane fx:id="scroll" pannable="true">
-        <StackPane fx:id="stack"
-                   alignment="TOP_LEFT"
-                   onMouseMoved="#fieldMouseMoved"
-                   onMouseClicked="#fieldMouseClicked">
+        <StackPane fx:id="stack" alignment="TOP_LEFT">
             <Canvas fx:id="field"
-                    mouseTransparent="true"/>
+                    onKeyPressed="#fieldKeyPressed"
+                    onMouseMoved="#fieldMouseMoved"
+                    onMouseClicked="#fieldMouseClicked"/>
             <Canvas fx:id="point"
                     StackPane.alignment="TOP_LEFT"
                     mouseTransparent="true"

@@ -8,6 +8,7 @@ import gui.control.ControlMain;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 
@@ -30,6 +31,7 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
     private double alpha;
     protected int rotation; // index of rotation of this component; see Rotatable
     private int mirrorV, mirrorH; // states of mirroring of this component; see Mirrorable
+    private boolean isHovered;
 
     // others
     private Pin[] pins;
@@ -41,12 +43,23 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
         rotation = Rotatable.DEFAULT;
         mirrorV = Mirrorable.DEFAULT;
         mirrorH = Mirrorable.DEFAULT;
+        isHovered = false;
         pins = initPins();
     }
     protected abstract Pin[] initPins();
-    public void initContextMenu(ControlMain control) {
-        ContextMenu menu = control.makeContextMenuFor(this);
+    public void initEvents(ControlMain control) {ContextMenu menu = control.makeContextMenuFor(this);
+        basis.setMouseTransparent(false);
+        basis.setOnMouseEntered(event -> {
+            basis.requestFocus();
+            isHovered = true;
+            render();
+        });
+        basis.setOnMouseExited(event -> {
+            isHovered = false;
+            render();
+        });
         basis.setOnContextMenuRequested(event -> menu.show(basis, event.getScreenX(), event.getScreenY()));
+        basis.setOnKeyPressed(key -> control.componentKeyPressed(this, key.getCode()));
     }
     public abstract Component newCompOfTheSameClass();
 
@@ -67,10 +80,7 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
             }
     }
     void disconnect() {
-        for (Pin pin : pins) {
-            pin.getNode().delPin(pin);
-            pin.disconnect();
-        }
+        for (Pin pin : pins) pin.disconnect();
     }
 
     // simulation
@@ -90,6 +100,14 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
         gc.setGlobalAlpha(alpha);
         gc.scale(p, p);
         gc.clearRect(0, 0, w, h);
+
+        // draw focus frame
+        if (isHovered) {
+            double l = ControlMain.LINE_WIDTH;
+            gc.setStroke(Color.LIGHTSKYBLUE);
+            gc.setLineWidth(l);
+            gc.strokeRect(l / 2, l / 2, w - l, h - l);
+        }
 
         // render pins
         for (Pin pin : pins) pin.render(gc);
@@ -261,6 +279,7 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
             this.node = node;
         }
         void disconnect() {
+            if (node != null) node.delPin(this);
             node = null;
         }
 
