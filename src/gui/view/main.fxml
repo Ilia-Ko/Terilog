@@ -2,8 +2,7 @@
 
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.*?>
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="gui.control.ControlMain">
 
     <MenuBar>
@@ -43,9 +42,10 @@
         </Menu>
     </MenuBar>
 
-    <ScrollPane fx:id="scroll" pannable="true">
+    <ScrollPane fx:id="scroll" pannable="true" VBox.vgrow="ALWAYS">
         <StackPane fx:id="stack" alignment="TOP_LEFT">
             <Canvas fx:id="field"
+                    StackPane.alignment="TOP_LEFT"
                     onKeyPressed="#fieldKeyPressed"
                     onMouseMoved="#fieldMouseMoved"
                     onMouseClicked="#fieldMouseClicked"/>

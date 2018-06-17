@@ -23,7 +23,7 @@ public class Indicator extends Component {
 
     // initialization
     @Override protected Pin[] initPins() {
-        source = new Pin(this, Pin.INPUT, "source");
+        source = new Pin(this, "source");
         source.setPos(0, RADIUS);
         return new Pin[] {source};
     }

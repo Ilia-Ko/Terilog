@@ -18,9 +18,9 @@ public abstract class MOSFET extends Component {
     // initialization
     @Override protected Pin[] initPins() {
         // create pins
-        gate = new Pin(this, Pin.INPUT, "gate");
-        source = new Pin(this, Pin.INPUT, "source");
-        drain = new Pin(this, Pin.OUTPUT, "drain");
+        gate = new Pin(this, "gate");
+        source = new Pin(this, "source");
+        drain = new Pin(this, "drain");
 
         // place them
         gate.setPos(2, 0);

@@ -18,7 +18,7 @@ public class Main extends Application {
 
     // general dimensions
     private static final double GOLD = 0.5 * (1.0 + Math.sqrt(5.0));
-    private static final double DEF_FONT_SIZE = 1.0 / 60.0;
+    private static final double DEF_FONT_SIZE = 1.0 / 60.0; // relative to screen height
 
     // dimensions
     private double maxWidth, maxHeight;
