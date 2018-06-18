@@ -5,10 +5,12 @@ import engine.interfaces.Mirrorable;
 import engine.interfaces.Renderable;
 import engine.interfaces.Rotatable;
 import gui.control.ControlMain;
+import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
@@ -17,7 +19,7 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
 
     // rendering
     protected double p; // grid period
-    private Canvas basis; // canvas for rendering
+    @FXML private Canvas basis; // canvas for rendering
     private int x, y; // coordinates of the top-left corner of this component
     protected double alpha;
     private int rotation; // index of rotation of this component; see Rotatable
@@ -25,6 +27,7 @@ public abstract class Component implements Renderable, Rotatable, Mirrorable, In
     protected boolean isHovered;
 
     // others
+    protected Pane parent;
     private Pin[] pins;
     private String id;
 

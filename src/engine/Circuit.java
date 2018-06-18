@@ -37,10 +37,6 @@ public class Circuit {
         for (Component comp : components) comp.render();
         for (Wire wire : wires) wire.render();
     }
-    public void updateGridPeriod(double period) {
-        for (Component comp : components) comp.setGridPeriod(period);
-        for (Wire wire : wires) wire.setGridPeriod(period);
-    }
 
     // construction logic
     // TODO: establish connection ideology
@@ -70,6 +66,9 @@ public class Circuit {
 
         wires.add(wire);
     }
+    public void add(engine.connectivity.Wire wire) {
+
+    }
     public void del(Wire wire) {
         // disconnect wire from node
         Node node = wire.getNode();
@@ -78,6 +77,9 @@ public class Circuit {
         // disconnect component from node (previously connected by this wire)
         for (Component comp : node.getComponents())
             comp.disconnect(wire);
+    }
+    public void del(engine.connectivity.Wire wire) {
+
     }
     public void add(Component comp) {
         if (comp.isIndependent()) constants.add(comp);
@@ -91,6 +93,9 @@ public class Circuit {
                 }
 
         components.add(comp);
+    }
+    public void add(engine.components.Component comp) {
+
     }
     public void del(Component comp) {
         components.remove(comp);

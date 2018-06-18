@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.Rectangle?>
+<Pane xmlns="http://javafx.com/javafx">
+
+    <Rectangle stroke="aquamarine" fill="chartreuse" width="4" height="3"/>
+
+</Pane>

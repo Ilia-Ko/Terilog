@@ -5,55 +5,56 @@
 <?import javafx.scene.layout.*?>
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="gui.control.ControlMain">
 
-    <MenuBar>
-        <Menu text="_File">
-            <MenuItem text="_Open" accelerator="Ctrl+O" onAction="#menuOpen"/>
-            <MenuItem text="_Save" accelerator="Ctrl+S" onAction="#menuSave"/>
-            <MenuItem text="Save as ..." accelerator="Shift+S" onAction="#menuSaveAs"/>
-            <SeparatorMenuItem/>
-            <MenuItem text="Toggle _fullscreen" accelerator="F11" onAction="#menuToggle"/>
-            <MenuItem text="_Quit" accelerator="Ctrl+Q" onAction="#menuQuit"/>
-        </Menu>
-        <Menu text="_Add">
-            <MenuItem text="Hard _N" accelerator="N" onAction="#menuHardN"/>
-            <MenuItem text="Hard _P" accelerator="P" onAction="#menuHardP"/>
-            <MenuItem text="Soft N" accelerator="Ctrl+N" onAction="#menuSoftN"/>
-            <MenuItem text="Soft P" accelerator="Ctrl+P" onAction="#menuSoftP"/>
-            <SeparatorMenuItem/>
-            <MenuItem text="_Diode" accelerator="D" onAction="#menuDiode"/>
-            <MenuItem text="_Reconciliator" accelerator="R" onAction="#menuReconciliator"/>
-            <SeparatorMenuItem/>
-            <MenuItem text="_Indicator" accelerator="I" onAction="#menuIndicator"/>
-            <MenuItem text="_Voltage" accelerator="V" onAction="#menuVoltage"/>
-            <MenuItem text="_Wire" accelerator="W" onAction="#menuWire"/>
-        </Menu>
-        <Menu text="_Simulate">
-            <MenuItem text="Start" accelerator="Space" onAction="#menuPlay" fx:id="menuPlay"/>
-            <MenuItem text="Settings" accelerator="F2" onAction="#menuSettings"/>
-        </Menu>
-        <Menu text="_Grid">
-            <MenuItem text="Grid size   " accelerator="Ctrl+G" onAction="#menuGrid"/>
-            <MenuItem text="Zoom +12%" accelerator="=" onAction="#menuZoomIn" fx:id="menuZoomIn"/>
-            <MenuItem text="Zoom -12%" accelerator="-" onAction="#menuZoomOut" fx:id="menuZoomOut"/>
-        </Menu>
-        <Menu text="_Help">
-            <MenuItem text="About" accelerator="F1" onAction="#menuAbout"/>
-            <MenuItem text="Credits" onAction="#menuCredits"/>
-        </Menu>
-    </MenuBar>
+    <HBox alignment="CENTER">
 
-    <ScrollPane fx:id="scroll" pannable="true" VBox.vgrow="ALWAYS">
+        <MenuBar HBox.hgrow="ALWAYS">
+            <Menu text="_File">
+                <MenuItem text="_Open" accelerator="Ctrl+O" onAction="#menuOpen"/>
+                <MenuItem text="_Save" accelerator="Ctrl+S" onAction="#menuSave"/>
+                <MenuItem text="Save as ..." accelerator="Shift+S" onAction="#menuSaveAs"/>
+                <SeparatorMenuItem/>
+                <MenuItem text="Toggle _fullscreen" accelerator="F11" onAction="#menuToggle"/>
+                <MenuItem text="_Quit" accelerator="Ctrl+Q" onAction="#menuQuit"/>
+            </Menu>
+            <Menu text="_Add">
+                <MenuItem text="Hard _N" accelerator="N" onAction="#menuHardN"/>
+                <MenuItem text="Hard _P" accelerator="P" onAction="#menuHardP"/>
+                <MenuItem text="Soft N" accelerator="Shift+N" onAction="#menuSoftN"/>
+                <MenuItem text="Soft P" accelerator="Shift+P" onAction="#menuSoftP"/>
+                <SeparatorMenuItem/>
+                <MenuItem text="_Diode" accelerator="D" onAction="#menuDiode"/>
+                <MenuItem text="_Reconciliator" accelerator="Ctrl+R" onAction="#menuReconciliator"/>
+                <SeparatorMenuItem/>
+                <MenuItem text="_Indicator" accelerator="I" onAction="#menuIndicator"/>
+                <MenuItem text="_Voltage" accelerator="V" onAction="#menuVoltage"/>
+                <MenuItem text="_Wire" accelerator="W" onAction="#menuWire"/>
+            </Menu>
+            <Menu text="_Simulate">
+                <MenuItem text="Start" accelerator="Space" onAction="#menuPlay" fx:id="menuPlay"/>
+                <MenuItem text="Settings" accelerator="F2" onAction="#menuSettings"/>
+            </Menu>
+            <Menu text="_Grid">
+                <MenuItem text="Grid size   " accelerator="Ctrl+G" onAction="#menuGrid"/>
+                <MenuItem text="Zoom +12%" accelerator="=" onAction="#menuZoomIn" fx:id="menuZoomIn"/>
+                <MenuItem text="Zoom -12%" accelerator="-" onAction="#menuZoomOut" fx:id="menuZoomOut"/>
+            </Menu>
+            <Menu text="_Help">
+                <MenuItem text="About" accelerator="F1" onAction="#menuAbout"/>
+                <MenuItem text="Credits" onAction="#menuCredits"/>
+            </Menu>
+        </MenuBar>
+        <Label fx:id="lblPoint"/>
+
+    </HBox>
+    <ScrollPane fx:id="scroll" pannable="true" vbarPolicy="NEVER" hbarPolicy="NEVER">
+
         <StackPane fx:id="stack" alignment="TOP_LEFT">
-            <Canvas fx:id="field"
-                    StackPane.alignment="TOP_LEFT"
-                    onKeyPressed="#fieldKeyPressed"
-                    onMouseMoved="#fieldMouseMoved"
-                    onMouseClicked="#fieldMouseClicked"/>
-            <Canvas fx:id="point"
-                    StackPane.alignment="TOP_LEFT"
-                    mouseTransparent="true"
-                    visible="false"/>
+
+            <Canvas fx:id="field"/>
+            <Pane fx:id="parent"/>
+
         </StackPane>
+
     </ScrollPane>
 
 </VBox>
