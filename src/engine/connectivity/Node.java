@@ -1,11 +1,13 @@
-package engine;
+package engine.connectivity;
 
-import engine.interfaces.Informative;
+import engine.LogicLevel;
+import engine.components.Component;
+import engine.components.Pin;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Node implements Informative { // 'logical' class, no rendering
+public class Node { // 'logical' class, no rendering
 
     // simulation
     private ArrayList<Component> components; // components, connected to this node
@@ -25,12 +27,12 @@ public class Node implements Informative { // 'logical' class, no rendering
     }
 
     // simulation
-    void reset() {
+    public void reset() {
         signals = new LogicLevel[components.size()];
         Arrays.fill(signals, LogicLevel.ZZZ);
         sigResult = LogicLevel.ZZZ;
     }
-    ArrayList<Node> propagate() {
+    public ArrayList<Node> propagate() {
         /* Propagation is a part of destabilization of a circuit. When a node is unstable, it affects
         those components, whose inputs are connected to the node. It means, that these components should
         compute their outputs again. When they produce new signals, their outputs become unstable too.
@@ -38,10 +40,10 @@ public class Node implements Informative { // 'logical' class, no rendering
         nodes, who become unstable after the computation.
          */
         ArrayList<Node> unstable = new ArrayList<>();
-        for (Component c : components) unstable.addAll(c.simulate());
+//        for (Component c : components) unstable.addAll(c.simulate());
         return unstable;
     }
-    boolean stabilize() {
+    public boolean stabilize() {
         /* Definition: a node is STABLE if and only if the result of interaction between input signals
         equals to the current signal on the node.
         Stabilization of a node is a part of the global stabilization process which flows parallel
@@ -69,13 +71,13 @@ public class Node implements Informative { // 'logical' class, no rendering
 
     // connectivity
     // TODO: establish connection ideology
-    void connect(Component.Pin pin) {
+    void connect(Pin pin) {
 
     }
-    void addPin(Component.Pin pin) {
-        components.add(pin.getParent());
+    void addPin(Pin pin) {
+//        components.add(pin.getParent());
     }
-    void delPin(Component.Pin pin) {
+    void delPin(Pin pin) {
         components.remove(pin.getParent());
     }
     void delWire(Wire wire) {
@@ -86,13 +88,13 @@ public class Node implements Informative { // 'logical' class, no rendering
     }
 
     // informative
-    @Override public String getPrefixID() {
+    public String getPrefixID() {
         return "n";
     }
-    @Override public void setID(String id) {
+    public void setID(String id) {
         this.id = id;
     }
-    @Override public String getID() {
+    public String getID() {
         return id;
     }
     void addWire(Wire w) {

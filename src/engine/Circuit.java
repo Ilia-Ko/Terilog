@@ -1,6 +1,11 @@
 package engine;
 
+import engine.components.Component;
+import engine.connectivity.Node;
+import engine.connectivity.Wire;
 import gui.control.ControlMain;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import java.util.ArrayList;
 
@@ -31,75 +36,64 @@ public class Circuit {
         constants = new ArrayList<>();
         nodes = new ArrayList<>();
     }
-
-    // rendering
-    public void renderAll() {
-        for (Component comp : components) comp.render();
-        for (Wire wire : wires) wire.render();
+    public Circuit(ControlMain control, Element c) {
+        this.control = control;
+        // TODO: init circuit from xml
     }
 
     // construction logic
     // TODO: establish connection ideology
     public void add(Wire wire) {
-        // check whether 'w' should be connected to existing wires
-        boolean isNewNode = true;
-        for (Wire old : wires)
-            for (int[] p : wire.getPoints())
-                if (old.inside(p[0], p[1])) {
-                    wire.connect(old.getNode());
-                    isNewNode = false;
-                    break;
-                }
-
-        // create new node if needed (if 'w' does not participate in any existing ones)
-        if (isNewNode) {
-            Node node = new Node();
-            nodes.add(node);
-            wire.connect(node);
-        }
-
-        // check whether 'w' should be connected to existing components
-        for (Component comp : components)
-            for (Component.Pin pin : comp.getPins())
-                if (wire.inside(pin.getX(), pin.getY()))
-                    pin.connect(wire);
-
-        wires.add(wire);
-    }
-    public void add(engine.connectivity.Wire wire) {
-
+//        // check whether 'w' should be connected to existing wires
+//        boolean isNewNode = true;
+//        for (Wire old : wires)
+//            for (int[] p : wire.getPoints())
+//                if (old.inside(p[0], p[1])) {
+//                    wire.connect(old.getNode());
+//                    isNewNode = false;
+//                    break;
+//                }
+//
+//        // create new node if needed (if 'w' does not participate in any existing ones)
+//        if (isNewNode) {
+//            Node node = new Node();
+//            nodes.add(node);
+//            wire.connect(node);
+//        }
+//
+//        // check whether 'w' should be connected to existing components
+//        for (Component comp : components)
+//            for (Component.Pin pin : comp.getPins())
+//                if (wire.inside(pin.getX(), pin.getY()))
+//                    pin.connect(wire);
+//
+//        wires.add(wire);
     }
     public void del(Wire wire) {
-        // disconnect wire from node
-        Node node = wire.getNode();
-        node.delWire(wire);
-
-        // disconnect component from node (previously connected by this wire)
-        for (Component comp : node.getComponents())
-            comp.disconnect(wire);
-    }
-    public void del(engine.connectivity.Wire wire) {
-
+//        // disconnect wire from node
+//        Node node = wire.getNode();
+//        node.delWire(wire);
+//
+//        // disconnect component from node (previously connected by this wire)
+//        for (Component comp : node.getComponents())
+//            comp.disconnect(wire);
     }
     public void add(Component comp) {
-        if (comp.isIndependent()) constants.add(comp);
-
-        // check whether 'comp' should be connected to existing nodes (their wires)
-        for (Component.Pin pin : comp.getPins())
-            for (Wire wire : wires)
-                if (wire.inside(pin.getX(), pin.getY())) {
-                    pin.connect(wire);
-                    break;
-                }
-
-        components.add(comp);
-    }
-    public void add(engine.components.Component comp) {
-
+//        if (comp.isIndependent()) constants.add(comp);
+//
+//        // check whether 'comp' should be connected to existing nodes (their wires)
+//        for (Component.Pin pin : comp.getPins())
+//            for (Wire wire : wires)
+//                if (wire.inside(pin.getX(), pin.getY())) {
+//                    pin.connect(wire);
+//                    break;
+//                }
+//
+//        components.add(comp);
     }
     public void del(Component comp) {
-        components.remove(comp);
-        comp.disconnect();
+//        components.remove(comp);
+//        comp.disconnect();
     }
 
     // simulation logic
@@ -116,7 +110,7 @@ public class Circuit {
             4) Now 'entry point' step is complete - the circuit is unstable and requires stabilization.
          */
         for (Node node : nodes) node.reset(); // reset all nodes
-        for (Component constant : constants) unstable.addAll(constant.simulate()); // 'entry point'
+//        for (Component constant : constants) unstable.addAll(constant.simulate()); // 'entry point'
         for (Node n : unstable)
             if (n.stabilize()) unstable.remove(n); // initial stabilization
 
@@ -134,8 +128,6 @@ public class Circuit {
                 complexity of the simulation algorithm.
          */
         do {
-            renderAll();
-
             // destabilizing pass: propagate changes from unstable nodes to affected components
             ArrayList<Node> tmp = new ArrayList<>(unstable);
             for (Node n : tmp)
@@ -170,10 +162,10 @@ public class Circuit {
         return wires;
     }
     void setComponents(ArrayList<Component> comps) {
-        components = comps;
-        for (Component comp : components)
-            if (comp.isIndependent())
-                constants.add(comp);
+//        components = comps;
+//        for (Component comp : components)
+//            if (comp.isIndependent())
+//                constants.add(comp);
     }
     void setNodes(ArrayList<Node> nodes) {
         this.nodes = nodes;
@@ -186,6 +178,19 @@ public class Circuit {
     }
     void setName(String name) {
         this.name = name;
+    }
+
+    public Element writeCircuitToXML(Document doc) {
+        Element c = doc.createElement("circuit");
+        c.setAttribute("name", name);
+
+        for (Component comp : components)
+            c.appendChild(comp.writeXML(doc));
+
+        for (Wire wire : wires)
+            c.appendChild(wire.writeXML(doc));
+
+        return c;
     }
 
     // grid

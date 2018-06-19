@@ -1,18 +1,19 @@
 package engine.connectivity;
 
-import engine.Circuit;
+import engine.LogicLevel;
 import gui.control.ControlMain;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.effect.Bloom;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import java.util.ArrayList;
 
-public class Wire {
+public class Wire implements Connectible {
 
     /* Wire is a polyline (made of line segments - WireLines) that connects two points.
     It is important that polyline is continuous and must not have branches. When a
@@ -38,21 +39,27 @@ public class Wire {
     private WireLine lineH, lineV;
     private boolean isFirstH;
 
-    private Pane parent;
-    private Circuit circuit;
+    private ControlMain control;
     private ArrayList<WireLine> lines;
     private boolean isTotalSelect;
 
-    public Wire(Pane parent, IntegerProperty mouseX, IntegerProperty mouseY) {
-        this.parent = parent;
+    public Wire(ControlMain control) {
+        this.control = control;
+        IntegerProperty mouseX = control.getMouseX();
+        IntegerProperty mouseY = control.getMouseY();
         IntegerProperty x0 = new SimpleIntegerProperty(mouseX.get());
         IntegerProperty y0 = new SimpleIntegerProperty(mouseY.get());
-        lineH = new WireLine(parent, x0, y0, mouseX, y0);
-        lineV = new WireLine(parent, mouseX, y0, mouseX, mouseY);
+
+        lineH = new WireLine(x0, y0, mouseX, y0);
+        lineV = new WireLine(mouseX, y0, mouseX, mouseY);
         isFirstH = true;
     }
-    public Wire(ArrayList<WireLine> lines) { // create a wire in main mode
+    public Wire(ControlMain control, ArrayList<WireLine> lines) { // create a wire in main mode
+        this.control = control;
         this.lines = lines;
+    }
+    public Wire(ControlMain control, Element w) {
+        this.control = control;
     }
 
     // layout mode only
@@ -71,15 +78,15 @@ public class Wire {
         lineV.startXProperty().bind(x);
         lineV.endXProperty().bind(x);
     }
-    public void confirm(Circuit circuit) { // enter main mode
+    public void confirm() { // enter main mode
         lines = new ArrayList<>();
-        this.circuit = circuit;
         lineH.enterMainMode();
         lineV.enterMainMode();
         lineH.connect(lineV);
     }
     public void delete() {
-        parent.getChildren().removeAll(lineH, lineV);
+        control.getParent().getChildren().removeAll(lineH, lineV);
+        control.getCircuit().del(this);
     }
 
     // main mode only
@@ -89,7 +96,7 @@ public class Wire {
     }
     private void removeSegment(WireLine seg) {
         if (isTotalSelect) // remove the whole wire from the circuit
-            circuit.del(this);
+            control.getCircuit().del(this);
         else { // remove only one segment
             if (seg.isInTheMiddle()) split(seg);
             lines.remove(seg);
@@ -108,7 +115,7 @@ public class Wire {
         findBranch(seed, seed.getNextSegment(), branch);
 
         lines.removeAll(branch); // remove the branch from this wire
-        circuit.add(new Wire(branch)); // but create new wire from the branch
+        control.getCircuit().add(new Wire(control, branch)); // but create new wire from the branch
     }
     private static void findBranch(WireLine prev, WireLine curr, ArrayList<WireLine> dstList) {
         dstList.add(curr);
@@ -116,20 +123,51 @@ public class Wire {
             findBranch(curr, curr.getNextSegment(), dstList);
     }
 
+    @Override
+    public void connect(Connectible con) {
+
+    }
+
+    @Override
+    public void disconnect(Connectible con) {
+
+    }
+
+    @Override
+    public void disconnect() {
+
+    }
+
+    @Override
+    public LogicLevel sig() {
+        return null;
+    }
+
+    @Override
+    public void sendSig(LogicLevel signal) {
+
+    }
+
+    // xml info
+    public Element writeXML(Document doc) {
+        Element w = doc.createElement("wire");
+        return w;
+    }
+
     private class WireLine extends Line implements Connectible {
 
         private WireLine seg1, seg2;
         private Connectible c1, c2;
 
-        private WireLine(Pane parent, IntegerProperty x0, IntegerProperty y0, IntegerProperty x1, IntegerProperty y1) {
+        private WireLine(IntegerProperty x0, IntegerProperty y0, IntegerProperty x1, IntegerProperty y1) {
             super();
             startXProperty().bind(x0);
             startYProperty().bind(y0);
             endXProperty().bind(x1);
             endYProperty().bind(y1);
             setOpacity(0.4);
-            setStrokeWidth(ControlMain.LINE_WIDTH);
-            parent.getChildren().add(this);
+            setStrokeWidth(0.1);
+            control.getParent().getChildren().add(this);
         }
 
         private void enterMainMode() {
@@ -185,6 +223,14 @@ public class Wire {
             c1 = null;
             c2 = null;
         }
+
+        @Override public LogicLevel sig() {
+            return null;
+        }
+        @Override public void sendSig(LogicLevel signal) {
+
+        }
+
         private boolean hasNextSegment(WireLine exceptFromThis) {
             if (seg1 == exceptFromThis) {
                 return seg2 != null;

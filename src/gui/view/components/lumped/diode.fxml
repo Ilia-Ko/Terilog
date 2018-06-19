@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--suppress ALL -->
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.shape.Polygon?>
+<?import java.lang.*?>
+<Pane xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml">
+
+    <!--anode-->
+    <Line stroke="black" strokeWidth="0.1" startX="0" startY="1" endX="1" endY="1"/>
+    <Polygon fill="black">
+        <points>
+            <Double fx:value="1"/> <Double fx:value="0"/>
+            <Double fx:value="1"/> <Double fx:value="2"/>
+            <Double fx:value="2"/> <Double fx:value="1"/>
+        </points>
+    </Polygon>
+
+    <!--cathode-->
+    <Line stroke="black" strokeWidth="0.1" startX="3" startY="0" endX="3" endY="2"/>
+    <Line stroke="black" strokeWidth="0.1" startX="3" startY="1" endX="4" endY="1"/>
+
+</Pane>

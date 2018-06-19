@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--suppress ALL -->
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.Line?>
+<Pane xmlns="http://javafx.com/javafx">
+
+    <!--wires-->
+    <Line stroke="black" strokeWidth="0.1" startX="0" startY="1" endX="0.5" endY="1"/>
+    <Line stroke="black" strokeWidth="0.1" startX="1" startY="0" endX="1" endY="0.5"/>
+    <Line stroke="black" strokeWidth="0.1" startX="1.5" startY="1" endX="2" endY="1"/>
+
+    <!--body-->
+    <Circle stroke="black" strokeWidth="0.1" fill="gray" centerX="1" centerY="1" radius="0.5"/>
+
+</Pane>

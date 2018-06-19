@@ -1,17 +1,17 @@
 package gui.control;
 
 import engine.Circuit;
-import engine.Component;
 import engine.TerilogIO;
+import engine.components.Component;
+import engine.components.lumped.Diode;
+import engine.components.lumped.Indicator;
+import engine.components.lumped.Reconciliator;
+import engine.components.lumped.Voltage;
+import engine.components.mosfets.HardN;
+import engine.components.mosfets.HardP;
+import engine.components.mosfets.SoftN;
+import engine.components.mosfets.SoftP;
 import engine.connectivity.Wire;
-import engine.lumped.Diode;
-import engine.lumped.Indicator;
-import engine.lumped.Reconciliator;
-import engine.lumped.Voltage;
-import engine.transistors.HardN;
-import engine.transistors.HardP;
-import engine.transistors.SoftN;
-import engine.transistors.SoftP;
 import gui.Main;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
@@ -24,8 +24,14 @@ import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.*;
-import javafx.scene.input.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -35,6 +41,8 @@ import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -47,9 +55,9 @@ public class ControlMain {
 
     // dimensions
     private static final double GRID_PERIOD = 0.01; // relative to screen width
-    public  static final double GRID_POINT_RADIUS = 1.0 / 18.0; // in periods
+    private static final double GRID_POINT_RADIUS = 1.0 / 18.0; // in periods
     private static final double GRID_HOVER_RADIUS = 0.5; // in periods
-    public  static final double LINE_WIDTH = 1.0 / 12.0; // in periods
+    private static final double LINE_WIDTH = 1.0 / 12.0; // in periods
     private static final double GRID_PANE_GAP = 0.01;
     // input bounds
     private static final double MIN_GRID_PERIOD = 1.0 / 6.0; // relative to period
@@ -82,7 +90,6 @@ public class ControlMain {
     private IntegerProperty mouseX, mouseY;
     private boolean holdingWire, holdingComp;
     private Wire flyWire;
-    private Component flyComp;
     private engine.components.Component flyComp1;
 
     // initialization
@@ -136,7 +143,7 @@ public class ControlMain {
         // circuit logic
         circuit = new Circuit(this);
         try {
-            ioSystem = new TerilogIO(circuit);
+            ioSystem = new TerilogIO(this);
         } catch (ParserConfigurationException | TransformerConfigurationException e) {
             e.printStackTrace();
             ioSystem = null;
@@ -164,39 +171,6 @@ public class ControlMain {
         // finish rendering
         gc.restore();
     }
-    public ContextMenu makeContextMenuFor(Component comp) {
-        // move
-        MenuItem itemMove = new MenuItem("Move");
-        itemMove.setAccelerator(KeyCombination.valueOf("M"));
-        itemMove.setOnAction(event -> moveComp(comp));
-
-        // delete
-        MenuItem itemDel = new MenuItem("Remove");
-        itemDel.setAccelerator(KeyCombination.valueOf("Delete"));
-        itemDel.setOnAction(event -> deleteComp(comp));
-
-        // rotate CW
-        MenuItem itemRotCW = new MenuItem("Rotate right (CW)");
-        itemRotCW.setAccelerator(KeyCombination.valueOf("R"));
-        itemRotCW.setOnAction(event -> comp.rotateCW());
-
-        // rotate CCW
-        MenuItem itemRotCCW = new MenuItem("Rotate left (CCW)");
-        itemRotCCW.setAccelerator(KeyCombination.valueOf("L"));
-        itemRotCCW.setOnAction(event -> comp.rotateCCW());
-
-        // mirror horizontally
-        MenuItem itemMirrorH = new MenuItem("Mirror horizontally");
-        itemMirrorH.setAccelerator(KeyCombination.valueOf("X"));
-        itemMirrorH.setOnAction(event -> comp.mirrorHorizontal());
-
-        // mirror vertically
-        MenuItem itemMirrorV = new MenuItem("Mirror vertically");
-        itemMirrorV.setAccelerator(KeyCombination.valueOf("Y"));
-        itemMirrorV.setOnAction(event -> comp.mirrorVertical());
-
-        return new ContextMenu(itemMove, itemDel, itemRotCW, itemRotCCW, itemMirrorH, itemMirrorV);
-    }
 
     // some actions
     private void onGlobalMouseMoved(MouseEvent mouse) {
@@ -216,10 +190,10 @@ public class ControlMain {
         if (mouse.getButton() == MouseButton.PRIMARY) {
             // insertion logic
             if (holdingWire) {
-                finishWireInsertion();
+                flyWire.confirm();
                 holdingWire = false;
             } else if (holdingComp) {
-                flyComp1.confirm(circuit);
+                flyComp1.confirm();
                 holdingComp = false;
             }
 
@@ -237,33 +211,32 @@ public class ControlMain {
             flyWire.flip();
             key.consume(); // prevent ScrollPane from receiving space key
         }
-        if (holdingComp) componentKeyPressed(flyComp, code);
-    }
-    public void componentKeyPressed(Component comp, KeyCode code) {
-        switch (code) {
-            case INSERT:
-                moveComp(comp);
-                break;
-            case DELETE:
-                deleteComp(comp);
-                break;
-            case CLOSE_BRACKET:
-                flyComp1.rotateCW();
-                break;
-            case OPEN_BRACKET:
-                flyComp1.rotateCCW();
-                break;
-            case QUOTE:
-                flyComp1.mirrorX();
-                break;
-            case BACK_SLASH:
-                flyComp1.mirrorY();
-                break;
+        if (holdingComp) {
+            switch (code) {
+                case INSERT:
+                    moveComp(flyComp1);
+                    break;
+                case DELETE:
+                    deleteComp(flyComp1);
+                    break;
+                case CLOSE_BRACKET:
+                    flyComp1.rotateCW();
+                    break;
+                case OPEN_BRACKET:
+                    flyComp1.rotateCCW();
+                    break;
+                case QUOTE:
+                    flyComp1.mirrorX();
+                    break;
+                case BACK_SLASH:
+                    flyComp1.mirrorY();
+                    break;
+            }
         }
     }
     private void moveComp(Component comp) {
         deleteComp(comp);
-        flyComp1 = new engine.components.Component(parent, mouseX, mouseY);
+        flyComp1 = new HardN(this);
     }
     private void deleteComp(Component comp) {
         flyComp1.delete();
@@ -286,14 +259,6 @@ public class ControlMain {
 
 
         holdingComp = true;
-    }
-    private void finishWireInsertion() {
-//        flyWire.setGlobalAlpha(OPACITY_NORMAL);
-//        flyWire.render();
-//        circuit.add(flyWire);
-        flyWire.confirm(circuit);
-        circuit.add(flyWire);
-        holdingWire = false;
     }
     private void breakInsertion() {
         if (holdingComp) {
@@ -367,48 +332,47 @@ public class ControlMain {
     // menu.add
     @FXML private void menuHardN() {
         breakInsertion();
-        flyComp = new HardN();
-        flyComp1 = new engine.components.Component(parent, mouseX, mouseY);
-        beginCompInsertion();
+        flyComp1 = new HardN(this);
+        holdingComp = true;
     }
     @FXML private void menuHardP() {
         breakInsertion();
-        flyComp = new HardP();
-        beginCompInsertion();
+        flyComp1 = new HardP(this);
+        holdingComp = true;
     }
     @FXML private void menuSoftN() {
         breakInsertion();
-        flyComp = new SoftN();
-        beginCompInsertion();
+        flyComp1 = new SoftN(this);
+        holdingComp = true;
     }
     @FXML private void menuSoftP() {
         breakInsertion();
-        flyComp = new SoftP();
-        beginCompInsertion();
+        flyComp1 = new SoftP(this);
+        holdingComp = true;
     }
     @FXML private void menuDiode() {
         breakInsertion();
-        flyComp = new Diode();
-        beginCompInsertion();
+        flyComp1 = new Diode(this);
+        holdingComp = true;
     }
     @FXML private void menuReconciliator() {
         breakInsertion();
-        flyComp = new Reconciliator();
+        flyComp1 = new Reconciliator(this);
         beginCompInsertion();
     }
     @FXML private void menuVoltage() {
         breakInsertion();
-        flyComp = new Voltage();
-        beginCompInsertion();
+        flyComp1 = new Voltage(this);
+        holdingComp = true;
     }
     @FXML private void menuIndicator() {
         breakInsertion();
-        flyComp = new Indicator();
+        flyComp1 = new Indicator(this);
         beginCompInsertion();
     }
     @FXML private void menuWire() {
         breakInsertion();
-        flyWire = new Wire(parent, mouseX, mouseY);
+        flyWire = new Wire(this);
         holdingWire = true;
     }
 
@@ -426,7 +390,7 @@ public class ControlMain {
 
     // menu.grid
     @FXML private void menuGrid() {
-        FXMLLoader loader = new FXMLLoader(Main.class.getResource("view/dialog-grid.fxml"));
+        FXMLLoader loader = new FXMLLoader(Main.class.getResource("view/grid.fxml"));
         try {
             // init gui
             GridPane root = loader.load();
@@ -486,7 +450,30 @@ public class ControlMain {
         renderField();
     }
 
-    // utilities
+    // misc
+    public Pane getParent() {
+        return parent;
+    }
+    public Circuit getCircuit() {
+        return circuit;
+    }
+    public void setCircuit(Circuit circuit) {
+        this.circuit = circuit;
+    }
+    public IntegerProperty getMouseX() {
+        return mouseX;
+    }
+    public IntegerProperty getMouseY() {
+        return mouseY;
+    }
+    public Element writeGridToXML(Document doc) {
+        Element g = doc.createElement("grid");
+        return g;
+    }
+    public void readGridFromXML(Element g) {
+
+    }
+
     private void updateSavedFile() {
         try {
             ioSystem.saveTLG(lastSave);
