@@ -23,7 +23,7 @@
                 <MenuItem text="Soft P" accelerator="Shift+P" onAction="#menuSoftP"/>
                 <SeparatorMenuItem/>
                 <MenuItem text="_Diode" accelerator="D" onAction="#menuDiode"/>
-                <MenuItem text="_Reconciliator" accelerator="Ctrl+R" onAction="#menuReconciliator"/>
+                <MenuItem text="_Reconciliator" accelerator="R" onAction="#menuReconciliator"/>
                 <SeparatorMenuItem/>
                 <MenuItem text="_Indicator" accelerator="I" onAction="#menuIndicator"/>
                 <MenuItem text="_Voltage" accelerator="V" onAction="#menuVoltage"/>
@@ -48,7 +48,7 @@
     </HBox>
     <ScrollPane fx:id="scroll" pannable="true" vbarPolicy="NEVER" hbarPolicy="NEVER">
 
-        <StackPane fx:id="stack" alignment="TOP_LEFT">
+        <StackPane fx:id="stack">
 
             <Canvas fx:id="field"/>
             <Pane fx:id="parent"/>

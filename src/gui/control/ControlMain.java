@@ -20,6 +20,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -53,16 +54,6 @@ import java.io.IOException;
 
 public class ControlMain {
 
-    // dimensions
-    private static final double GRID_PERIOD = 0.01; // relative to screen width
-    private static final double GRID_POINT_RADIUS = 1.0 / 18.0; // in periods
-    private static final double GRID_HOVER_RADIUS = 0.5; // in periods
-    private static final double LINE_WIDTH = 1.0 / 12.0; // in periods
-    private static final double GRID_PANE_GAP = 0.01;
-    // input bounds
-    private static final double MIN_GRID_PERIOD = 1.0 / 6.0; // relative to period
-    private static final double MAX_GRID_PERIOD = 1.0 * 144.0; // relative to period
-
     // some gui
     private Stage stage;
     @FXML private ScrollPane scroll;
@@ -78,7 +69,7 @@ public class ControlMain {
     private DoubleProperty p; // in pixels
     private IntegerProperty w, h; // in periods
     private double minPeriod, maxPeriod; // in pixels
-    private double defSpacing;
+    private double defSpacing; // in pixels
     private String defFont;
 
     // circuit logic
@@ -90,7 +81,7 @@ public class ControlMain {
     private IntegerProperty mouseX, mouseY;
     private boolean holdingWire, holdingComp;
     private Wire flyWire;
-    private engine.components.Component flyComp1;
+    private Component flyComp;
 
     // initialization
     public void initialSetup(Stage stage, String defFont, double screenWidth, double screenHeight) {
@@ -98,12 +89,12 @@ public class ControlMain {
         this.defFont = defFont;
 
         // dimensions
-        p = new SimpleDoubleProperty(screenWidth * GRID_PERIOD);
+        p = new SimpleDoubleProperty(screenWidth * 0.01);
         w = new SimpleIntegerProperty((int) Math.round(screenWidth / p.get()));
         h = new SimpleIntegerProperty((int) Math.round(screenHeight / p.get()));
-        minPeriod = p.get() * MIN_GRID_PERIOD; if (minPeriod < 1.0) minPeriod = 1.0;
-        maxPeriod = p.get() * MAX_GRID_PERIOD;
-        defSpacing = screenWidth * GRID_PANE_GAP;
+        minPeriod = p.get() / 12.0; if (minPeriod < 1.0) minPeriod = 1.0;
+        maxPeriod = p.get() * 12.0;
+        defSpacing = screenWidth * 0.005;
 
         // init events
         mouseX = new SimpleIntegerProperty();
@@ -128,12 +119,14 @@ public class ControlMain {
         parent.getTransforms().add(scale);
         parent.setCursor(Cursor.CROSSHAIR);
         parent.setOnMouseEntered(mouse -> parent.requestFocus());
+        parent.layoutXProperty().bindBidirectional(field.layoutXProperty());
+        parent.layoutYProperty().bindBidirectional(field.layoutYProperty());
 
         // init 'point'
-        Circle point = new Circle(GRID_HOVER_RADIUS);
+        Circle point = new Circle(0.5);
         point.setFill(Color.TRANSPARENT);
         point.setStroke(Color.DARKRED);
-        point.setStrokeWidth(LINE_WIDTH);
+        point.setStrokeWidth(0.1);
         point.setMouseTransparent(true);
         point.visibleProperty().bind(parent.hoverProperty());
         point.centerXProperty().bind(mouseX);
@@ -155,14 +148,14 @@ public class ControlMain {
         GraphicsContext gc = field.getGraphicsContext2D();
         gc.save();
         gc.scale(p.doubleValue(), p.doubleValue());
-        gc.setLineWidth(LINE_WIDTH);
+        gc.setLineWidth(0.1);
 
         // clear background
         gc.setFill(Color.LIGHTCYAN);
         gc.fillRect(0.0, 0.0, w.doubleValue(), h.doubleValue());
 
         // draw grid points
-        double a = GRID_POINT_RADIUS;
+        double a = 1.0 / 18.0;
         gc.setFill(Color.BLACK);
         for (int i = 0; i <= w.get(); i++)
             for (int j = 0; j <= h.get(); j++)
@@ -170,6 +163,17 @@ public class ControlMain {
 
         // finish rendering
         gc.restore();
+    }
+    private Stage initDialog(FXMLLoader loader) throws IOException {
+        GridPane root = loader.load();
+        root.setStyle(defFont);
+        root.setHgap(defSpacing);
+        root.setVgap(defSpacing);
+        root.setPadding(new Insets(defSpacing, defSpacing, defSpacing, defSpacing));
+        Scene scene = new Scene(root);
+        Stage dialog = new Stage(StageStyle.UNDECORATED);
+        dialog.setScene(scene);
+        return dialog;
     }
 
     // some actions
@@ -183,8 +187,8 @@ public class ControlMain {
         // update mouse position label
         lblPoint.setText(String.format("%3d : %3d ", mx, my));
 
-        // stop event (except for panning)
-        if (mouse.getButton() != MouseButton.SECONDARY) mouse.consume();
+        // stop panning by left-button drag
+        if (mouse.isDragDetect() && mouse.getButton() == MouseButton.PRIMARY) mouse.consume();
     }
     private void onGlobalMouseClicked(MouseEvent mouse) {
         if (mouse.getButton() == MouseButton.PRIMARY) {
@@ -193,12 +197,12 @@ public class ControlMain {
                 flyWire.confirm();
                 holdingWire = false;
             } else if (holdingComp) {
-                flyComp1.confirm();
+                flyComp.confirm();
                 holdingComp = false;
             }
 
-            // prevent dragging with primary button (but ScrollPane is still pannable with secondary button)
-            mouse.consume();
+//            // prevent dragging with primary button (but ScrollPane is still pannable with secondary button)
+//            mouse.consume();
         }
     }
     private void onGlobalKeyPressed(KeyEvent key) {
@@ -214,55 +218,37 @@ public class ControlMain {
         if (holdingComp) {
             switch (code) {
                 case INSERT:
-                    moveComp(flyComp1);
+                    moveComp(flyComp);
                     break;
                 case DELETE:
-                    deleteComp(flyComp1);
+                    deleteComp(flyComp);
                     break;
                 case CLOSE_BRACKET:
-                    flyComp1.rotateCW();
+                    flyComp.rotateCW();
                     break;
                 case OPEN_BRACKET:
-                    flyComp1.rotateCCW();
+                    flyComp.rotateCCW();
                     break;
                 case QUOTE:
-                    flyComp1.mirrorX();
+                    flyComp.mirrorX();
                     break;
                 case BACK_SLASH:
-                    flyComp1.mirrorY();
+                    flyComp.mirrorY();
                     break;
             }
         }
     }
     private void moveComp(Component comp) {
         deleteComp(comp);
-        flyComp1 = new HardN(this);
+        flyComp = new HardN(this);
     }
     private void deleteComp(Component comp) {
-        flyComp1.delete();
+        flyComp.delete();
         circuit.del(comp);
-    }
-
-    // insertion
-    private void beginCompInsertion() {
-//        // setup basis
-//        Canvas basis = flyComp.getBasis();
-//        parent.getChildren().add(basis);
-//        basis.setMouseTransparent(true);
-//        basis.setCursor(Cursor.CLOSED_HAND);
-//
-//        // initialize component
-//        flyComp.setGlobalAlpha(OPACITY_FLYING);
-//        flyComp.setGridPeriod(p.doubleValue());
-//        flyComp.setPos(mouseX.get(), mouseY.get());
-//        flyComp.render();
-
-
-        holdingComp = true;
     }
     private void breakInsertion() {
         if (holdingComp) {
-            flyComp1.delete();
+            flyComp.delete();
             holdingComp = false;
         } else if (holdingWire) {
             flyWire.delete();
@@ -332,43 +318,43 @@ public class ControlMain {
     // menu.add
     @FXML private void menuHardN() {
         breakInsertion();
-        flyComp1 = new HardN(this);
+        flyComp = new HardN(this);
         holdingComp = true;
     }
     @FXML private void menuHardP() {
         breakInsertion();
-        flyComp1 = new HardP(this);
+        flyComp = new HardP(this);
         holdingComp = true;
     }
     @FXML private void menuSoftN() {
         breakInsertion();
-        flyComp1 = new SoftN(this);
+        flyComp = new SoftN(this);
         holdingComp = true;
     }
     @FXML private void menuSoftP() {
         breakInsertion();
-        flyComp1 = new SoftP(this);
+        flyComp = new SoftP(this);
         holdingComp = true;
     }
     @FXML private void menuDiode() {
         breakInsertion();
-        flyComp1 = new Diode(this);
+        flyComp = new Diode(this);
         holdingComp = true;
     }
     @FXML private void menuReconciliator() {
         breakInsertion();
-        flyComp1 = new Reconciliator(this);
-        beginCompInsertion();
+        flyComp = new Reconciliator(this);
+        holdingComp = true;
     }
     @FXML private void menuVoltage() {
         breakInsertion();
-        flyComp1 = new Voltage(this);
+        flyComp = new Voltage(this);
         holdingComp = true;
     }
     @FXML private void menuIndicator() {
         breakInsertion();
-        flyComp1 = new Indicator(this);
-        beginCompInsertion();
+        flyComp = new Indicator(this);
+        holdingComp = true;
     }
     @FXML private void menuWire() {
         breakInsertion();
@@ -386,26 +372,24 @@ public class ControlMain {
             menuPlay.setText("Stop");
         }
     }
-    @FXML private void menuSettings() {}
+    @FXML private void menuSettings() {
+        try {
+            FXMLLoader loader = new FXMLLoader(Main.class.getResource("view/dialogs/settings.fxml"));
+            Stage dialog = initDialog(loader);
+            ((ControlSettings) loader.getController()).initialSetup(dialog, this);
+            dialog.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Failed to show Simulation Settings dialog.");
+        }
+    }
 
     // menu.grid
     @FXML private void menuGrid() {
-        FXMLLoader loader = new FXMLLoader(Main.class.getResource("view/grid.fxml"));
         try {
-            // init gui
-            GridPane root = loader.load();
-            root.setStyle(defFont);
-            root.setHgap(defSpacing);
-            root.setVgap(defSpacing);
-            Scene scene = new Scene(root);
-            Stage dialog = new Stage(StageStyle.UNDECORATED);
-            dialog.setScene(scene);
-
-            // init controller
-            ControlDlgGrid control = loader.getController();
-            control.initialSetup(dialog, this, w.get(), h.get());
-
-            // show
+            FXMLLoader loader = new FXMLLoader(Main.class.getResource("view/dialogs/grid.fxml"));
+            Stage dialog = initDialog(loader);
+            ((ControlGrid) loader.getController()).initialSetup(dialog, this);
             dialog.showAndWait();
         } catch (IOException e) {
             e.printStackTrace();
@@ -434,31 +418,38 @@ public class ControlMain {
     }
 
     // menu.help
-    @FXML private void menuAbout() {}
-    @FXML private void menuCredits() {}
+    @FXML private void menuAbout() {
+        try {
+            FXMLLoader loader = new FXMLLoader(Main.class.getResource("view/dialogs/about.fxml"));
+            Stage dialog = initDialog(loader);
+            ((ControlAbout) loader.getController()).initialSetup(dialog);
+            dialog.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Failed to show About dialog.");
+        }
+    }
+    @FXML private void menuCredits() {
+        try {
+            FXMLLoader loader = new FXMLLoader(Main.class.getResource("view/dialogs/credits.fxml"));
+            Stage dialog = initDialog(loader);
+            ((ControlCredits) loader.getController()).initialSetup(dialog);
+            dialog.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Failed to show Credits dialog.");
+        }
+    }
 
-    // informative
-    public int getGridWidth() {
-        return w.get();
-    }
-    public int getGridHeight() {
-        return h.get();
-    }
-    public void setGridDimensions(int width, int height) {
-        w.setValue(width);
-        h.setValue(height);
-        renderField();
-    }
-
-    // misc
-    public Pane getParent() {
-        return parent;
-    }
+    // getters and setters
     public Circuit getCircuit() {
         return circuit;
     }
     public void setCircuit(Circuit circuit) {
         this.circuit = circuit;
+    }
+    public Pane getParent() {
+        return parent;
     }
     public IntegerProperty getMouseX() {
         return mouseX;
@@ -466,14 +457,18 @@ public class ControlMain {
     public IntegerProperty getMouseY() {
         return mouseY;
     }
-    public Element writeGridToXML(Document doc) {
-        Element g = doc.createElement("grid");
-        return g;
+    public void setFlyComp(Component comp) {
+        flyComp = comp;
+        holdingComp = true;
     }
-    public void readGridFromXML(Element g) {
-
+    IntegerProperty getGridWidth() {
+        return w;
+    }
+    IntegerProperty getGridHeight() {
+        return h;
     }
 
+    // xml info
     private void updateSavedFile() {
         try {
             ioSystem.saveTLG(lastSave);
@@ -486,6 +481,16 @@ public class ControlMain {
             alert.showAndWait();
             lastSave = null;
         }
+    }
+    public Element writeGridToXML(Document doc) {
+        Element g = doc.createElement("grid");
+        g.setAttribute("w", w.toString());
+        g.setAttribute("h", h.toString());
+        return g;
+    }
+    public void readGridFromXML(Element g) {
+        w.setValue(Integer.parseInt(g.getAttribute("w")));
+        h.setValue(Integer.parseInt(g.getAttribute("h")));
     }
 
 }

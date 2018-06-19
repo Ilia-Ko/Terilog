@@ -17,6 +17,9 @@ public abstract class MOSFET extends Component {
     MOSFET(ControlMain control) {
         super(control);
     }
+    MOSFET(ControlMain control, Element data) {
+        super(control, data);
+    }
     @Override protected Pane loadContent() {
         try {
             String location = "view/components/mosfets/" + getAttrClass() + ".fxml";

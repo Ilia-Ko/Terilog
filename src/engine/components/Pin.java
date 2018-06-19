@@ -39,7 +39,7 @@ public class Pin extends Circle implements Connectible {
         connect.disconnect(this);
     }
     @Override public LogicLevel sig() {
-        return connect.sig();
+        return (connect != null) ? connect.sig() : LogicLevel.ZZZ;
     }
 
     // xml info

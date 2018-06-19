@@ -1,6 +1,7 @@
 package gui.control;
 
 import gui.Main;
+import javafx.beans.property.IntegerProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
@@ -8,7 +9,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
-public class ControlDlgGrid {
+public class ControlGrid {
 
     // input bounds
     private static final int MIN_GRID_SIZE = 12;
@@ -20,13 +21,14 @@ public class ControlDlgGrid {
 
     // callback
     private Stage dialog;
-    private ControlMain control;
+    private IntegerProperty width, height;
 
-    void initialSetup(Stage dialog, ControlMain control, int gridW, int gridH) {
+    void initialSetup(Stage dialog, ControlMain control) {
         this.dialog = dialog;
-        this.control = control;
-        txtWidth.setText(Integer.toString(gridW));
-        txtHeight.setText(Integer.toString(gridH));
+        width = control.getGridWidth();
+        height = control.getGridHeight();
+        txtWidth.setText(Integer.toString(width.get()));
+        txtHeight.setText(Integer.toString(height.get()));
     }
 
     // text fields
@@ -52,7 +54,8 @@ public class ControlDlgGrid {
 
             // check bounds
             if (w <= MAX_GRID_SIZE && w >= MIN_GRID_SIZE && h <= MAX_GRID_SIZE && h >= MIN_GRID_SIZE) {
-                control.setGridDimensions(w, h);
+                width.setValue(w);
+                height.setValue(h);
                 dialog.close();
             } else {
                 // report input bounds

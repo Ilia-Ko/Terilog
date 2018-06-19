@@ -32,6 +32,6 @@
     </Polygon>
 
     <!--rounded rectangle-->
-    <Rectangle stroke="darkblue" strokeWidth="0.1" x="0.5" y="0.5" width="3" height="1" arcWidth="0.5" arcHeight="0.5"/>
+    <Rectangle stroke="darkblue" strokeWidth="0.1" fill="transparent" x="0.5" y="0.5" width="3" height="1" arcWidth="0.5" arcHeight="0.5"/>
 
 </Pane>

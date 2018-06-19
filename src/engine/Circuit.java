@@ -1,11 +1,20 @@
 package engine;
 
 import engine.components.Component;
+import engine.components.lumped.Diode;
+import engine.components.lumped.Indicator;
+import engine.components.lumped.Reconciliator;
+import engine.components.lumped.Voltage;
+import engine.components.mosfets.HardN;
+import engine.components.mosfets.HardP;
+import engine.components.mosfets.SoftN;
+import engine.components.mosfets.SoftP;
 import engine.connectivity.Node;
 import engine.connectivity.Wire;
 import gui.control.ControlMain;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import java.util.ArrayList;
 
@@ -16,7 +25,6 @@ public class Circuit {
 
     // construction logic
     private String name;
-    private ControlMain control;
     private ArrayList<Wire> wires;
 
     // simulation logic
@@ -25,20 +33,61 @@ public class Circuit {
     private ArrayList<Node> nodes;
 
     public Circuit(ControlMain control) {
-        // construction logic
         name = DEF_NAME;
-        this.control = control;
-        wires = new ArrayList<>();
-
-        // simulation logic
         isSimRunning = false;
         components = new ArrayList<>();
         constants = new ArrayList<>();
         nodes = new ArrayList<>();
+        wires = new ArrayList<>();
     }
     public Circuit(ControlMain control, Element c) {
-        this.control = control;
-        // TODO: init circuit from xml
+        this(control);
+        name = c.getAttribute("name");
+        NodeList list;
+
+        // create components
+        list = c.getElementsByTagName("comp");
+        if (list != null)
+            for (int i = 0; i < list.getLength(); i++) {
+                Element comp = (Element) list.item(i);
+                String attrClass = comp.getAttribute("class");
+                switch (attrClass) {
+                    case HardN.ATTR_CLASS:
+                        components.add(new HardN(control, comp));
+                        break;
+                    case HardP.ATTR_CLASS:
+                        components.add(new HardP(control, comp));
+                        break;
+                    case SoftN.ATTR_CLASS:
+                        components.add(new SoftN(control, comp));
+                        break;
+                    case SoftP.ATTR_CLASS:
+                        components.add(new SoftP(control, comp));
+                        break;
+                    case Diode.ATTR_CLASS:
+                        components.add(new Diode(control, comp));
+                        break;
+                    case Indicator.ATTR_CLASS:
+                        components.add(new Indicator(control, comp));
+                        break;
+                    case Reconciliator.ATTR_CLASS:
+                        components.add(new Reconciliator(control, comp));
+                        break;
+                    case Voltage.ATTR_CLASS:
+                        Voltage voltage = new Voltage(control, comp);
+                        constants.add(voltage);
+                        components.add(voltage);
+                        break;
+                    default:
+                        System.out.printf("WARNING: unknown component of class %s.\n", attrClass);
+                }
+            }
+
+        // create wires
+        list = c.getElementsByTagName("wire");
+        if (list != null)
+            for (int i = 0; i < list.getLength(); i++)
+                wires.add(new Wire(control, (Element) list.item(i)));
     }
 
     // construction logic
@@ -151,36 +200,8 @@ public class Circuit {
         return isSimRunning;
     }
 
-    // informative
-    ArrayList<Component> getComponents() {
-        return components;
-    }
-    ArrayList<Node> getNodes() {
-        return nodes;
-    }
-    ArrayList<Wire> getWires() {
-        return wires;
-    }
-    void setComponents(ArrayList<Component> comps) {
-//        components = comps;
-//        for (Component comp : components)
-//            if (comp.isIndependent())
-//                constants.add(comp);
-    }
-    void setNodes(ArrayList<Node> nodes) {
-        this.nodes = nodes;
-    }
-    void setWires(ArrayList<Wire> wires) {
-        this.wires = wires;
-    }
-    String getName() {
-        return name;
-    }
-    void setName(String name) {
-        this.name = name;
-    }
-
-    public Element writeCircuitToXML(Document doc) {
+    // xml info
+    Element writeCircuitToXML(Document doc) {
         Element c = doc.createElement("circuit");
         c.setAttribute("name", name);
 
@@ -191,17 +212,6 @@ public class Circuit {
             c.appendChild(wire.writeXML(doc));
 
         return c;
-    }
-
-    // grid
-    String getGridWidth() {
-        return Integer.toString(control.getGridWidth());
-    }
-    String getGridHeight() {
-        return Integer.toString(control.getGridHeight());
-    }
-    void setGridDimensions(int w, int h) {
-        control.setGridDimensions(w, h);
     }
 
 }

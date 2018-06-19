@@ -4,24 +4,20 @@ import engine.LogicLevel;
 import engine.components.Component;
 import engine.components.Pin;
 import gui.control.ControlMain;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.CycleMethod;
-import javafx.scene.paint.RadialGradient;
-import javafx.scene.paint.Stop;
 import javafx.scene.shape.Rectangle;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 public class Voltage extends Component {
+
+    public static final String ATTR_CLASS = "voltage";
 
     private ObjectProperty<Color> colour;
     private StringProperty text;
@@ -36,20 +32,16 @@ public class Voltage extends Component {
         // init colouring
         Rectangle body = (Rectangle) root.lookup("#body");
         colour = new SimpleObjectProperty<>();
-        colour.addListener((observable, oldValue, newValue) -> {
-            RadialGradient gradient = new RadialGradient(0, 0, 1, 1, 1,
-                    false, CycleMethod.NO_CYCLE,
-                    new Stop(0.0, newValue),
-                    new Stop(0.8, Color.BLACK));
-            body.setFill(gradient);
-        });
+        body.fillProperty().bind(colour);
         colour.setValue(signal.colour());
-        body.strokeProperty().bind(colour);
 
         // init indication
         text = new SimpleStringProperty(String.valueOf(signal.getDigitCharacter()));
         Label value = (Label) root.lookup("#value");
         value.textProperty().bind(text);
+        DoubleProperty size = new SimpleDoubleProperty(2.0);
+        value.layoutXProperty().bind(size.subtract(value.widthProperty()).divide(2.0));
+        value.layoutYProperty().bind(size.subtract(value.heightProperty()).divide(2.0));
     }
     public Voltage(ControlMain control, Element data) {
         super(control, data);
@@ -68,6 +60,7 @@ public class Voltage extends Component {
             items[i].setOnAction(event -> {
                 colour.setValue(lev.colour());
                 text.setValue(String.valueOf(lev.getDigitCharacter()));
+                signal = lev;
             });
         }
 
@@ -95,7 +88,7 @@ public class Voltage extends Component {
         signal = LogicLevel.parseName(comp.getAttribute("sig"));
     }
     @Override protected String getAttrClass() {
-        return "voltage";
+        return ATTR_CLASS;
     }
 
 }

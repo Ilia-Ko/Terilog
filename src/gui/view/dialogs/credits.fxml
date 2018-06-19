@@ -3,6 +3,6 @@
 <?import javafx.scene.layout.AnchorPane?>
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="gui.control.ControlSettings">
+            fx:controller="gui.control.ControlCredits">
 
 </AnchorPane>

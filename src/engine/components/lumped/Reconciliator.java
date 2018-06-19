@@ -8,6 +8,8 @@ import org.w3c.dom.Element;
 
 public class Reconciliator extends Component {
 
+    public static final String ATTR_CLASS = "reconciliator";
+
     private Pin source, pull, drain;
 
     // initialization
@@ -32,7 +34,7 @@ public class Reconciliator extends Component {
 
     // xml info
     @Override protected String getAttrClass() {
-        return "reconciliator";
+        return ATTR_CLASS;
     }
 
 }

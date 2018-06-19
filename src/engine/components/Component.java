@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tooltip;
+import javafx.scene.effect.Bloom;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.Pane;
 import javafx.scene.transform.Rotate;
@@ -35,6 +36,14 @@ public abstract class Component {
         ContextMenu menu = buildContextMenu();
         root.setOnContextMenuRequested(mouse -> menu.show(root, mouse.getScreenX(), mouse.getScreenY()));
 
+        // hover effect
+        root.hoverProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue)
+                root.setEffect(new Bloom(0.7));
+            else
+                root.setEffect(null);
+        });
+
         // layout transforms
         rotate = new Rotate(0, 0, 0);
         scale = new Scale(1, 1, 0, 0);
@@ -61,14 +70,15 @@ public abstract class Component {
         MenuItem itemMove = new MenuItem("Move");
         itemMove.setAccelerator(KeyCombination.valueOf("Insert"));
         itemMove.setOnAction(event -> {
-            delete();
+            control.getCircuit().del(this);
             begin();
+            control.setFlyComp(this);
         });
 
         // delete
         MenuItem itemDelete = new MenuItem("Remove");
         itemDelete.setAccelerator(KeyCombination.valueOf("Delete"));
-        itemMove.setOnAction(event -> delete());
+        itemDelete.setOnAction(event -> delete());
 
         // rotate clockwise
         MenuItem itemRotCW = new MenuItem("Rotate right (CW)");
@@ -105,7 +115,7 @@ public abstract class Component {
 
         root.setOpacity(1.0);
         root.setOnMouseEntered(mouse -> root.requestFocus());
-        Tooltip.install(root, new Tooltip(String.format("%s - %s", getAttrClass(), root.getId())));
+        Tooltip.install(root, new Tooltip(String.format("%s #%s", getAttrClass(), root.getId())));
 
         control.getCircuit().add(this);
     }

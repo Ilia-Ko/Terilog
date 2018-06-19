@@ -5,7 +5,7 @@
 <?import javafx.scene.shape.Rectangle?>
 <Pane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
 
-    <Rectangle fx:id="body" strokeWidth="0.1" width="2" height="2" arcHeight="0.5" arcWidth="0.5"/>
-    <Label fx:id="value" prefWidth="2" prefHeight="2" alignment="BASELINE_CENTER" textAlignment="CENTER"/>
+    <Rectangle fx:id="body" width="2" height="2" arcHeight="0.5" arcWidth="0.5"/>
+    <Label fx:id="value" textFill="white" style="-fx-font-size: 1.5px" textAlignment="CENTER"/>
 
 </Pane>

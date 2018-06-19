@@ -8,6 +8,8 @@ import org.w3c.dom.Element;
 
 public class Diode extends Component {
 
+    public static final String ATTR_CLASS = "diode";
+
     private Pin anode, cathode;
 
     // initialization
@@ -31,7 +33,7 @@ public class Diode extends Component {
 
     // xml info
     @Override protected String getAttrClass() {
-        return "diode";
+        return ATTR_CLASS;
     }
 
 }
