@@ -1,5 +1,6 @@
 package engine.components.lumped;
 
+import engine.LogicLevel;
 import engine.components.Component;
 import engine.components.Pin;
 import gui.control.ControlMain;
@@ -29,7 +30,12 @@ public class Reconciliator extends Component {
 
     // simulation
     @Override public void simulate() {
-        // TODO: implement simulation logic
+        LogicLevel s = source.query();
+
+        if (s.isUnstable())
+            drain.announce(pull.query());
+        else
+            drain.announce(s);
     }
 
     // xml info

@@ -73,8 +73,11 @@ public class Voltage extends Component {
     }
 
     // simulation
+    @Override public boolean isEntryPoint() {
+        return true;
+    }
     @Override public void simulate() {
-        drain.sendSig(signal);
+        drain.announce(signal);
     }
 
     // xml info

@@ -36,11 +36,11 @@ public class Indicator extends Component {
                     new Stop(1.0, Color.GRAY));
             body.setFill(gradient);
         });
-        colour.setValue(source.sig().colour());
+        colour.setValue(LogicLevel.ZZZ.colour());
         body.strokeProperty().bind(colour);
 
         // init indication
-        text = new SimpleStringProperty(String.valueOf(source.sig().getDigitCharacter()));
+        text = new SimpleStringProperty(String.valueOf(LogicLevel.ZZZ.getDigitCharacter()));
         Label value = (Label) root.lookup("#value");
         value.textProperty().bind(text);
         DoubleProperty size = new SimpleDoubleProperty(2.0);
@@ -58,7 +58,7 @@ public class Indicator extends Component {
 
     // simulation
     @Override public void simulate() {
-        LogicLevel signal = source.sig();
+        LogicLevel signal = source.query();
         colour.setValue(signal.colour());
         text.setValue(String.valueOf(signal.getDigitCharacter()));
     }

@@ -10,10 +10,11 @@ import org.w3c.dom.Element;
 
 import java.io.IOException;
 
-public abstract class MOSFET extends Component {
+abstract class MOSFET extends Component {
 
-    protected Pin source, gate, drain;
+    Pin source, gate, drain;
 
+    // initialization
     MOSFET(ControlMain control) {
         super(control);
     }
@@ -34,11 +35,6 @@ public abstract class MOSFET extends Component {
         source = new Pin(pane, "source", 0, 2);
         gate = new Pin(pane, "gate", 2, 0);
         drain = new Pin(pane, "drain", 4, 2);
-    }
-
-    @Override protected void readXML(Element comp) {
-        super.readXML(comp);
-        // TODO: read pins
     }
 
 }

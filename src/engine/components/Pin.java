@@ -1,17 +1,25 @@
 package engine.components;
 
 import engine.LogicLevel;
-import engine.connectivity.Connectible;
+import engine.connectivity.Connection;
+import engine.connectivity.Node;
+import engine.connectivity.SignalTransfer;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 
-public class Pin extends Circle implements Connectible {
+public class Pin extends Circle implements SignalTransfer {
 
     private String name;
-    private Connectible connect;
+    private Connection connect;
+    private boolean isConnected;
+    private boolean isNodified;
+    private Node node;
 
     public Pin(Pane parent, String name, int xPosInOwner, int yPosInOwner) {
         this.name = name;
+        isConnected = false;
+        isNodified = false;
+
         setCenterX(xPosInOwner);
         setCenterY(yPosInOwner);
         setRadius(0.3);
@@ -20,26 +28,27 @@ public class Pin extends Circle implements Connectible {
     }
 
     // simulation
-    @Override public void sendSig(LogicLevel signal) {
-        connect.sendSig(signal);
+    @Override public void announce(LogicLevel signal) {
+        if (isConnected) node.announce(signal);
         setFill(signal.colour());
+    }
+    @Override public LogicLevel query() {
+        if (isNodified) return node.query();
+        else return LogicLevel.ZZZ;
     }
 
     // connectivity
-    @Override public void connect(Connectible con) {
-        connect = con;
+    @Override public void connectTo(Connection con) {
+        if (isConnected && con.placeMatches(connect)) connect = con;
     }
-    @Override public void disconnect(Connectible con) {
-        if (connect == con) {
+    @Override public void disconnectFrom(Connection con) {
+        if (isConnected && con.placeMatches(connect)) {
             connect = null;
-            con.disconnect(this);
+            isConnected = false;
         }
     }
-    @Override public void disconnect() {
-        connect.disconnect(this);
-    }
-    @Override public LogicLevel sig() {
-        return (connect != null) ? connect.sig() : LogicLevel.ZZZ;
+    @Override public void totalDisconnect() {
+        if (isConnected) connect.terminate();
     }
 
     // xml info

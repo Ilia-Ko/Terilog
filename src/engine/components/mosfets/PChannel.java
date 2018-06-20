@@ -1,11 +1,12 @@
 package engine.components.mosfets;
 
+import engine.LogicLevel;
 import gui.control.ControlMain;
 import org.w3c.dom.Element;
 
-public abstract class PChannel extends MOSFET {
+abstract class PChannel extends MOSFET {
 
-    private int vgsth;
+    private final int vgsth;
 
     PChannel(ControlMain control, int vgsth) {
         super(control);
@@ -18,7 +19,17 @@ public abstract class PChannel extends MOSFET {
 
     @Override
     public void simulate() {
-        // TODO: implement simulation logic
+        LogicLevel g = gate.query();
+        LogicLevel s = source.query();
+
+        if (s == LogicLevel.ZZZ)
+            drain.announce(LogicLevel.ZZZ);
+        else if (s == LogicLevel.ERR || g.isUnstable())
+            drain.announce(LogicLevel.ERR);
+        else if (g.volts() - s.volts() <= vgsth)
+            drain.announce(s);
+        else
+            drain.announce(LogicLevel.ZZZ);
     }
 
 }

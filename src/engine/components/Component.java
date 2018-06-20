@@ -139,13 +139,15 @@ public abstract class Component {
     }
 
     // simulation
+    public boolean isEntryPoint() {
+        return false;
+    }
     public abstract void simulate();
 
     // xml info
     public Element writeXML(Document doc) {
         Element comp = doc.createElement("comp");
         comp.setAttribute("class", getAttrClass());
-        comp.setAttribute("id", root.getId());
         comp.setAttribute("x", asInt(root.layoutXProperty()));
         comp.setAttribute("y", asInt(root.layoutYProperty()));
         comp.setAttribute("rot", asInt(root.rotateProperty()));
@@ -154,7 +156,6 @@ public abstract class Component {
         return comp;
     }
     protected void readXML(Element comp) {
-        root.setId(comp.getAttribute("id"));
         root.setLayoutX(getDouble(comp, "x"));
         root.setLayoutY(getDouble(comp, "y"));
         root.setRotate(getDouble(comp, "rot"));

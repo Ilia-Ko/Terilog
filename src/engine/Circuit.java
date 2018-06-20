@@ -23,25 +23,21 @@ public class Circuit {
     private static final String DEF_NAME = "untitled";
     private static final int SIM_DEPTH = 100;
 
-    // construction logic
     private String name;
+    private ArrayList<Component> components, entries;
     private ArrayList<Wire> wires;
+    private ArrayList<Node> nodes; // simulation only
+    private boolean isSimRunning; // flag for threading
 
-    // simulation logic
-    private boolean isSimRunning;
-    private ArrayList<Component> components, constants;
-    private ArrayList<Node> nodes;
-
-    public Circuit(ControlMain control) {
+    public Circuit() {
         name = DEF_NAME;
         isSimRunning = false;
         components = new ArrayList<>();
-        constants = new ArrayList<>();
-        nodes = new ArrayList<>();
+        entries = new ArrayList<>();
         wires = new ArrayList<>();
     }
     public Circuit(ControlMain control, Element c) {
-        this(control);
+        this();
         name = c.getAttribute("name");
         NodeList list;
 
@@ -75,7 +71,7 @@ public class Circuit {
                         break;
                     case Voltage.ATTR_CLASS:
                         Voltage voltage = new Voltage(control, comp);
-                        constants.add(voltage);
+                        entries.add(voltage);
                         components.add(voltage);
                         break;
                     default:
@@ -90,111 +86,74 @@ public class Circuit {
                 wires.add(new Wire(control, (Element) list.item(i)));
     }
 
-    // construction logic
-    // TODO: establish connection ideology
+    // construction
     public void add(Wire wire) {
-//        // check whether 'w' should be connected to existing wires
-//        boolean isNewNode = true;
-//        for (Wire old : wires)
-//            for (int[] p : wire.getPoints())
-//                if (old.inside(p[0], p[1])) {
-//                    wire.connect(old.getNode());
-//                    isNewNode = false;
-//                    break;
-//                }
-//
-//        // create new node if needed (if 'w' does not participate in any existing ones)
-//        if (isNewNode) {
-//            Node node = new Node();
-//            nodes.add(node);
-//            wire.connect(node);
-//        }
-//
-//        // check whether 'w' should be connected to existing components
-//        for (Component comp : components)
-//            for (Component.Pin pin : comp.getPins())
-//                if (wire.inside(pin.getX(), pin.getY()))
-//                    pin.connect(wire);
-//
-//        wires.add(wire);
+        wires.add(wire);
     }
     public void del(Wire wire) {
-//        // disconnect wire from node
-//        Node node = wire.getNode();
-//        node.delWire(wire);
-//
-//        // disconnect component from node (previously connected by this wire)
-//        for (Component comp : node.getComponents())
-//            comp.disconnect(wire);
+        wires.remove(wire);
     }
     public void add(Component comp) {
-//        if (comp.isIndependent()) constants.add(comp);
-//
-//        // check whether 'comp' should be connected to existing nodes (their wires)
-//        for (Component.Pin pin : comp.getPins())
-//            for (Wire wire : wires)
-//                if (wire.inside(pin.getX(), pin.getY())) {
-//                    pin.connect(wire);
-//                    break;
-//                }
-//
-//        components.add(comp);
+        components.add(comp);
+        if (comp.isEntryPoint()) entries.add(comp);
     }
     public void del(Component comp) {
-//        components.remove(comp);
-//        comp.disconnect();
+        components.remove(comp);
     }
 
-    // simulation logic
+    // connectivity and simulation
+    public void parse() {
+        // TODO: complete parsing
+    }
     public void startSimulation() {
-        isSimRunning = true;
-        ArrayList<Node> unstable = new ArrayList<>();
-
-        /* Part I. Global destabilization:
-            1) Reset all nodes - set every signal to LogicLevel.NIL
-            2) 'Entry point': simulate 'constant' components and make list of those nodes,
-                who was affected by this simulation step - 'unstable'.
-            3) Try to stabilize them, remove all stable nodes. See /src/engine/Node.stabilize()
-                for more info about the stabilization process.
-            4) Now 'entry point' step is complete - the circuit is unstable and requires stabilization.
-         */
-        for (Node node : nodes) node.reset(); // reset all nodes
-//        for (Component constant : constants) unstable.addAll(constant.simulate()); // 'entry point'
-        for (Node n : unstable)
-            if (n.stabilize()) unstable.remove(n); // initial stabilization
-
-        int attempts = 0; // count our attempts to stabilize the circuit
-
-        /* Part II. Global stabilization:
-            1) From the previous part we have a list of unstable nodes. It is important that they
-                affect a lot of components, who are currently stable. We should propagate the unstable
-                signal in order to find the new stable state of the circuit. After propagating these
-                signals to components, the latest will change their outputs and a lot of new nodes will
-                become unstable.
-            2) After a destabilizing pass (propagation), we should make a stabilizing pass in order to
-                find a new stable state of the circuit. If a node is stable, it does not affect its
-                outputs, so they do not need to be recomputed. Removal of such nodes decreases the
-                complexity of the simulation algorithm.
-         */
-        do {
-            // destabilizing pass: propagate changes from unstable nodes to affected components
-            ArrayList<Node> tmp = new ArrayList<>(unstable);
-            for (Node n : tmp)
-                unstable.addAll(n.propagate());
-
-            // stabilizing pass: remove stable nodes from the next pass
-            for (Node n : unstable)
-                if (n.stabilize())
-                    unstable.remove(n);
-
-        } while (unstable.size() > 0 && (++attempts) < SIM_DEPTH && isSimRunning);
-
-        // finalize the simulation
-        stopSimulation();
+        // TODO: complete simulation
+//        isSimRunning = true;
+//        ArrayList<Node> unstable = new ArrayList<>();
+//
+//        /* Part I. Global destabilization:
+//            1) Reset all nodes - set every signal to LogicLevel.NIL
+//            2) 'Entry point': simulate 'constant' components and make list of those nodes,
+//                who was affected by this simulation step - 'unstable'.
+//            3) Try to stabilize them, remove all stable nodes. See /src/engine/Node.stabilize()
+//                for more info about the stabilization process.
+//            4) Now 'entry point' step is complete - the circuit is unstable and requires stabilization.
+//         */
+//        for (Node node : nodes) node.reset(); // reset all nodes
+////        for (Component constant : entries) unstable.addAll(constant.simulate()); // 'entry point'
+//        for (Node n : unstable)
+//            if (n.stabilize()) unstable.remove(n); // initial stabilization
+//
+//        int attempts = 0; // count our attempts to stabilize the circuit
+//
+//        /* Part II. Global stabilization:
+//            1) From the previous part we have a list of unstable nodes. It is important that they
+//                affect a lot of components, who are currently stable. We should propagate the unstable
+//                signal in order to find the new stable state of the circuit. After propagating these
+//                signals to components, the latest will change their outputs and a lot of new nodes will
+//                become unstable.
+//            2) After a destabilizing pass (propagation), we should make a stabilizing pass in order to
+//                find a new stable state of the circuit. If a node is stable, it does not affect its
+//                outputs, so they do not need to be recomputed. Removal of such nodes decreases the
+//                complexity of the simulation algorithm.
+//         */
+//        do {
+//            // destabilizing pass: propagate changes from unstable nodes to affected components
+//            ArrayList<Node> tmp = new ArrayList<>(unstable);
+//            for (Node n : tmp)
+//                unstable.addAll(n.propagate());
+//
+//            // stabilizing pass: remove stable nodes from the next pass
+//            for (Node n : unstable)
+//                if (n.stabilize())
+//                    unstable.remove(n);
+//
+//        } while (unstable.size() > 0 && (++attempts) < SIM_DEPTH && isSimRunning);
+//
+//        // finalize the simulation
+//        stopSimulation();
     }
     public void stopSimulation() {
         isSimRunning = false;
-
     }
     public boolean isSimulationRunning() {
         return isSimRunning;

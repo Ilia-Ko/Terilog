@@ -1,5 +1,6 @@
 package engine.components.lumped;
 
+import engine.LogicLevel;
 import engine.components.Component;
 import engine.components.Pin;
 import gui.control.ControlMain;
@@ -28,7 +29,20 @@ public class Diode extends Component {
 
     // simulation
     @Override public void simulate() {
-        // TODO: implement simulation logic
+        LogicLevel a = anode.query();
+        LogicLevel c = cathode.query();
+
+        if (a == LogicLevel.ERR || c == LogicLevel.ERR) {
+            anode.announce(LogicLevel.ERR);
+            cathode.announce(LogicLevel.ERR);
+        } else if (a == LogicLevel.ZZZ && c == LogicLevel.NEG)
+            anode.announce(LogicLevel.NEG);
+        else if (a == LogicLevel.POS && c == LogicLevel.ZZZ)
+            cathode.announce(LogicLevel.POS);
+        else if (a == LogicLevel.POS && c == LogicLevel.NEG) {
+            anode.announce(LogicLevel.ERR);
+            cathode.announce(LogicLevel.ERR);
+        }
     }
 
     // xml info

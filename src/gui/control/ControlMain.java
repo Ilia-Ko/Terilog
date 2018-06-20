@@ -11,7 +11,7 @@ import engine.components.mosfets.HardN;
 import engine.components.mosfets.HardP;
 import engine.components.mosfets.SoftN;
 import engine.components.mosfets.SoftP;
-import engine.connectivity.Wire;
+import engine.connectivity.FlyWire;
 import gui.Main;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
@@ -80,7 +80,7 @@ public class ControlMain {
     // mouse logic
     private IntegerProperty mouseX, mouseY;
     private boolean holdingWire, holdingComp;
-    private Wire flyWire;
+    private FlyWire flyWire;
     private Component flyComp;
 
     // initialization
@@ -134,7 +134,7 @@ public class ControlMain {
         parent.getChildren().add(point);
 
         // circuit logic
-        circuit = new Circuit(this);
+        circuit = new Circuit();
         try {
             ioSystem = new TerilogIO(this);
         } catch (ParserConfigurationException | TransformerConfigurationException e) {
@@ -192,7 +192,6 @@ public class ControlMain {
     }
     private void onGlobalMouseClicked(MouseEvent mouse) {
         if (mouse.getButton() == MouseButton.PRIMARY) {
-            // insertion logic
             if (holdingWire) {
                 flyWire.confirm();
                 holdingWire = false;
@@ -200,9 +199,6 @@ public class ControlMain {
                 flyComp.confirm();
                 holdingComp = false;
             }
-
-//            // prevent dragging with primary button (but ScrollPane is still pannable with secondary button)
-//            mouse.consume();
         }
     }
     private void onGlobalKeyPressed(KeyEvent key) {
@@ -358,7 +354,7 @@ public class ControlMain {
     }
     @FXML private void menuWire() {
         breakInsertion();
-        flyWire = new Wire(this);
+        flyWire = new FlyWire(this);
         holdingWire = true;
     }
 
