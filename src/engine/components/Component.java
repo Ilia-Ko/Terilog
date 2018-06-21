@@ -1,5 +1,7 @@
 package engine.components;
 
+import engine.connectivity.Node;
+import engine.connectivity.Wire;
 import gui.Main;
 import gui.control.ControlMain;
 import javafx.beans.property.DoubleProperty;
@@ -16,14 +18,15 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import java.io.IOException;
+import java.util.HashSet;
 
 public abstract class Component {
 
-    // layout
-    protected Pane root;
+    private Pane root;
     private ControlMain control;
     private Rotate rotate;
     private Scale scale;
+    private Pin[] pins;
 
     // initialization
     protected Component(ControlMain control) { // create Component in layout mode
@@ -49,6 +52,7 @@ public abstract class Component {
         scale = new Scale(1, 1, 0, 0);
         root.getTransforms().addAll(rotate, scale);
 
+        pins = initPins();
         begin();
     }
     protected Component(ControlMain control, Element data) { // create Component from xml in main mode
@@ -58,7 +62,7 @@ public abstract class Component {
     }
     protected Pane loadContent() {
         try {
-            String location = "view/components/lumped/" + getAttrClass() + ".fxml";
+            String location = "view/components/lumped/" + getClass().getSimpleName().toLowerCase() + ".fxml";
             return FXMLLoader.load(Main.class.getResource(location));
         } catch (IOException e) {
             e.printStackTrace();
@@ -102,6 +106,9 @@ public abstract class Component {
 
         return new ContextMenu(itemMove, itemDelete, itemRotCW, itemRotCCW, itemMirrorX, itemMirrorY);
     }
+    protected Pin[] initPins() {
+        return new Pin[0];
+    }
 
     // layout mode
     private void begin() {
@@ -115,7 +122,7 @@ public abstract class Component {
 
         root.setOpacity(1.0);
         root.setOnMouseEntered(mouse -> root.requestFocus());
-        Tooltip.install(root, new Tooltip(String.format("%s #%s", getAttrClass(), root.getId())));
+        Tooltip.install(root, new Tooltip(String.format("%s #%s", getClass().getSimpleName(), root.getId())));
 
         control.getCircuit().add(this);
     }
@@ -138,16 +145,29 @@ public abstract class Component {
         scale.setY(-scale.getY());
     }
 
+    // connectivity
+    public void nodify() {
+        for (Pin pin : pins) pin.nodify();
+    }
+    public void inspect(Wire wire) {
+        for (Pin pin : pins) pin.inspect(wire);
+    }
+    public HashSet<Node> gather() {
+        HashSet<Node> nodes = new HashSet<>();
+        for (Pin pin : pins) nodes.add(pin.gather());
+        return nodes;
+    }
+
     // simulation
     public boolean isEntryPoint() {
         return false;
     }
-    public abstract void simulate();
+    public abstract HashSet<Node> simulate(); // should return list of affected nodes
 
     // xml info
     public Element writeXML(Document doc) {
         Element comp = doc.createElement("comp");
-        comp.setAttribute("class", getAttrClass());
+        comp.setAttribute("class", getClass().getSimpleName().toLowerCase());
         comp.setAttribute("x", asInt(root.layoutXProperty()));
         comp.setAttribute("y", asInt(root.layoutYProperty()));
         comp.setAttribute("rot", asInt(root.rotateProperty()));
@@ -162,9 +182,11 @@ public abstract class Component {
         root.setScaleX(getDouble(comp, "mx"));
         root.setScaleY(getDouble(comp, "my"));
     }
-    protected abstract String getAttrClass();
 
-    // utils
+    // misc
+    protected Pane getRoot() {
+        return root;
+    }
     private static String asInt(DoubleProperty d) {
         return Integer.toString(d.intValue());
     }

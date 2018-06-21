@@ -3,13 +3,13 @@ package engine.components.lumped;
 import engine.LogicLevel;
 import engine.components.Component;
 import engine.components.Pin;
+import engine.connectivity.Node;
 import gui.control.ControlMain;
-import javafx.scene.layout.Pane;
 import org.w3c.dom.Element;
 
-public class Reconciliator extends Component {
+import java.util.HashSet;
 
-    public static final String ATTR_CLASS = "reconciliator";
+public class Reconciliator extends Component {
 
     private Pin source, pull, drain;
 
@@ -20,27 +20,28 @@ public class Reconciliator extends Component {
     public Reconciliator(ControlMain control, Element data) {
         super(control, data);
     }
-    @Override protected Pane loadContent() {
-        Pane pane = super.loadContent();
-        source = new Pin(pane, "source", 0, 1);
-        pull = new Pin(pane, "pull", 1, 0);
-        drain = new Pin(pane, "drain", 2, 1);
-        return pane;
+    @Override protected Pin[] initPins() {
+        source = new Pin(this, 0, 1);
+        pull = new Pin(this, 1, 0);
+        drain = new Pin(this, 2, 1);
+        return new Pin[] {source, pull, drain};
     }
 
     // simulation
-    @Override public void simulate() {
+    @Override public HashSet<Node> simulate() {
+        HashSet<Node> affected = new HashSet<>();
+        boolean changed;
         LogicLevel s = source.query();
 
+        // simulate
         if (s.isUnstable())
-            drain.announce(pull.query());
+            changed = drain.update(pull.query());
         else
-            drain.announce(s);
-    }
+            changed = drain.update(s);
 
-    // xml info
-    @Override protected String getAttrClass() {
-        return ATTR_CLASS;
+        // report about affected nodes
+        if (changed) affected.add(drain.gather());
+        return affected;
     }
 
 }

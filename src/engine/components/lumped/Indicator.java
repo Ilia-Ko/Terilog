@@ -3,10 +3,10 @@ package engine.components.lumped;
 import engine.LogicLevel;
 import engine.components.Component;
 import engine.components.Pin;
+import engine.connectivity.Node;
 import gui.control.ControlMain;
 import javafx.beans.property.*;
 import javafx.scene.control.Label;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.RadialGradient;
@@ -14,9 +14,9 @@ import javafx.scene.paint.Stop;
 import javafx.scene.shape.Circle;
 import org.w3c.dom.Element;
 
-public class Indicator extends Component {
+import java.util.HashSet;
 
-    public static final String ATTR_CLASS = "indicator";
+public class Indicator extends Component {
 
     private ObjectProperty<Color> colour;
     private StringProperty text;
@@ -27,7 +27,7 @@ public class Indicator extends Component {
         super(control);
 
         // init colouring
-        Circle body = (Circle) root.lookup("#body");
+        Circle body = (Circle) getRoot().lookup("#body");
         colour = new SimpleObjectProperty<>();
         colour.addListener((observable, oldValue, newValue) -> {
             RadialGradient gradient = new RadialGradient(0, 0, 1, 1, 1,
@@ -41,7 +41,7 @@ public class Indicator extends Component {
 
         // init indication
         text = new SimpleStringProperty(String.valueOf(LogicLevel.ZZZ.getDigitCharacter()));
-        Label value = (Label) root.lookup("#value");
+        Label value = (Label) getRoot().lookup("#value");
         value.textProperty().bind(text);
         DoubleProperty size = new SimpleDoubleProperty(2.0);
         value.layoutXProperty().bind(size.subtract(value.widthProperty()).divide(2.0));
@@ -50,22 +50,17 @@ public class Indicator extends Component {
     public Indicator(ControlMain control, Element data) {
         super(control, data);
     }
-    @Override protected Pane loadContent() {
-        Pane pane = super.loadContent();
-        source = new Pin(pane, "source", 0, 1);
-        return pane;
+    @Override protected Pin[] initPins() {
+        source = new Pin(this, 0, 1);
+        return new Pin[] {source};
     }
 
     // simulation
-    @Override public void simulate() {
+    @Override public HashSet<Node> simulate() {
         LogicLevel signal = source.query();
         colour.setValue(signal.colour());
         text.setValue(String.valueOf(signal.getDigitCharacter()));
-    }
-
-    // xml info
-    @Override protected String getAttrClass() {
-        return ATTR_CLASS;
+        return new HashSet<>();
     }
 
 }

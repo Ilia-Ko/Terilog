@@ -1,8 +1,11 @@
 package engine.components.mosfets;
 
 import engine.LogicLevel;
+import engine.connectivity.Node;
 import gui.control.ControlMain;
 import org.w3c.dom.Element;
+
+import java.util.HashSet;
 
 abstract class NChannel extends MOSFET {
 
@@ -17,18 +20,25 @@ abstract class NChannel extends MOSFET {
         this.vgsth = vgsth;
     }
 
-    @Override public void simulate() {
+    @Override public HashSet<Node> simulate() {
+        HashSet<Node> affected = new HashSet<>();
+        boolean changed;
         LogicLevel g = gate.query();
         LogicLevel s = source.query();
 
+        // simulation
         if (s == LogicLevel.ZZZ)
-            drain.announce(LogicLevel.ZZZ);
+            changed = drain.update(LogicLevel.ZZZ);
         else if (s == LogicLevel.ERR || g.isUnstable())
-            drain.announce(LogicLevel.ERR);
-        else if (g.volts() - s.volts() >= vgsth)
-            drain.announce(s);
+            changed = drain.update(LogicLevel.ERR);
+        else if (g.volts()-s.volts()>=vgsth)
+            changed = drain.update(s);
         else
-            drain.announce(LogicLevel.ZZZ);
+            changed = drain.update(LogicLevel.ZZZ);
+
+        // report about affected node
+        if (changed) affected.add(drain.gather());
+        return affected;
     }
 
 }

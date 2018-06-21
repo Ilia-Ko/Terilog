@@ -3,21 +3,21 @@ package engine.components.lumped;
 import engine.LogicLevel;
 import engine.components.Component;
 import engine.components.Pin;
+import engine.connectivity.Node;
 import gui.control.ControlMain;
 import javafx.beans.property.*;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-public class Voltage extends Component {
+import java.util.HashSet;
 
-    public static final String ATTR_CLASS = "voltage";
+public class Voltage extends Component {
 
     private ObjectProperty<Color> colour;
     private StringProperty text;
@@ -30,14 +30,14 @@ public class Voltage extends Component {
         signal = LogicLevel.ZZZ;
 
         // init colouring
-        Rectangle body = (Rectangle) root.lookup("#body");
+        Rectangle body = (Rectangle) getRoot().lookup("#body");
         colour = new SimpleObjectProperty<>();
         body.fillProperty().bind(colour);
         colour.setValue(signal.colour());
 
         // init indication
         text = new SimpleStringProperty(String.valueOf(signal.getDigitCharacter()));
-        Label value = (Label) root.lookup("#value");
+        Label value = (Label) getRoot().lookup("#value");
         value.textProperty().bind(text);
         DoubleProperty size = new SimpleDoubleProperty(2.0);
         value.layoutXProperty().bind(size.subtract(value.widthProperty()).divide(2.0));
@@ -46,10 +46,9 @@ public class Voltage extends Component {
     public Voltage(ControlMain control, Element data) {
         super(control, data);
     }
-    @Override protected Pane loadContent() {
-        Pane pane = super.loadContent();
-        drain = new Pin(pane, "drain", 1, 2);
-        return pane;
+    @Override protected Pin[] initPins() {
+        drain = new Pin(this, 1, 2);
+        return new Pin[] {drain};
     }
     @Override protected ContextMenu buildContextMenu() {
         LogicLevel[] levels = LogicLevel.values();
@@ -76,8 +75,10 @@ public class Voltage extends Component {
     @Override public boolean isEntryPoint() {
         return true;
     }
-    @Override public void simulate() {
-        drain.announce(signal);
+    @Override public HashSet<Node> simulate() {
+        HashSet<Node> affected = new HashSet<>();
+        if (drain.update(signal)) affected.add(drain.gather());
+        return affected;
     }
 
     // xml info
@@ -89,9 +90,6 @@ public class Voltage extends Component {
     @Override protected void readXML(Element comp) {
         super.readXML(comp);
         signal = LogicLevel.parseName(comp.getAttribute("sig"));
-    }
-    @Override protected String getAttrClass() {
-        return ATTR_CLASS;
     }
 
 }

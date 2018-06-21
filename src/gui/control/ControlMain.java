@@ -364,6 +364,7 @@ public class ControlMain {
             circuit.stopSimulation();
             menuPlay.setText("Start");
         } else {
+            circuit.parse();
             circuit.startSimulation();
             menuPlay.setText("Stop");
         }

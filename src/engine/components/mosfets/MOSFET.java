@@ -23,18 +23,17 @@ abstract class MOSFET extends Component {
     }
     @Override protected Pane loadContent() {
         try {
-            String location = "view/components/mosfets/" + getAttrClass() + ".fxml";
-            Pane pane = FXMLLoader.load(Main.class.getResource(location));
-            createPins(pane);
-            return pane;
+            String location = "view/components/mosfets/" + getClass().getSimpleName().toLowerCase() + ".fxml";
+            return FXMLLoader.load(Main.class.getResource(location));
         } catch (IOException e) {
             return new Pane();
         }
     }
-    private void createPins(Pane pane) {
-        source = new Pin(pane, "source", 0, 2);
-        gate = new Pin(pane, "gate", 2, 0);
-        drain = new Pin(pane, "drain", 4, 2);
+    @Override protected Pin[] initPins() {
+        source = new Pin(this,0, 2);
+        gate = new Pin(this, 2, 0);
+        drain = new Pin(this, 4, 2);
+        return new Pin[] {source, gate, drain};
     }
 
 }

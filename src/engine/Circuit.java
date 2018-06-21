@@ -12,16 +12,46 @@ import engine.components.mosfets.SoftP;
 import engine.connectivity.Node;
 import engine.connectivity.Wire;
 import gui.control.ControlMain;
+import javafx.application.Platform;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class Circuit {
 
+    // The circuit is just a couple of arrays of wires and
+    // components, disconnected from each other until
+    // user starts the simulation process. Before the
+    // simulation the circuit has to be parsed in order to
+    // make components understand with whom they are
+    // connected and to whom they will send signals and
+    // from whom they will receive signals. Parsing is
+    // done by geometrically locating points of contact
+    // between wires and pins of components, wires with
+    // each other. From the point of view of simulation
+    // there is no matter in how wires are placed, the
+    // only important thing is - who is connected with
+    // whom. So that it would be inefficient to transfer
+    // signals via wires, node instance is created instead.
+    // Node is a system of wires that connects some pins
+    // together. Node is responsible for signal transfer
+    // and for colouring wires according to signal value.
+    // How to create a proper system of nodes? It is the
+    // main goal of parsing. Initially, every wire and pin
+    // represents separate node. When a connection between
+    // two objects is located (geometrically), their nodes
+    // are joined. Finally, we get a complete circuit graph -
+    // the minimal and quite efficient system of nodes.
+    // After that, we can begin simulation. The components,
+    // whose outputs does not depend on inputs become entry
+    // points of the simulation. They update their output
+    // signals at their output nodes and these nodes invoke
+    // those components, whose inputs are connected to them.
+
     private static final String DEF_NAME = "untitled";
-    private static final int SIM_DEPTH = 100;
 
     private String name;
     private ArrayList<Component> components, entries;
@@ -48,28 +78,28 @@ public class Circuit {
                 Element comp = (Element) list.item(i);
                 String attrClass = comp.getAttribute("class");
                 switch (attrClass) {
-                    case HardN.ATTR_CLASS:
+                    case "hardn":
                         components.add(new HardN(control, comp));
                         break;
-                    case HardP.ATTR_CLASS:
+                    case "hardp":
                         components.add(new HardP(control, comp));
                         break;
-                    case SoftN.ATTR_CLASS:
+                    case "softn":
                         components.add(new SoftN(control, comp));
                         break;
-                    case SoftP.ATTR_CLASS:
+                    case "softp":
                         components.add(new SoftP(control, comp));
                         break;
-                    case Diode.ATTR_CLASS:
+                    case "diode":
                         components.add(new Diode(control, comp));
                         break;
-                    case Indicator.ATTR_CLASS:
+                    case "indicator":
                         components.add(new Indicator(control, comp));
                         break;
-                    case Reconciliator.ATTR_CLASS:
+                    case "reconciliator":
                         components.add(new Reconciliator(control, comp));
                         break;
-                    case Voltage.ATTR_CLASS:
+                    case "voltage":
                         Voltage voltage = new Voltage(control, comp);
                         entries.add(voltage);
                         components.add(voltage);
@@ -99,58 +129,53 @@ public class Circuit {
     }
     public void del(Component comp) {
         components.remove(comp);
+        if (comp.isEntryPoint()) entries.remove(comp);
     }
 
     // connectivity and simulation
     public void parse() {
-        // TODO: complete parsing
+        // set separate node for every Connectible
+        components.forEach(Component::nodify);
+        wires.forEach(Wire::nodify);
+
+        // search for connections between wires - O(1/2 * n^2), n = wires.size()
+        for (int i = 0; i < wires.size(); i++) {
+            Wire wire = wires.get(i);
+            for (int j = i + 1; j < wires.size(); j++)
+                wire.inspect(wires.get(j));
+        }
+
+        // search for connections between wires and pins - O(n * m), m = components.size()
+        for (Wire wire : wires)
+            for (Component comp : components)
+                comp.inspect(wire);
+
+        // gather nodes all over the circuit
+        nodes = new ArrayList<>();
+        wires.forEach(wire -> nodes.add(wire.gather()));
+        components.forEach(comp -> nodes.addAll(comp.gather()));
+
+        // Nice system of nodes is ready to simulation!
     }
+    private void simulate() {
+        isSimRunning = true;
+        HashSet<Node> unstable = new HashSet<>();
+
+        // entry points
+        for (Component entry : entries) unstable.addAll(entry.simulate());
+
+        // continuous simulation
+        while (isSimRunning && unstable.size() > 0) {
+            HashSet<Node> tmp = new HashSet<>(unstable);
+            unstable.clear();
+            for (Node node : tmp) unstable.addAll(node.simulate());
+        }
+
+        isSimRunning = false;
+    }
+
     public void startSimulation() {
-        // TODO: complete simulation
-//        isSimRunning = true;
-//        ArrayList<Node> unstable = new ArrayList<>();
-//
-//        /* Part I. Global destabilization:
-//            1) Reset all nodes - set every signal to LogicLevel.NIL
-//            2) 'Entry point': simulate 'constant' components and make list of those nodes,
-//                who was affected by this simulation step - 'unstable'.
-//            3) Try to stabilize them, remove all stable nodes. See /src/engine/Node.stabilize()
-//                for more info about the stabilization process.
-//            4) Now 'entry point' step is complete - the circuit is unstable and requires stabilization.
-//         */
-//        for (Node node : nodes) node.reset(); // reset all nodes
-////        for (Component constant : entries) unstable.addAll(constant.simulate()); // 'entry point'
-//        for (Node n : unstable)
-//            if (n.stabilize()) unstable.remove(n); // initial stabilization
-//
-//        int attempts = 0; // count our attempts to stabilize the circuit
-//
-//        /* Part II. Global stabilization:
-//            1) From the previous part we have a list of unstable nodes. It is important that they
-//                affect a lot of components, who are currently stable. We should propagate the unstable
-//                signal in order to find the new stable state of the circuit. After propagating these
-//                signals to components, the latest will change their outputs and a lot of new nodes will
-//                become unstable.
-//            2) After a destabilizing pass (propagation), we should make a stabilizing pass in order to
-//                find a new stable state of the circuit. If a node is stable, it does not affect its
-//                outputs, so they do not need to be recomputed. Removal of such nodes decreases the
-//                complexity of the simulation algorithm.
-//         */
-//        do {
-//            // destabilizing pass: propagate changes from unstable nodes to affected components
-//            ArrayList<Node> tmp = new ArrayList<>(unstable);
-//            for (Node n : tmp)
-//                unstable.addAll(n.propagate());
-//
-//            // stabilizing pass: remove stable nodes from the next pass
-//            for (Node n : unstable)
-//                if (n.stabilize())
-//                    unstable.remove(n);
-//
-//        } while (unstable.size() > 0 && (++attempts) < SIM_DEPTH && isSimRunning);
-//
-//        // finalize the simulation
-//        stopSimulation();
+        Platform.runLater(this::simulate);
     }
     public void stopSimulation() {
         isSimRunning = false;

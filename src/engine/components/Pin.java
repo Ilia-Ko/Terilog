@@ -1,59 +1,58 @@
 package engine.components;
 
 import engine.LogicLevel;
-import engine.connectivity.Connection;
 import engine.connectivity.Node;
-import engine.connectivity.SignalTransfer;
-import javafx.scene.layout.Pane;
+import engine.connectivity.Wire;
 import javafx.scene.shape.Circle;
 
-public class Pin extends Circle implements SignalTransfer {
+import java.util.HashSet;
 
-    private String name;
-    private Connection connect;
-    private boolean isConnected;
+public class Pin extends Circle {
+
+    private Component owner;
     private boolean isNodified;
     private Node node;
 
-    public Pin(Pane parent, String name, int xPosInOwner, int yPosInOwner) {
-        this.name = name;
-        isConnected = false;
+    public Pin(Component owner, int xPosInOwner, int yPosInOwner) {
+        this.owner = owner;
         isNodified = false;
 
         setCenterX(xPosInOwner);
         setCenterY(yPosInOwner);
         setRadius(0.3);
         setFill(LogicLevel.ZZZ.colour());
-        parent.getChildren().add(this);
+        owner.getRoot().getChildren().add(this);
     }
 
     // simulation
-    @Override public void announce(LogicLevel signal) {
-        if (isConnected) node.announce(signal);
+    public boolean update(LogicLevel signal) { // called by owner only
+        if (isNodified && node.update(signal)) {
+            return true;
+        }
         setFill(signal.colour());
+        return false;
     }
-    @Override public LogicLevel query() {
+    public LogicLevel query() {
         if (isNodified) return node.query();
         else return LogicLevel.ZZZ;
     }
+    public HashSet<Node> simulate() { // called by nodes only
+        return owner.simulate();
+    }
 
     // connectivity
-    @Override public void connectTo(Connection con) {
-        if (isConnected && con.placeMatches(connect)) connect = con;
+    void inspect(Wire wire) {
+        int mx = (int) (getParent().getLayoutX() + getCenterX());
+        int my = (int) (getParent().getLayoutY() + getCenterY());
+        if (wire.inside(mx, my)) node = node.mergeAndCopy(wire.gather());
     }
-    @Override public void disconnectFrom(Connection con) {
-        if (isConnected && con.placeMatches(connect)) {
-            connect = null;
-            isConnected = false;
-        }
+    void nodify() {
+        node = new Node(this);
+        isNodified = true;
     }
-    @Override public void totalDisconnect() {
-        if (isConnected) connect.terminate();
-    }
-
-    // xml info
-    public String getName() {
-        return name;
+    public Node gather() {
+        if (isNodified) return node;
+        else return null;
     }
 
 }
