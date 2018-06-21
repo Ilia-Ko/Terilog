@@ -21,8 +21,8 @@ public class Diode extends Component {
         super(control, data);
     }
     @Override protected Pin[] initPins() {
-        anode = new Pin(this, 0, 1);
-        cathode = new Pin(this, 4, 1);
+        anode = new Pin(this, true, 0, 1);
+        cathode = new Pin(this, true, 4, 1);
         return new Pin[] {anode, cathode};
     }
 

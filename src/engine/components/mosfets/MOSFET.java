@@ -30,9 +30,9 @@ abstract class MOSFET extends Component {
         }
     }
     @Override protected Pin[] initPins() {
-        source = new Pin(this,0, 2);
-        gate = new Pin(this, 2, 0);
-        drain = new Pin(this, 4, 2);
+        source = new Pin(this, true, 0, 2);
+        gate = new Pin(this, true, 2, 0);
+        drain = new Pin(this, false, 4, 2);
         return new Pin[] {source, gate, drain};
     }
 

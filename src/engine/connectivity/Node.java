@@ -41,18 +41,23 @@ public class Node {
         for (Pin pin : pins) affected.addAll(pin.simulate());
         return affected;
     }
-    public boolean update(LogicLevel signal) {
+    public boolean update(LogicLevel signal) { // return true if sigResult changes
         if (signal.conflicts(sigResult)) {
             sigResult = LogicLevel.ERR;
+            updateWires();
             return true;
         } else if (signal.suppresses(sigResult)) {
             sigResult = signal;
+            updateWires();
             return true;
         }
         return false;
     }
     public LogicLevel query() {
         return sigResult;
+    }
+    private void updateWires() {
+        for (Wire wire : wires) wire.setStroke(sigResult.colour());
     }
 
 }

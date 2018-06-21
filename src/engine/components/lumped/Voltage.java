@@ -47,7 +47,7 @@ public class Voltage extends Component {
         super(control, data);
     }
     @Override protected Pin[] initPins() {
-        drain = new Pin(this, 1, 2);
+        drain = new Pin(this, false, 1, 2);
         return new Pin[] {drain};
     }
     @Override protected ContextMenu buildContextMenu() {

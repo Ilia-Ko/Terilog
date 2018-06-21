@@ -12,9 +12,11 @@ public class Pin extends Circle {
     private Component owner;
     private boolean isNodified;
     private Node node;
+    private boolean canInfluenceOwner;
 
-    public Pin(Component owner, int xPosInOwner, int yPosInOwner) {
+    public Pin(Component owner, boolean canInfluence, int xPosInOwner, int yPosInOwner) {
         this.owner = owner;
+        canInfluenceOwner = canInfluence;
         isNodified = false;
 
         setCenterX(xPosInOwner);
@@ -27,9 +29,9 @@ public class Pin extends Circle {
     // simulation
     public boolean update(LogicLevel signal) { // called by owner only
         if (isNodified && node.update(signal)) {
+            setFill(signal.colour());
             return true;
         }
-        setFill(signal.colour());
         return false;
     }
     public LogicLevel query() {
@@ -37,7 +39,8 @@ public class Pin extends Circle {
         else return LogicLevel.ZZZ;
     }
     public HashSet<Node> simulate() { // called by nodes only
-        return owner.simulate();
+        if (canInfluenceOwner) return owner.simulate();
+        else return new HashSet<>();
     }
 
     // connectivity

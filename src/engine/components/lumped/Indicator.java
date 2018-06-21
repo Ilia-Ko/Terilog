@@ -51,7 +51,7 @@ public class Indicator extends Component {
         super(control, data);
     }
     @Override protected Pin[] initPins() {
-        source = new Pin(this, 0, 1);
+        source = new Pin(this, true, 0, 1);
         return new Pin[] {source};
     }
 

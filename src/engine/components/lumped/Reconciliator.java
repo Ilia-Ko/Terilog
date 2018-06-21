@@ -21,9 +21,9 @@ public class Reconciliator extends Component {
         super(control, data);
     }
     @Override protected Pin[] initPins() {
-        source = new Pin(this, 0, 1);
-        pull = new Pin(this, 1, 0);
-        drain = new Pin(this, 2, 1);
+        source = new Pin(this, true, 0, 1);
+        pull = new Pin(this, true, 1, 0);
+        drain = new Pin(this, false, 2, 1);
         return new Pin[] {source, pull, drain};
     }
 
