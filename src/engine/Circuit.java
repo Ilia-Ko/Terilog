@@ -1,197 +1,201 @@
 package engine;
 
+import engine.components.Component;
+import engine.components.lumped.Diode;
+import engine.components.lumped.Indicator;
+import engine.components.lumped.Reconciliator;
+import engine.components.lumped.Voltage;
+import engine.components.mosfets.HardN;
+import engine.components.mosfets.HardP;
+import engine.components.mosfets.SoftN;
+import engine.components.mosfets.SoftP;
+import engine.connectivity.Node;
+import engine.connectivity.Wire;
 import gui.control.ControlMain;
+import javafx.application.Platform;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class Circuit {
 
+    // The circuit is just a couple of arrays of wires and
+    // components, disconnected from each other until
+    // user starts the simulation process. Before the
+    // simulation the circuit has to be parsed in order to
+    // make components understand with whom they are
+    // connected and to whom they will send signals and
+    // from whom they will receive signals. Parsing is
+    // done by geometrically locating points of contact
+    // between wires and pins of components, wires with
+    // each other. From the point of view of simulation
+    // there is no matter in how wires are placed, the
+    // only important thing is - who is connected with
+    // whom. So that it would be inefficient to transfer
+    // signals via wires, node instance is created instead.
+    // Node is a system of wires that connects some pins
+    // together. Node is responsible for signal transfer
+    // and for colouring wires according to signal value.
+    // How to create a proper system of nodes? It is the
+    // main goal of parsing. Initially, every wire and pin
+    // represents separate node. When a connection between
+    // two objects is located (geometrically), their nodes
+    // are joined. Finally, we get a complete circuit graph -
+    // the minimal and quite efficient system of nodes.
+    // After that, we can begin simulation. The components,
+    // whose outputs does not depend on inputs become entry
+    // points of the simulation. They update their output
+    // signals at their output nodes and these nodes invoke
+    // those components, whose inputs are connected to them.
+
     private static final String DEF_NAME = "untitled";
-    private static final int SIM_DEPTH = 100;
 
-    // construction logic
     private String name;
-    private ControlMain control;
+    private ArrayList<Component> components, entries;
     private ArrayList<Wire> wires;
+    private ArrayList<Node> nodes; // simulation only
+    private boolean isSimRunning; // flag for threading
 
-    // simulation logic
-    private boolean isSimRunning;
-    private ArrayList<Component> components, constants;
-    private ArrayList<Node> nodes;
-
-    public Circuit(ControlMain control) {
-        // construction logic
+    public Circuit() {
         name = DEF_NAME;
-        this.control = control;
-        wires = new ArrayList<>();
-
-        // simulation logic
         isSimRunning = false;
         components = new ArrayList<>();
-        constants = new ArrayList<>();
-        nodes = new ArrayList<>();
+        entries = new ArrayList<>();
+        wires = new ArrayList<>();
     }
+    public Circuit(ControlMain control, Element c) {
+        this();
+        name = c.getAttribute("name");
+        NodeList list;
 
-    // rendering
-    public void renderAll() {
-        for (Component comp : components) comp.render();
-        for (Wire wire : wires) wire.render();
-    }
-    public void updateGridPeriod(double period) {
-        for (Component comp : components) comp.setGridPeriod(period);
-        for (Wire wire : wires) wire.setGridPeriod(period);
-    }
-
-    // construction logic
-    // TODO: establish connection ideology
-    public void add(Wire wire) {
-        // check whether 'w' should be connected to existing wires
-        boolean isNewNode = true;
-        for (Wire old : wires)
-            for (int[] p : wire.getPoints())
-                if (old.inside(p[0], p[1])) {
-                    wire.connect(old.getNode());
-                    isNewNode = false;
-                    break;
+        // create components
+        list = c.getElementsByTagName("comp");
+        if (list != null)
+            for (int i = 0; i < list.getLength(); i++) {
+                Element comp = (Element) list.item(i);
+                String attrClass = comp.getAttribute("class");
+                switch (attrClass) {
+                    case "hardn":
+                        components.add(new HardN(control, comp));
+                        break;
+                    case "hardp":
+                        components.add(new HardP(control, comp));
+                        break;
+                    case "softn":
+                        components.add(new SoftN(control, comp));
+                        break;
+                    case "softp":
+                        components.add(new SoftP(control, comp));
+                        break;
+                    case "diode":
+                        components.add(new Diode(control, comp));
+                        break;
+                    case "indicator":
+                        components.add(new Indicator(control, comp));
+                        break;
+                    case "reconciliator":
+                        components.add(new Reconciliator(control, comp));
+                        break;
+                    case "voltage":
+                        Voltage voltage = new Voltage(control, comp);
+                        entries.add(voltage);
+                        components.add(voltage);
+                        break;
+                    default:
+                        System.out.printf("WARNING: unknown component of class %s.\n", attrClass);
                 }
+            }
 
-        // create new node if needed (if 'w' does not participate in any existing ones)
-        if (isNewNode) {
-            Node node = new Node();
-            nodes.add(node);
-            wire.connect(node);
-        }
+        // create wires
+        list = c.getElementsByTagName("wire");
+        if (list != null)
+            for (int i = 0; i < list.getLength(); i++)
+                wires.add(new Wire(control, (Element) list.item(i)));
+    }
 
-        // check whether 'w' should be connected to existing components
-        for (Component comp : components)
-            for (Component.Pin pin : comp.getPins())
-                if (wire.inside(pin.getX(), pin.getY()))
-                    pin.connect(wire);
-
+    // construction
+    public void add(Wire wire) {
         wires.add(wire);
     }
     public void del(Wire wire) {
-        // disconnect wire from node
-        Node node = wire.getNode();
-        node.delWire(wire);
-
-        // disconnect component from node (previously connected by this wire)
-        for (Component comp : node.getComponents())
-            comp.disconnect(wire);
+        wires.remove(wire);
     }
     public void add(Component comp) {
-        if (comp.isIndependent()) constants.add(comp);
-
-        // check whether 'comp' should be connected to existing nodes (their wires)
-        for (Component.Pin pin : comp.getPins())
-            for (Wire wire : wires)
-                if (wire.inside(pin.getX(), pin.getY())) {
-                    pin.connect(wire);
-                    break;
-                }
-
         components.add(comp);
+        if (comp.isEntryPoint()) entries.add(comp);
     }
     public void del(Component comp) {
         components.remove(comp);
-        comp.disconnect();
+        if (comp.isEntryPoint()) entries.remove(comp);
     }
 
-    // simulation logic
-    public void startSimulation() {
+    // connectivity and simulation
+    public void parse() {
+        // set separate node for every Connectible
+        components.forEach(Component::nodify);
+        wires.forEach(Wire::nodify);
+
+        // search for connections between wires - O(1/2 * n^2), n = wires.size()
+        for (int i = 0; i < wires.size(); i++) {
+            Wire wire = wires.get(i);
+            for (int j = i + 1; j < wires.size(); j++)
+                wire.inspect(wires.get(j));
+        }
+
+        // search for connections between wires and pins - O(n * m), m = components.size()
+        for (Wire wire : wires)
+            for (Component comp : components)
+                comp.inspect(wire);
+
+        // gather nodes all over the circuit
+        nodes = new ArrayList<>();
+        wires.forEach(wire -> nodes.add(wire.gather()));
+        components.forEach(comp -> nodes.addAll(comp.gather()));
+
+        // Nice system of nodes is ready to simulation!
+    }
+    private void simulate() {
         isSimRunning = true;
-        ArrayList<Node> unstable = new ArrayList<>();
+        HashSet<Node> unstable = new HashSet<>();
 
-        /* Part I. Global destabilization:
-            1) Reset all nodes - set every signal to LogicLevel.NIL
-            2) 'Entry point': simulate 'constant' components and make list of those nodes,
-                who was affected by this simulation step - 'unstable'.
-            3) Try to stabilize them, remove all stable nodes. See /src/engine/Node.stabilize()
-                for more info about the stabilization process.
-            4) Now 'entry point' step is complete - the circuit is unstable and requires stabilization.
-         */
-        for (Node node : nodes) node.reset(); // reset all nodes
-        for (Component constant : constants) unstable.addAll(constant.simulate()); // 'entry point'
-        for (Node n : unstable)
-            if (n.stabilize()) unstable.remove(n); // initial stabilization
+        // entry points
+        for (Component entry : entries) unstable.addAll(entry.simulate());
 
-        int attempts = 0; // count our attempts to stabilize the circuit
+        // continuous simulation
+        while (isSimRunning && unstable.size() > 0) {
+            HashSet<Node> tmp = new HashSet<>(unstable);
+            unstable.clear();
+            for (Node node : tmp) unstable.addAll(node.simulate());
+        }
 
-        /* Part II. Global stabilization:
-            1) From the previous part we have a list of unstable nodes. It is important that they
-                affect a lot of components, who are currently stable. We should propagate the unstable
-                signal in order to find the new stable state of the circuit. After propagating these
-                signals to components, the latest will change their outputs and a lot of new nodes will
-                become unstable.
-            2) After a destabilizing pass (propagation), we should make a stabilizing pass in order to
-                find a new stable state of the circuit. If a node is stable, it does not affect its
-                outputs, so they do not need to be recomputed. Removal of such nodes decreases the
-                complexity of the simulation algorithm.
-         */
-        do {
-            renderAll();
+        isSimRunning = false;
+    }
 
-            // destabilizing pass: propagate changes from unstable nodes to affected components
-            ArrayList<Node> tmp = new ArrayList<>(unstable);
-            for (Node n : tmp)
-                unstable.addAll(n.propagate());
-
-            // stabilizing pass: remove stable nodes from the next pass
-            for (Node n : unstable)
-                if (n.stabilize())
-                    unstable.remove(n);
-
-        } while (unstable.size() > 0 && (++attempts) < SIM_DEPTH && isSimRunning);
-
-        // finalize the simulation
-        stopSimulation();
+    public void startSimulation() {
+        Platform.runLater(this::simulate);
     }
     public void stopSimulation() {
         isSimRunning = false;
-
     }
     public boolean isSimulationRunning() {
         return isSimRunning;
     }
 
-    // informative
-    ArrayList<Component> getComponents() {
-        return components;
-    }
-    ArrayList<Node> getNodes() {
-        return nodes;
-    }
-    ArrayList<Wire> getWires() {
-        return wires;
-    }
-    void setComponents(ArrayList<Component> comps) {
-        components = comps;
-        for (Component comp : components)
-            if (comp.isIndependent())
-                constants.add(comp);
-    }
-    void setNodes(ArrayList<Node> nodes) {
-        this.nodes = nodes;
-    }
-    void setWires(ArrayList<Wire> wires) {
-        this.wires = wires;
-    }
-    String getName() {
-        return name;
-    }
-    void setName(String name) {
-        this.name = name;
-    }
+    // xml info
+    Element writeCircuitToXML(Document doc) {
+        Element c = doc.createElement("circuit");
+        c.setAttribute("name", name);
 
-    // grid
-    String getGridWidth() {
-        return Integer.toString(control.getGridWidth());
-    }
-    String getGridHeight() {
-        return Integer.toString(control.getGridHeight());
-    }
-    void setGridDimensions(int w, int h) {
-        control.setGridDimensions(w, h);
+        for (Component comp : components)
+            c.appendChild(comp.writeXML(doc));
+
+        for (Wire wire : wires)
+            c.appendChild(wire.writeXML(doc));
+
+        return c;
     }
 
 }

@@ -1,0 +1,132 @@
+package engine.connectivity;
+
+import gui.control.ControlMain;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.scene.effect.Bloom;
+import javafx.scene.input.KeyCode;
+import javafx.scene.shape.Line;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+public class Wire extends Line {
+
+    // Wire is a line, connecting two points on the circuit grid.
+    // For layout convenience, FlyWire class is created.
+    // After layout a wire should be confirmed.
+    // According to the current connectivity ideology Terilog does
+    // not even try parsing connections 'on a fly' - while a circuit
+    // is edited by unpredictable user. Therefore, a wire is just a
+    // graphical instance until simulation starts. But before the
+    // simulation process Terilog does its best and parses the circuit.
+
+    private static final Bloom HIGHLIGHT = new Bloom(0.7);
+
+    private ControlMain control;
+    private boolean isFlying;
+    private Node node;
+
+    // initialization
+    Wire(ControlMain control, IntegerProperty x0, IntegerProperty y0, IntegerProperty x1, IntegerProperty y1) {
+        this.control = control;
+        isFlying = true;
+
+        // create wire in layout mode
+        startXProperty().bind(x0);
+        startYProperty().bind(y0);
+        endXProperty().bind(x1);
+        endYProperty().bind(y1);
+        setOpacity(0.4);
+        setStrokeWidth(0.1);
+        control.getParent().getChildren().add(this);
+    }
+    public Wire(ControlMain control, Element w) {
+        this.control = control;
+        isFlying = false;
+
+        startXProperty().setValue(Integer.parseInt(w.getAttribute("x0")));
+        startYProperty().setValue(Integer.parseInt(w.getAttribute("y0")));
+        endXProperty().setValue(Integer.parseInt(w.getAttribute("x1")));
+        endYProperty().setValue(Integer.parseInt(w.getAttribute("y1")));
+        setStrokeWidth(0.1);
+        control.getParent().getChildren().add(this);
+
+        confirm();
+    }
+
+    void confirm() {
+        if (isFlying) {
+            startXProperty().unbind();
+            startYProperty().unbind();
+            endXProperty().unbind();
+            endYProperty().unbind();
+        }
+
+        setOpacity(1.0);
+        setOnMouseEntered(mouse -> {
+            requestFocus();
+            setEffect(HIGHLIGHT);
+        });
+        setOnMouseExited(mouse -> setEffect(null));
+        setOnKeyPressed(key -> {
+            KeyCode code = key.getCode();
+            if (code == KeyCode.DELETE) {
+                control.getParent().getChildren().remove(this);
+                control.getCircuit().del(this);
+            }
+        });
+
+        control.getCircuit().add(this);
+    }
+    public boolean inside(int x, int y) {
+        int x0 = startXProperty().intValue();
+        int y0 = startYProperty().intValue();
+        int x1 = endXProperty().intValue();
+        int y1 = endYProperty().intValue();
+
+        if (x0 == x1) return x == x0 && between(y, y0, y1);
+        else if (y0 == y1) return y == y0 && between(x, x0, x1);
+        else {
+            // wires are not recommended to be diagonal, but it is not forbidden
+            double k = (double) (y1 - y0) / (double) (x1 - x0);
+            double m = y0 - k * x0;
+            return y == (int) Math.round(k * x + m);
+        }
+    }
+
+    // connectivity
+    public void inspect(Wire wire) {
+        int x0 = startXProperty().intValue();
+        int y0 = startYProperty().intValue();
+        int x1 = endXProperty().intValue();
+        int y1 = endYProperty().intValue();
+
+        if (wire.inside(x0, y0) || wire.inside(x1, y1))
+            node = node.mergeAndCopy(wire.gather());
+    }
+    public void nodify() {
+        node = new Node(this);
+    }
+    public Node gather() {
+        return node;
+    }
+
+    // xml info
+    public Element writeXML(Document doc) {
+        Element w = doc.createElement("wire");
+        w.setAttribute("x0", asInt(startXProperty()));
+        w.setAttribute("y0", asInt(startYProperty()));
+        w.setAttribute("x1", asInt(endXProperty()));
+        w.setAttribute("y1", asInt(endYProperty()));
+        return w;
+    }
+
+    // util
+    private static String asInt(DoubleProperty d) {
+        return Integer.toString(d.intValue());
+    }
+    private static boolean between(int what, int a, int b) {
+        return Math.abs(what - a) + Math.abs(what - b) == Math.abs(a - b);
+    }
+
+}

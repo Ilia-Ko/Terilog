@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.Rectangle?>
+<Pane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+
+    <Rectangle fx:id="body" width="2" height="2" arcHeight="0.5" arcWidth="0.5"/>
+    <Label fx:id="value" textFill="white" style="-fx-font-size: 1.5px" textAlignment="CENTER"/>
+
+</Pane>
