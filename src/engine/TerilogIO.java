@@ -43,9 +43,9 @@ public class TerilogIO {
         transformer.transform(source, result);
     }
     public void loadTLG(File inputFile) throws IOException, SAXException {
-        // roots
         Document dom = builder.parse(inputFile);
         Element root = dom.getDocumentElement();
+        control.getCircuit().destroy();
         control.setCircuit(new Circuit(control, root));
         control.readGridFromXML(root);
     }

@@ -79,6 +79,10 @@ public class Wire extends Line implements Connectible {
 
         control.getCircuit().add(this);
     }
+    public void delete() {
+        control.getCircuit().del(this);
+        control.getParent().getChildren().remove(this);
+    }
 
     // connectivity
     @Override public void reset() {

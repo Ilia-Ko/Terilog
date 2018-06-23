@@ -135,6 +135,10 @@ public class Circuit {
         components.remove(comp);
         if (comp.isEntryPoint()) entries.remove(comp);
     }
+    void destroy() {
+        wires.forEach(Wire::delete);
+        components.forEach(Component::delete);
+    }
 
     // connectivity
     public void parse() {

@@ -45,8 +45,8 @@ public enum LogicLevel {
         }
     }; // undefined, critical, like SNaN in FPU
 
-    public static final int HARD_VOLTAGE = POS.volts() - NEG.volts();
-    public static final int SOFT_VOLTAGE = POS.volts() - NIL.volts();
+    public static final int HARD_VOLTAGE = POS.voltage - NEG.voltage;
+    public static final int SOFT_VOLTAGE = POS.voltage - NIL.voltage;
 
     private String standardName;
     private char digit;
