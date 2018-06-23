@@ -1,6 +1,7 @@
 package engine;
 
 import engine.components.Component;
+import engine.components.Pin;
 import engine.components.lumped.Diode;
 import engine.components.lumped.Indicator;
 import engine.components.lumped.Reconciliator;
@@ -9,10 +10,13 @@ import engine.components.mosfets.HardN;
 import engine.components.mosfets.HardP;
 import engine.components.mosfets.SoftN;
 import engine.components.mosfets.SoftP;
+import engine.connectivity.Connectible;
 import engine.connectivity.Node;
-import engine.connectivity.Wire;
+import engine.wires.Wire;
 import gui.control.ControlMain;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -51,20 +55,21 @@ public class Circuit {
     // signals at their output nodes and these nodes invoke
     // those components, whose inputs are connected to them.
 
-    private static final String DEF_NAME = "untitled";
+    private static final String DEF_NAME = "Untitled";
 
     private String name;
     private ArrayList<Component> components, entries;
     private ArrayList<Wire> wires;
-    private ArrayList<Node> nodes; // simulation only
-    private boolean isSimRunning; // flag for threading
+    private ArrayList<Pin> pins;
+    private BooleanProperty simRunProperty; // flag for threading
 
     public Circuit() {
         name = DEF_NAME;
-        isSimRunning = false;
+        simRunProperty = new SimpleBooleanProperty(false);
         components = new ArrayList<>();
         entries = new ArrayList<>();
         wires = new ArrayList<>();
+        pins = new ArrayList<>();
     }
     public Circuit(ControlMain control, Element c) {
         this();
@@ -79,30 +84,28 @@ public class Circuit {
                 String attrClass = comp.getAttribute("class");
                 switch (attrClass) {
                     case "hardn":
-                        components.add(new HardN(control, comp));
+                        add(new HardN(control, comp));
                         break;
                     case "hardp":
-                        components.add(new HardP(control, comp));
+                        add(new HardP(control, comp));
                         break;
                     case "softn":
-                        components.add(new SoftN(control, comp));
+                        add(new SoftN(control, comp));
                         break;
                     case "softp":
-                        components.add(new SoftP(control, comp));
+                        add(new SoftP(control, comp));
                         break;
                     case "diode":
-                        components.add(new Diode(control, comp));
+                        add(new Diode(control, comp));
                         break;
                     case "indicator":
-                        components.add(new Indicator(control, comp));
+                        add(new Indicator(control, comp));
                         break;
                     case "reconciliator":
-                        components.add(new Reconciliator(control, comp));
+                        add(new Reconciliator(control, comp));
                         break;
                     case "voltage":
-                        Voltage voltage = new Voltage(control, comp);
-                        entries.add(voltage);
-                        components.add(voltage);
+                        add(new Voltage(control, comp));
                         break;
                     default:
                         System.out.printf("WARNING: unknown component of class %s.\n", attrClass);
@@ -126,62 +129,68 @@ public class Circuit {
     public void add(Component comp) {
         components.add(comp);
         if (comp.isEntryPoint()) entries.add(comp);
+        pins.addAll(comp.getPins());
     }
     public void del(Component comp) {
         components.remove(comp);
         if (comp.isEntryPoint()) entries.remove(comp);
     }
 
-    // connectivity and simulation
+    // connectivity
     public void parse() {
-        // set separate node for every Connectible
-        components.forEach(Component::nodify);
-        wires.forEach(Wire::nodify);
+        // reset everything
+        wires.forEach(Connectible::reset);
+        pins.forEach(Connectible::reset);
 
-        // search for connections between wires - O(1/2 * n^2), n = wires.size()
-        for (int i = 0; i < wires.size(); i++) {
-            Wire wire = wires.get(i);
-            for (int j = i + 1; j < wires.size(); j++)
-                wire.inspect(wires.get(j));
-        }
+        // parsing.stage1.a: searching for connections between wires
+        int len = wires.size();
+        for (int i = 0; i < len; i++)
+            for (int j = i + 1; j < len; j++)
+                wires.get(i).inspect(wires.get(j));
 
-        // search for connections between wires and pins - O(n * m), m = components.size()
+        // parsing.stage1.b: searching for connections between wires and pins
+        for (Pin pin : pins)
+            for (Wire wire : wires)
+                pin.inspect(wire);
+
+        // parsing.stage2.a: nodify wires
         for (Wire wire : wires)
-            for (Component comp : components)
-                comp.inspect(wire);
+            if (wire.isNodeFree())
+                wire.nodify(new Node());
 
-        // gather nodes all over the circuit
-        nodes = new ArrayList<>();
-        wires.forEach(wire -> nodes.add(wire.gather()));
-        components.forEach(comp -> nodes.addAll(comp.gather()));
+        // parsing.stage2.b: nodify pins
+        for (Pin pin : pins)
+            if (pin.isNodeFree())
+                pin.nodify(new Node());
 
         // Nice system of nodes is ready to simulation!
     }
     private void simulate() {
-        isSimRunning = true;
+        simRunProperty.setValue(true);
         HashSet<Node> unstable = new HashSet<>();
 
         // entry points
         for (Component entry : entries) unstable.addAll(entry.simulate());
 
         // continuous simulation
-        while (isSimRunning && unstable.size() > 0) {
+        while (simRunProperty.get() && unstable.size() > 0) {
             HashSet<Node> tmp = new HashSet<>(unstable);
             unstable.clear();
             for (Node node : tmp) unstable.addAll(node.simulate());
         }
 
-        isSimRunning = false;
+        simRunProperty.setValue(false);
     }
 
+    // simulation
     public void startSimulation() {
         Platform.runLater(this::simulate);
     }
     public void stopSimulation() {
-        isSimRunning = false;
+        simRunProperty.setValue(false);
     }
-    public boolean isSimulationRunning() {
-        return isSimRunning;
+    public BooleanProperty getSimRunProperty() {
+        return simRunProperty;
     }
 
     // xml info
@@ -196,6 +205,9 @@ public class Circuit {
             c.appendChild(wire.writeXML(doc));
 
         return c;
+    }
+    public String getName() {
+        return name;
     }
 
 }

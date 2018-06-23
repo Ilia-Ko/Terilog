@@ -1,7 +1,6 @@
 package engine.components;
 
 import engine.connectivity.Node;
-import engine.connectivity.Wire;
 import gui.Main;
 import gui.control.ControlMain;
 import javafx.beans.property.DoubleProperty;
@@ -18,6 +17,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 
 public abstract class Component {
@@ -26,10 +26,10 @@ public abstract class Component {
     private ControlMain control;
     private Rotate rotate;
     private Scale scale;
-    private Pin[] pins;
+    private ArrayList<Pin> pins;
 
     // initialization
-    protected Component(ControlMain control) { // create Component in layout mode
+    private Component(ControlMain control, boolean isLayoutMode) {
         this.control = control;
         root = loadContent();
         root.setId(Integer.toString(hashCode()));
@@ -53,10 +53,13 @@ public abstract class Component {
         root.getTransforms().addAll(rotate, scale);
 
         pins = initPins();
-        begin();
+        if (isLayoutMode) begin();
+    }
+    protected Component(ControlMain control) { // create Component in layout mode
+        this(control, true);
     }
     protected Component(ControlMain control, Element data) { // create Component from xml in main mode
-        this(control);
+        this(control, false);
         readXML(data);
         confirm();
     }
@@ -106,8 +109,8 @@ public abstract class Component {
 
         return new ContextMenu(itemMove, itemDelete, itemRotCW, itemRotCCW, itemMirrorX, itemMirrorY);
     }
-    protected Pin[] initPins() {
-        return new Pin[0];
+    protected ArrayList<Pin> initPins() {
+        return new ArrayList<>();
     }
 
     // layout mode
@@ -122,7 +125,7 @@ public abstract class Component {
 
         root.setOpacity(1.0);
         root.setOnMouseEntered(mouse -> root.requestFocus());
-        Tooltip.install(root, new Tooltip(String.format("%s #%s", getClass().getSimpleName(), root.getId())));
+        Tooltip.install(root, new Tooltip(getClass().getSimpleName()));
 
         control.getCircuit().add(this);
     }
@@ -145,19 +148,6 @@ public abstract class Component {
         scale.setY(-scale.getY());
     }
 
-    // connectivity
-    public void nodify() {
-        for (Pin pin : pins) pin.nodify();
-    }
-    public void inspect(Wire wire) {
-        for (Pin pin : pins) pin.inspect(wire);
-    }
-    public HashSet<Node> gather() {
-        HashSet<Node> nodes = new HashSet<>();
-        for (Pin pin : pins) nodes.add(pin.gather());
-        return nodes;
-    }
-
     // simulation
     public boolean isEntryPoint() {
         return false;
@@ -170,22 +160,31 @@ public abstract class Component {
         comp.setAttribute("class", getClass().getSimpleName().toLowerCase());
         comp.setAttribute("x", asInt(root.layoutXProperty()));
         comp.setAttribute("y", asInt(root.layoutYProperty()));
-        comp.setAttribute("rot", asInt(root.rotateProperty()));
-        comp.setAttribute("mx", asInt(root.scaleXProperty()));
-        comp.setAttribute("my", asInt(root.scaleYProperty()));
+        comp.setAttribute("rot", asInt(rotate.angleProperty()));
+        comp.setAttribute("mx", asInt(scale.xProperty()));
+        comp.setAttribute("my", asInt(scale.yProperty()));
         return comp;
     }
     protected void readXML(Element comp) {
         root.setLayoutX(getDouble(comp, "x"));
         root.setLayoutY(getDouble(comp, "y"));
-        root.setRotate(getDouble(comp, "rot"));
-        root.setScaleX(getDouble(comp, "mx"));
-        root.setScaleY(getDouble(comp, "my"));
+        rotate.setAngle(getDouble(comp, "rot"));
+        scale.setX(getDouble(comp, "mx"));
+        scale.setY(getDouble(comp, "my"));
     }
 
     // misc
     protected Pane getRoot() {
         return root;
+    }
+    protected Rotate getRotation() {
+        return rotate;
+    }
+    protected Scale getScale() {
+        return scale;
+    }
+    public ArrayList<Pin> getPins() {
+        return pins;
     }
     private static String asInt(DoubleProperty d) {
         return Integer.toString(d.intValue());

@@ -9,6 +9,7 @@ import javafx.scene.layout.Pane;
 import org.w3c.dom.Element;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 abstract class MOSFET extends Component {
 
@@ -29,11 +30,15 @@ abstract class MOSFET extends Component {
             return new Pane();
         }
     }
-    @Override protected Pin[] initPins() {
+    @Override protected ArrayList<Pin> initPins() {
         source = new Pin(this, true, 0, 2);
         gate = new Pin(this, true, 2, 0);
         drain = new Pin(this, false, 4, 2);
-        return new Pin[] {source, gate, drain};
+        ArrayList<Pin> pins = new ArrayList<>();
+        pins.add(source);
+        pins.add(gate);
+        pins.add(drain);
+        return pins;
     }
 
 }

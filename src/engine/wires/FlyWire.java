@@ -1,4 +1,4 @@
-package engine.connectivity;
+package engine.wires;
 
 import gui.control.ControlMain;
 import javafx.beans.property.DoubleProperty;
@@ -45,11 +45,11 @@ public class FlyWire {
         lineV.endXProperty().bind(x);
     }
     public void confirm() { // enter main mode
-        if (isFirstH && lineV.getStartY() == lineV.getEndY()) {
+        if (lineV.getStartY() == lineV.getEndY()) {
             // lineV is redundant
             lineH.confirm();
             control.getParent().getChildren().remove(lineV);
-        } else if (!isFirstH && lineH.getStartX() == lineH.getEndX()) {
+        } else if (lineH.getStartX() == lineH.getEndX()) {
             // lineH is redundant
             lineV.confirm();
             control.getParent().getChildren().remove(lineH);

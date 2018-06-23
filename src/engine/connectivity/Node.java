@@ -2,37 +2,30 @@ package engine.connectivity;
 
 import engine.LogicLevel;
 import engine.components.Pin;
+import engine.wires.Wire;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 
 public class Node {
 
-    private ArrayList<Pin> pins; // pins, connected to this node
-    private ArrayList<Wire> wires; // wires, included in this node
+    private HashSet<Wire> wires; // wires, included in this node
+    private HashSet<Pin> pins; // pins, connected to this node
 
     private LogicLevel sigResult; // the current signal on the node
 
-    public Node(Pin initial) { // create node with initial pin
-        this();
-        pins.add(initial);
-    }
-    Node(Wire initial) {
-        this();
-        wires.add(initial);
-    }
-    private Node() {
-        pins = new ArrayList<>();
-        wires = new ArrayList<>();
-
+    public Node() {
         sigResult = LogicLevel.ZZZ;
+
+        pins = new HashSet<>();
+        wires = new HashSet<>();
     }
 
     // connectivity
-    public Node mergeAndCopy(Node another) {
-        another.pins.addAll(pins);
-        another.wires.addAll(wires);
-        return another;
+    public void add(Wire wire) {
+        wires.add(wire);
+    }
+    public void add(Pin pin) {
+        pins.add(pin);
     }
 
     // simulation

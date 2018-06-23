@@ -14,6 +14,7 @@ import javafx.scene.paint.Stop;
 import javafx.scene.shape.Circle;
 import org.w3c.dom.Element;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
 public class Indicator extends Component {
@@ -46,13 +47,20 @@ public class Indicator extends Component {
         DoubleProperty size = new SimpleDoubleProperty(2.0);
         value.layoutXProperty().bind(size.subtract(value.widthProperty()).divide(2.0));
         value.layoutYProperty().bind(size.subtract(value.heightProperty()).divide(2.0));
+        value.rotateProperty().bind(getRotation().angleProperty().negate());
+        value.scaleXProperty().bind(getScale().xProperty());
+        value.scaleYProperty().bind(getScale().yProperty());
     }
     public Indicator(ControlMain control, Element data) {
-        super(control, data);
+        this(control);
+        confirm();
+        readXML(data);
     }
-    @Override protected Pin[] initPins() {
+    @Override protected ArrayList<Pin> initPins() {
         source = new Pin(this, true, 0, 1);
-        return new Pin[] {source};
+        ArrayList<Pin> pins = new ArrayList<>();
+        pins.add(source);
+        return pins;
     }
 
     // simulation

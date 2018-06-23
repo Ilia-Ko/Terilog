@@ -7,6 +7,7 @@ import engine.connectivity.Node;
 import gui.control.ControlMain;
 import org.w3c.dom.Element;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
 public class Reconciliator extends Component {
@@ -20,11 +21,15 @@ public class Reconciliator extends Component {
     public Reconciliator(ControlMain control, Element data) {
         super(control, data);
     }
-    @Override protected Pin[] initPins() {
+    @Override protected ArrayList<Pin> initPins() {
         source = new Pin(this, true, 0, 1);
         pull = new Pin(this, true, 1, 0);
         drain = new Pin(this, false, 2, 1);
-        return new Pin[] {source, pull, drain};
+        ArrayList<Pin> pins = new ArrayList<>();
+        pins.add(source);
+        pins.add(pull);
+        pins.add(drain);
+        return pins;
     }
 
     // simulation
@@ -40,7 +45,7 @@ public class Reconciliator extends Component {
             changed = drain.update(s);
 
         // report about affected nodes
-        if (changed) affected.add(drain.gather());
+        if (changed) affected.add(drain.getNode());
         return affected;
     }
 

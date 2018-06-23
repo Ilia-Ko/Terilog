@@ -11,7 +11,7 @@ import engine.components.mosfets.HardN;
 import engine.components.mosfets.HardP;
 import engine.components.mosfets.SoftN;
 import engine.components.mosfets.SoftP;
-import engine.connectivity.FlyWire;
+import engine.wires.FlyWire;
 import gui.Main;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
@@ -44,6 +44,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -135,6 +136,7 @@ public class ControlMain {
 
         // circuit logic
         circuit = new Circuit();
+        stage.setTitle(String.format("%s - %s", Main.TITLE, circuit.getName()));
         try {
             ioSystem = new TerilogIO(this);
         } catch (ParserConfigurationException | TransformerConfigurationException e) {
@@ -142,6 +144,9 @@ public class ControlMain {
             ioSystem = null;
         }
         lastSave = null;
+
+        // menu play text
+        circuit.getSimRunProperty().addListener((observable, oldValue, newValue) -> menuPlay.setText(newValue ? "Stop" : "Start"));
     }
     private void renderField() {
         // configure gc
@@ -262,10 +267,12 @@ public class ControlMain {
 
         // get file
         File tlg = chooser.showOpenDialog(stage);
+        if (tlg == null || !tlg.exists()) return;
 
         // load it
         try {
             ioSystem.loadTLG(tlg);
+            stage.setTitle(String.format("%s - %s", Main.TITLE, circuit.getName()));
         } catch (IOException e) {
             e.printStackTrace();
             // show IO alert
@@ -298,7 +305,9 @@ public class ControlMain {
         chooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("TLG files", "*.tlg"));
 
         // get file
-        lastSave = chooser.showSaveDialog(stage);
+        File save = chooser.showSaveDialog(stage);
+        if (save == null || !save.exists()) return;
+        lastSave = save;
 
         // save it
         updateSavedFile();
@@ -360,13 +369,11 @@ public class ControlMain {
 
     // menu.simulate
     @FXML private void menuPlay() {
-        if (circuit.isSimulationRunning()) {
+        if (circuit.getSimRunProperty().get()) {
             circuit.stopSimulation();
-            menuPlay.setText("Start");
         } else {
             circuit.parse();
             circuit.startSimulation();
-            menuPlay.setText("Stop");
         }
     }
     @FXML private void menuSettings() {
@@ -469,6 +476,7 @@ public class ControlMain {
     private void updateSavedFile() {
         try {
             ioSystem.saveTLG(lastSave);
+            stage.setTitle(circuit.getName());
         } catch (TransformerException e) {
             e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -481,11 +489,17 @@ public class ControlMain {
     }
     public Element writeGridToXML(Document doc) {
         Element g = doc.createElement("grid");
-        g.setAttribute("w", w.toString());
-        g.setAttribute("h", h.toString());
+        g.setAttribute("w", Integer.toString(w.intValue()));
+        g.setAttribute("h", Integer.toString(h.intValue()));
         return g;
     }
-    public void readGridFromXML(Element g) {
+    public void readGridFromXML(Element c) {
+        NodeList list = c.getElementsByTagName("grid");
+        if (list.getLength() != 1) {
+            System.out.println("WARNING: <circuit> entry should contain exactly one <grid> tag.");
+            return;
+        }
+        Element g = (Element) list.item(0);
         w.setValue(Integer.parseInt(g.getAttribute("w")));
         h.setValue(Integer.parseInt(g.getAttribute("h")));
     }

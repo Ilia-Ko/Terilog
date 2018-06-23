@@ -15,6 +15,7 @@ import javafx.scene.shape.Rectangle;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
 public class Voltage extends Component {
@@ -42,13 +43,20 @@ public class Voltage extends Component {
         DoubleProperty size = new SimpleDoubleProperty(2.0);
         value.layoutXProperty().bind(size.subtract(value.widthProperty()).divide(2.0));
         value.layoutYProperty().bind(size.subtract(value.heightProperty()).divide(2.0));
+        value.rotateProperty().bind(getRotation().angleProperty().negate());
+        value.scaleXProperty().bind(getScale().xProperty());
+        value.scaleYProperty().bind(getScale().yProperty());
     }
     public Voltage(ControlMain control, Element data) {
-        super(control, data);
+        this(control);
+        confirm();
+        readXML(data);
     }
-    @Override protected Pin[] initPins() {
+    @Override protected ArrayList<Pin> initPins() {
         drain = new Pin(this, false, 1, 2);
-        return new Pin[] {drain};
+        ArrayList<Pin> pins = new ArrayList<>();
+        pins.add(drain);
+        return pins;
     }
     @Override protected ContextMenu buildContextMenu() {
         LogicLevel[] levels = LogicLevel.values();
@@ -56,11 +64,7 @@ public class Voltage extends Component {
         for (int i = 0; i < levels.length; i++) {
             LogicLevel lev = levels[i];
             items[i] = new MenuItem(String.format("%c (%s)", lev.getDigitCharacter(), lev.getStandardName()));
-            items[i].setOnAction(event -> {
-                colour.setValue(lev.colour());
-                text.setValue(String.valueOf(lev.getDigitCharacter()));
-                signal = lev;
-            });
+            items[i].setOnAction(event -> setSignal(lev));
         }
 
         Menu menuSet = new Menu("Set voltage");
@@ -77,8 +81,13 @@ public class Voltage extends Component {
     }
     @Override public HashSet<Node> simulate() {
         HashSet<Node> affected = new HashSet<>();
-        if (drain.update(signal)) affected.add(drain.gather());
+        if (drain.update(signal)) affected.add(drain.getNode());
         return affected;
+    }
+    private void setSignal(LogicLevel sig) {
+        colour.setValue(sig.colour());
+        text.setValue(String.valueOf(sig.getDigitCharacter()));
+        signal = sig;
     }
 
     // xml info
@@ -89,7 +98,12 @@ public class Voltage extends Component {
     }
     @Override protected void readXML(Element comp) {
         super.readXML(comp);
-        signal = LogicLevel.parseName(comp.getAttribute("sig"));
+        String sigAttr = comp.getAttribute("sig");
+        LogicLevel sig = LogicLevel.parseName(sigAttr);
+        if (sig == null)
+            System.out.printf("WARNING: unknown signal name '%s'. Using default Z value.", sigAttr);
+        else
+            setSignal(sig);
     }
 
 }

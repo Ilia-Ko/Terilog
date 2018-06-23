@@ -1,5 +1,8 @@
-package engine.connectivity;
+package engine.wires;
 
+import engine.LogicLevel;
+import engine.connectivity.Connectible;
+import engine.connectivity.Node;
 import gui.control.ControlMain;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -9,7 +12,9 @@ import javafx.scene.shape.Line;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-public class Wire extends Line {
+import java.util.HashSet;
+
+public class Wire extends Line implements Connectible {
 
     // Wire is a line, connecting two points on the circuit grid.
     // For layout convenience, FlyWire class is created.
@@ -23,13 +28,12 @@ public class Wire extends Line {
     private static final Bloom HIGHLIGHT = new Bloom(0.7);
 
     private ControlMain control;
-    private boolean isFlying;
+    private HashSet<Connectible> connectibles;
     private Node node;
 
     // initialization
     Wire(ControlMain control, IntegerProperty x0, IntegerProperty y0, IntegerProperty x1, IntegerProperty y1) {
         this.control = control;
-        isFlying = true;
 
         // create wire in layout mode
         startXProperty().bind(x0);
@@ -42,12 +46,11 @@ public class Wire extends Line {
     }
     public Wire(ControlMain control, Element w) {
         this.control = control;
-        isFlying = false;
 
-        startXProperty().setValue(Integer.parseInt(w.getAttribute("x0")));
-        startYProperty().setValue(Integer.parseInt(w.getAttribute("y0")));
-        endXProperty().setValue(Integer.parseInt(w.getAttribute("x1")));
-        endYProperty().setValue(Integer.parseInt(w.getAttribute("y1")));
+        startXProperty().setValue(getInt(w, "x0"));
+        startYProperty().setValue(getInt(w, "y0"));
+        endXProperty().setValue(getInt(w, "x1"));
+        endYProperty().setValue(getInt(w, "y1"));
         setStrokeWidth(0.1);
         control.getParent().getChildren().add(this);
 
@@ -55,12 +58,10 @@ public class Wire extends Line {
     }
 
     void confirm() {
-        if (isFlying) {
-            startXProperty().unbind();
-            startYProperty().unbind();
-            endXProperty().unbind();
-            endYProperty().unbind();
-        }
+        startXProperty().unbind();
+        startYProperty().unbind();
+        endXProperty().unbind();
+        endYProperty().unbind();
 
         setOpacity(1.0);
         setOnMouseEntered(mouse -> {
@@ -78,7 +79,34 @@ public class Wire extends Line {
 
         control.getCircuit().add(this);
     }
-    public boolean inside(int x, int y) {
+
+    // connectivity
+    @Override public void reset() {
+        node = null;
+        connectibles = new HashSet<>();
+        setStroke(LogicLevel.ZZZ.colour());
+    }
+    // parsing.stage1
+    @Override public void inspect(Wire wire) {
+        int x0, y0, x1, y1;
+
+        // check if this wire touches given one
+        x0 = this.startXProperty().intValue();
+        y0 = this.startYProperty().intValue();
+        x1 = this.endXProperty().intValue();
+        y1 = this.endYProperty().intValue();
+        boolean a = wire.inside(x0, y0) || wire.inside(x1, y1);
+
+        // check if given wire touches this one
+        x0 = wire.startXProperty().intValue();
+        y0 = wire.startYProperty().intValue();
+        x1 = wire.endXProperty().intValue();
+        y1 = wire.endYProperty().intValue();
+        boolean b = this.inside(x0, y0) || this.inside(x1, y1);
+
+        if (a || b) Connectible.establishConnection(this, wire);
+    }
+    @Override public boolean inside(int x, int y) {
         int x0 = startXProperty().intValue();
         int y0 = startYProperty().intValue();
         int x1 = endXProperty().intValue();
@@ -87,28 +115,24 @@ public class Wire extends Line {
         if (x0 == x1) return x == x0 && between(y, y0, y1);
         else if (y0 == y1) return y == y0 && between(x, x0, x1);
         else {
-            // wires are not recommended to be diagonal, but it is not forbidden
+            // diagonal wires are not recommended, but it is not forbidden
             double k = (double) (y1 - y0) / (double) (x1 - x0);
             double m = y0 - k * x0;
             return y == (int) Math.round(k * x + m);
         }
     }
-
-    // connectivity
-    public void inspect(Wire wire) {
-        int x0 = startXProperty().intValue();
-        int y0 = startYProperty().intValue();
-        int x1 = endXProperty().intValue();
-        int y1 = endYProperty().intValue();
-
-        if (wire.inside(x0, y0) || wire.inside(x1, y1))
-            node = node.mergeAndCopy(wire.gather());
+    @Override public void connect(Connectible con) {
+        connectibles.add(con);
     }
-    public void nodify() {
-        node = new Node(this);
+    // parsing.stage2
+    @Override public boolean isNodeFree() {
+        return node == null;
     }
-    public Node gather() {
-        return node;
+    @Override public void nodify(Node node) {
+        node.add(this);
+        this.node = node;
+        for (Connectible con : connectibles)
+            if (con.isNodeFree()) con.nodify(node);
     }
 
     // xml info
@@ -124,6 +148,9 @@ public class Wire extends Line {
     // util
     private static String asInt(DoubleProperty d) {
         return Integer.toString(d.intValue());
+    }
+    private static int getInt(Element from, String what) {
+        return Integer.parseInt(from.getAttribute(what));
     }
     private static boolean between(int what, int a, int b) {
         return Math.abs(what - a) + Math.abs(what - b) == Math.abs(a - b);

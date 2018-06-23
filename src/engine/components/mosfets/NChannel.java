@@ -31,13 +31,13 @@ abstract class NChannel extends MOSFET {
             changed = drain.update(LogicLevel.ZZZ);
         else if (s == LogicLevel.ERR || g.isUnstable())
             changed = drain.update(LogicLevel.ERR);
-        else if (g.volts()-s.volts()>=vgsth)
+        else if (g.volts() - s.volts() >= vgsth)
             changed = drain.update(s);
         else
             changed = drain.update(LogicLevel.ZZZ);
 
         // report about affected node
-        if (changed) affected.add(drain.gather());
+        if (changed) affected.add(drain.getNode());
         return affected;
     }
 

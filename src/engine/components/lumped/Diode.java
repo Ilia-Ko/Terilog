@@ -7,6 +7,7 @@ import engine.connectivity.Node;
 import gui.control.ControlMain;
 import org.w3c.dom.Element;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
 public class Diode extends Component {
@@ -20,10 +21,13 @@ public class Diode extends Component {
     public Diode(ControlMain control, Element data) {
         super(control, data);
     }
-    @Override protected Pin[] initPins() {
+    @Override protected ArrayList<Pin> initPins() {
         anode = new Pin(this, true, 0, 1);
         cathode = new Pin(this, true, 4, 1);
-        return new Pin[] {anode, cathode};
+        ArrayList<Pin> pins = new ArrayList<>();
+        pins.add(anode);
+        pins.add(cathode);
+        return pins;
     }
 
     // simulation
@@ -47,8 +51,8 @@ public class Diode extends Component {
         }
 
         // report about affected nodes
-        if (changedA) affected.add(anode.gather());
-        if (changedC) affected.add(cathode.gather());
+        if (changedA) affected.add(anode.getNode());
+        if (changedC) affected.add(cathode.getNode());
         return affected;
     }
 
