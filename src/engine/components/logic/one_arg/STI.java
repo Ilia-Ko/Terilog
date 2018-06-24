@@ -31,7 +31,6 @@ public class STI extends Gate1to1 {
             Color colour = newValue ? Color.LIGHTGRAY : Color.LIGHTGREEN;
             body.setFill(colour);
             head.setFill(colour);
-
         }));
     }
     public STI(ControlMain control, Element data) {

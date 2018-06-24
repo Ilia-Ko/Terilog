@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<circuit name="Full Adder">
+    <comp class="voltage" mx="1" my="1" rot="-90" sig="MID" x="3" y="5"/>
+    <comp class="voltage" mx="1" my="1" rot="-90" sig="MID" x="3" y="8"/>
+    <comp class="voltage" mx="1" my="1" rot="-90" sig="MID" x="3" y="11"/>
+    <comp class="sti" mode="0to0" mx="1" my="1" rot="0" x="8" y="3"/>
+    <comp class="halfadder" mx="1" my="1" rot="0" x="8" y="6"/>
+    <comp class="halfadder" mx="1" my="1" rot="0" x="21" y="6"/>
+    <comp class="sti" mode="0to0" mx="-1" my="1" rot="0" x="27" y="11"/>
+    <comp class="nany" mx="1" my="1" rot="0" x="21" y="14"/>
+    <comp class="indicator" mx="1" my="1" rot="0" x="34" y="6"/>
+    <comp class="indicator" mx="1" my="1" rot="0" x="34" y="9"/>
+    <wire x0="5" x1="8" y0="4" y1="4"/>
+    <wire x0="5" x1="8" y0="7" y1="7"/>
+    <wire x0="5" x1="8" y0="10" y1="10"/>
+    <wire x0="8" x1="8" y0="10" y1="9"/>
+    <wire x0="16" x1="21" y0="7" y1="7"/>
+    <wire x0="21" x1="19" y0="9" y1="9"/>
+    <wire x0="19" x1="19" y0="9" y1="4"/>
+    <wire x0="19" x1="12" y0="4" y1="4"/>
+    <wire x0="16" x1="18" y0="9" y1="9"/>
+    <wire x0="18" x1="18" y0="9" y1="17"/>
+    <wire x0="18" x1="21" y0="17" y1="17"/>
+    <wire x0="21" x1="23" y0="12" y1="12"/>
+    <wire x0="21" x1="21" y0="15" y1="12"/>
+    <wire x0="27" x1="29" y0="12" y1="12"/>
+    <wire x0="29" x1="29" y0="12" y1="9"/>
+    <wire x0="29" x1="34" y0="7" y1="7"/>
+    <wire x0="29" x1="31" y0="16" y1="16"/>
+    <wire x0="31" x1="31" y0="16" y1="10"/>
+    <wire x0="31" x1="34" y0="10" y1="10"/>
+    <grid h="56" w="100"/>
+</circuit>

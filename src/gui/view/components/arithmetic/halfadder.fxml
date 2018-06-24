@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--suppress ALL -->
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.*?>
+<Pane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+
+    <!--legs-->
+    <Line stroke="black" strokeWidth="0.1" startX="0" startY="1" endX="1" endY="1"/>
+    <Line stroke="black" strokeWidth="0.1" startX="0" startY="3" endX="1" endY="3"/>
+    <Line stroke="black" strokeWidth="0.1" startX="7" startY="1" endX="8" endY="1"/>
+    <Line stroke="black" strokeWidth="0.1" startX="7" startY="3" endX="8" endY="3"/>
+
+    <!--body-->
+    <Path stroke="black" strokeWidth="0.1" fill="lightgray">
+        <elements>
+            <MoveTo x="1" y="1"/>
+            <LineTo x="2" y="0"/>
+            <LineTo x="6" y="0"/>
+            <LineTo x="6" y="4"/>
+            <LineTo x="2" y="4"/>
+            <LineTo x="1" y="3"/>
+            <LineTo x="1" y="1"/>
+        </elements>
+    </Path>
+
+    <!--heads-->
+    <Circle stroke="black" strokeWidth="0.1" fill="lightgray" centerX="6.5" centerY="1" radius="0.5"/>
+    <Circle stroke="black" strokeWidth="0.1" fill="lightgray" centerX="6.5" centerY="3" radius="0.5"/>
+
+    <!--names-->
+    <Label text="A" layoutX="2" layoutY="0.5" textFill="black" style="-fx-font-size: 1px" textAlignment="CENTER"/>
+    <Label fx:id="lblB" text="B" layoutX="2" textFill="black" style="-fx-font-size: 1px" textAlignment="CENTER"/>
+    <Label fx:id="lblS" text="S" layoutY="0.5" textFill="black" style="-fx-font-size: 1px" textAlignment="CENTER"/>
+    <Label fx:id="lblC" text="C" textFill="black" style="-fx-font-size: 1px" textAlignment="CENTER"/>
+
+</Pane>

@@ -31,7 +31,6 @@ public class Diode extends Component {
 
     // simulation
     @Override public HashSet<Node> simulate() {
-        HashSet<Node> affected = new HashSet<>();
         boolean changedA = false, changedC = false;
         LogicLevel a = anode.querySigFromNode();
         LogicLevel c = cathode.querySigFromNode();
@@ -50,6 +49,7 @@ public class Diode extends Component {
         }
 
         // report about affected nodes
+        HashSet<Node> affected = new HashSet<>();
         if (changedA) affected.add(anode.getNode());
         if (changedC) affected.add(cathode.getNode());
         return affected;

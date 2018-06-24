@@ -45,7 +45,6 @@ abstract class Gate2to1 extends Component {
 
     // simulation
     @Override public HashSet<Node> simulate() {
-        HashSet<Node> affected = new HashSet<>();
         boolean changed;
         LogicLevel a = inA.querySigFromNode();
         LogicLevel b = inB.querySigFromNode();
@@ -54,6 +53,8 @@ abstract class Gate2to1 extends Component {
         if (a.isUnstable() || b.isUnstable()) changed = out.update(LogicLevel.ERR);
         else changed = out.update(function(a, b));
 
+        // report about affected nodes
+        HashSet<Node> affected = new HashSet<>();
         if (changed) affected.add(out.getNode());
         return affected;
     }

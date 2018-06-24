@@ -23,6 +23,6 @@
     </Polygon>
 
     <!--head-->
-    <Circle fx:id="head" stroke="black" strokeWidth="0.1" fill="lightgray" centerX="3" centerY="1" radius="0.5"/>
+    <Circle fx:id="head" stroke="black" strokeWidth="0.1" fill="lightgreen" centerX="3" centerY="1" radius="0.5"/>
 
 </Pane>

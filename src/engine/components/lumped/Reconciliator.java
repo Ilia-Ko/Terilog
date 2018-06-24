@@ -72,7 +72,6 @@ public class Reconciliator extends Component {
         return true;
     }
     @Override public HashSet<Node> simulate() {
-        HashSet<Node> affected = new HashSet<>();
         boolean changed;
         LogicLevel s = source.querySigFromNode();
 
@@ -83,6 +82,7 @@ public class Reconciliator extends Component {
             changed = drain.update(s);
 
         // report about affected nodes
+        HashSet<Node> affected = new HashSet<>();
         if (changed) affected.add(drain.getNode());
         return affected;
     }
