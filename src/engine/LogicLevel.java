@@ -36,7 +36,7 @@ public enum LogicLevel {
             return false;
         }
     }, // undefined, non-critical, like QNaN in FPU
-    ERR("E",    '!',      22, false, Color.RED) {
+    ERR("E",    '!',      22, false, Color.YELLOW) {
         @Override public boolean conflicts(LogicLevel signal) {
             return !signal.isUnstable();
         }

@@ -10,13 +10,14 @@ import engine.components.mosfets.HardN;
 import engine.components.mosfets.HardP;
 import engine.components.mosfets.SoftN;
 import engine.components.mosfets.SoftP;
-import engine.connectivity.Connectible;
 import engine.connectivity.Node;
 import engine.wires.Wire;
 import gui.control.ControlMain;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -57,15 +58,21 @@ public class Circuit {
 
     private static final String DEF_NAME = "Untitled";
 
-    private String name;
+    // construction
+    private StringProperty name;
     private ArrayList<Component> components, entries;
     private ArrayList<Wire> wires;
     private ArrayList<Pin> pins;
+    // simulation
+    private ArrayList<Node> nodes;
     private BooleanProperty simRunProperty; // flag for threading
+    private boolean needsReparsing;
 
     public Circuit() {
-        name = DEF_NAME;
+        name = new SimpleStringProperty(DEF_NAME);
         simRunProperty = new SimpleBooleanProperty(false);
+        needsReparsing = true;
+
         components = new ArrayList<>();
         entries = new ArrayList<>();
         wires = new ArrayList<>();
@@ -73,7 +80,7 @@ public class Circuit {
     }
     public Circuit(ControlMain control, Element c) {
         this();
-        name = c.getAttribute("name");
+        name.setValue(c.getAttribute("name"));
         NodeList list;
 
         // create components
@@ -122,52 +129,62 @@ public class Circuit {
     // construction
     public void add(Wire wire) {
         wires.add(wire);
+        needsReparsing = true;
     }
     public void del(Wire wire) {
-        wires.remove(wire);
+        needsReparsing = wires.remove(wire);
     }
     public void add(Component comp) {
         components.add(comp);
         if (comp.isEntryPoint()) entries.add(comp);
         pins.addAll(comp.getPins());
+        needsReparsing = true;
     }
     public void del(Component comp) {
-        components.remove(comp);
+        needsReparsing = components.remove(comp);
         if (comp.isEntryPoint()) entries.remove(comp);
     }
     void destroy() {
-        wires.forEach(Wire::delete);
-        components.forEach(Component::delete);
+        name.setValue(DEF_NAME);
+        wires.forEach(wire -> wire.delete(false));
+        wires.clear();
+        components.forEach(comp -> comp.delete(false));
+        components.clear();
     }
 
-    // connectivity
-    public void parse() {
-        // reset everything
-        wires.forEach(Connectible::reset);
-        pins.forEach(Connectible::reset);
+    // first methods are the most 'algorithmic' part of Terilog
+    private void parse() {
+        reset(true);
 
-        // parsing.stage1.a: searching for connections between wires
+        // parsing.stage1.a: searching for connections between wires - O(n*n)
         int len = wires.size();
         for (int i = 0; i < len; i++)
             for (int j = i + 1; j < len; j++)
                 wires.get(i).inspect(wires.get(j));
 
-        // parsing.stage1.b: searching for connections between wires and pins
+        // parsing.stage1.b: searching for connections between wires and pins - O(m*n)
         for (Pin pin : pins)
             for (Wire wire : wires)
                 pin.inspect(wire);
 
-        // parsing.stage2.a: nodify wires
+        // parsing.stage2.a: nodify wires - O(n)
         for (Wire wire : wires)
-            if (wire.isNodeFree())
-                wire.nodify(new Node());
+            if (wire.isNodeFree()) {
+                Node node = new Node();
+                wire.nodify(node);
+                nodes.add(node);
+            }
 
-        // parsing.stage2.b: nodify pins
+        // parsing.stage2.b: nodify pins - O(m)
         for (Pin pin : pins)
-            if (pin.isNodeFree())
-                pin.nodify(new Node());
+            if (pin.isNodeFree()) {
+                Node node = new Node();
+                pin.nodify(node);
+                nodes.add(node);
+            }
 
         // Nice system of nodes is ready to simulation!
+        needsReparsing = false;
     }
     private void simulate() {
         simRunProperty.setValue(true);
@@ -185,9 +202,18 @@ public class Circuit {
 
         simRunProperty.setValue(false);
     }
+    private void reset(boolean denodify) {
+        if (denodify) nodes = new ArrayList<>();
+        else nodes.forEach(Node::reset);
+        wires.forEach(wire -> wire.reset(denodify));
+        pins.forEach(pin -> pin.reset(denodify));
+    }
 
     // simulation
     public void startSimulation() {
+        if (needsReparsing) parse();
+        else reset(false);
+
         Platform.runLater(this::simulate);
     }
     public void stopSimulation() {
@@ -200,7 +226,7 @@ public class Circuit {
     // xml info
     Element writeCircuitToXML(Document doc) {
         Element c = doc.createElement("circuit");
-        c.setAttribute("name", name);
+        c.setAttribute("name", name.get());
 
         for (Component comp : components)
             c.appendChild(comp.writeXML(doc));
@@ -210,7 +236,7 @@ public class Circuit {
 
         return c;
     }
-    public String getName() {
+    public StringProperty getNameProperty() {
         return name;
     }
 

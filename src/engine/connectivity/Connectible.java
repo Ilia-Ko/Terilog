@@ -13,7 +13,7 @@ public interface Connectible {
     boolean isNodeFree();
     void nodify(Node node);
 
-    void reset();
+    void reset(boolean denodify);
     static void establishConnection(Connectible a, Connectible b) {
         a.connect(b);
         b.connect(a);

@@ -29,22 +29,30 @@ public class Node {
     }
 
     // simulation
+    public void reset() {
+        sigResult = LogicLevel.ZZZ;
+        updateWires();
+    }
     public HashSet<Node> simulate() {
         HashSet<Node> affected = new HashSet<>();
         for (Pin pin : pins) affected.addAll(pin.simulate());
         return affected;
     }
-    public boolean update(LogicLevel signal) { // return true if sigResult changes
-        if (signal.conflicts(sigResult)) {
-            sigResult = LogicLevel.ERR;
-            updateWires();
-            return true;
-        } else if (signal.suppresses(sigResult)) {
-            sigResult = signal;
-            updateWires();
-            return true;
+    public boolean update() { // return true if sigResult changes
+        boolean changed = sigResult != LogicLevel.ZZZ;
+        sigResult = LogicLevel.ZZZ;
+        for (Pin pin : pins) {
+            LogicLevel pinSig = pin.querySigFromOwner();
+            if (pinSig.conflicts(sigResult)) {
+                sigResult = LogicLevel.ERR;
+                changed = true;
+            } else if (pinSig.suppresses(sigResult)) {
+                sigResult = pinSig;
+                changed = true;
+            }
         }
-        return false;
+        if (changed) updateWires();
+        return changed;
     }
     public LogicLevel query() {
         return sigResult;

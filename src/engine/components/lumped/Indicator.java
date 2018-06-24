@@ -14,7 +14,6 @@ import javafx.scene.paint.Stop;
 import javafx.scene.shape.Circle;
 import org.w3c.dom.Element;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 
 public class Indicator extends Component {
@@ -56,16 +55,16 @@ public class Indicator extends Component {
         confirm();
         readXML(data);
     }
-    @Override protected ArrayList<Pin> initPins() {
-        source = new Pin(this, true, 0, 1);
-        ArrayList<Pin> pins = new ArrayList<>();
+    @Override protected HashSet<Pin> initPins() {
+        source = new Pin(this, true, false, 0, 1);
+        HashSet<Pin> pins = new HashSet<>();
         pins.add(source);
         return pins;
     }
 
     // simulation
     @Override public HashSet<Node> simulate() {
-        LogicLevel signal = source.query();
+        LogicLevel signal = source.querySigFromNode();
         colour.setValue(signal.colour());
         text.setValue(String.valueOf(signal.getDigitCharacter()));
         return new HashSet<>();

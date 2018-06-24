@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--suppress ALL -->
+
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.shape.Polygon?>
+<?import java.lang.*?>
+<Pane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+
+    <!--legs-->
+    <Line stroke="black" strokeWidth="0.1" startX="0" startY="1" endX="0.5" endY="1"/>
+    <Line stroke="black" strokeWidth="0.1" startX="3.5" startY="1" endX="4" endY="1"/>
+
+    <!--body-->
+    <Polygon stroke="black" strokeWidth="0.1" fill="lightcoral">
+        <points>
+            <Double fx:value="0.5"/> <Double fx:value="0"/>
+            <Double fx:value="0.5"/> <Double fx:value="2"/>
+            <Double fx:value="2.5"/> <Double fx:value="1"/>
+        </points>
+    </Polygon>
+
+    <!--head-->
+    <Circle stroke="black" strokeWidth="0.1" fill="lightcoral" centerX="3" centerY="1" radius="0.5"/>
+
+</Pane>

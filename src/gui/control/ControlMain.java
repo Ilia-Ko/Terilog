@@ -3,6 +3,9 @@ package gui.control;
 import engine.Circuit;
 import engine.TerilogIO;
 import engine.components.Component;
+import engine.components.logic.inverters.NTI;
+import engine.components.logic.inverters.PTI;
+import engine.components.logic.inverters.STI;
 import engine.components.lumped.Diode;
 import engine.components.lumped.Indicator;
 import engine.components.lumped.Reconciliator;
@@ -134,9 +137,8 @@ public class ControlMain {
         point.centerYProperty().bind(mouseY);
         parent.getChildren().add(point);
 
-        // circuit logic
-        circuit = new Circuit();
-        stage.setTitle(String.format("%s - %s", Main.TITLE, circuit.getName()));
+        // init circuit
+        setCircuit(new Circuit());
         try {
             ioSystem = new TerilogIO(this);
         } catch (ParserConfigurationException | TransformerConfigurationException e) {
@@ -144,9 +146,6 @@ public class ControlMain {
             ioSystem = null;
         }
         lastSave = null;
-
-        // menu play text
-        circuit.getSimRunProperty().addListener((observable, oldValue, newValue) -> menuPlay.setText(newValue ? "Stop" : "Start"));
     }
     private void renderField() {
         // configure gc
@@ -218,11 +217,8 @@ public class ControlMain {
         }
         if (holdingComp) {
             switch (code) {
-                case INSERT:
-                    moveComp(flyComp);
-                    break;
                 case DELETE:
-                    deleteComp(flyComp);
+                    flyComp.delete(false);
                     break;
                 case CLOSE_BRACKET:
                     flyComp.rotateCW();
@@ -239,17 +235,9 @@ public class ControlMain {
             }
         }
     }
-    private void moveComp(Component comp) {
-        deleteComp(comp);
-        flyComp = new HardN(this);
-    }
-    private void deleteComp(Component comp) {
-        flyComp.delete();
-        circuit.del(comp);
-    }
     private void breakInsertion() {
         if (holdingComp) {
-            flyComp.delete();
+            flyComp.delete(false);
             holdingComp = false;
         } else if (holdingWire) {
             flyWire.delete();
@@ -268,11 +256,11 @@ public class ControlMain {
         // get file
         File tlg = chooser.showOpenDialog(stage);
         if (tlg == null || !tlg.exists()) return;
+        lastSave = tlg;
 
         // load it
         try {
             ioSystem.loadTLG(tlg);
-            stage.setTitle(String.format("%s - %s", Main.TITLE, circuit.getName()));
         } catch (IOException e) {
             e.printStackTrace();
             // show IO alert
@@ -306,7 +294,7 @@ public class ControlMain {
 
         // get file
         File save = chooser.showSaveDialog(stage);
-        if (save == null || !save.exists()) return;
+        if (save == null) return;
         lastSave = save;
 
         // save it
@@ -320,7 +308,7 @@ public class ControlMain {
         System.exit(0);
     }
 
-    // menu.add
+    // menu.add.mosfet
     @FXML private void menuHardN() {
         breakInsertion();
         flyComp = new HardN(this);
@@ -341,6 +329,7 @@ public class ControlMain {
         flyComp = new SoftP(this);
         holdingComp = true;
     }
+    // menu.add.lumped
     @FXML private void menuDiode() {
         breakInsertion();
         flyComp = new Diode(this);
@@ -361,20 +350,54 @@ public class ControlMain {
         flyComp = new Indicator(this);
         holdingComp = true;
     }
+    // menu.add.logic 1-arg
+    @FXML private void menuNTI() {
+        breakInsertion();
+        flyComp = new NTI(this);
+        holdingComp = true;
+    }
+    @FXML private void menuSTI() {
+        breakInsertion();
+        flyComp = new STI(this);
+        holdingComp = true;
+    }
+    @FXML private void menuPTI() {
+        breakInsertion();
+        flyComp = new PTI(this);
+        holdingComp = true;
+    }
+    // menu.add.logic 2-arg
+    @FXML private void menuNAND() {
+        breakInsertion();
+//        flyComp = null;
+//        holdingComp = true;
+    }
+    @FXML private void menuNOR() {
+        breakInsertion();
+//        flyComp = null;
+//        holdingComp = true;
+    }
+    @FXML private void menuNCON() {
+        breakInsertion();
+//        flyComp = null;
+//        holdingComp = true;
+    }
+    @FXML private void menuNANY() {
+        breakInsertion();
+//        flyComp = null;
+//        holdingComp = true;
+    }
+    // menu.add.wire
     @FXML private void menuWire() {
         breakInsertion();
         flyWire = new FlyWire(this);
         holdingWire = true;
     }
 
-    // menu.simulate
+    // menu.circuit
     @FXML private void menuPlay() {
-        if (circuit.getSimRunProperty().get()) {
-            circuit.stopSimulation();
-        } else {
-            circuit.parse();
-            circuit.startSimulation();
-        }
+        if (circuit.getSimRunProperty().get()) circuit.stopSimulation();
+        else circuit.startSimulation();
     }
     @FXML private void menuSettings() {
         try {
@@ -451,6 +474,11 @@ public class ControlMain {
     }
     public void setCircuit(Circuit circuit) {
         this.circuit = circuit;
+        stage.setTitle(String.format("%s - %s", Main.TITLE, circuit.getNameProperty().get()));
+
+        // bindings
+        circuit.getSimRunProperty().addListener((observable, oldValue, newValue) -> menuPlay.setText(newValue ? "Stop" : "Start"));
+        circuit.getNameProperty().addListener(((observable, oldValue, newValue) -> stage.setTitle(String.format("%s - %s", Main.TITLE, newValue))));
     }
     public Pane getParent() {
         return parent;
@@ -476,7 +504,6 @@ public class ControlMain {
     private void updateSavedFile() {
         try {
             ioSystem.saveTLG(lastSave);
-            stage.setTitle(circuit.getName());
         } catch (TransformerException e) {
             e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR);

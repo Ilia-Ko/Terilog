@@ -15,7 +15,6 @@ import javafx.scene.shape.Rectangle;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 
 public class Voltage extends Component {
@@ -52,9 +51,9 @@ public class Voltage extends Component {
         confirm();
         readXML(data);
     }
-    @Override protected ArrayList<Pin> initPins() {
-        drain = new Pin(this, false, 1, 2);
-        ArrayList<Pin> pins = new ArrayList<>();
+    @Override protected HashSet<Pin> initPins() {
+        drain = new Pin(this, false, true, 1, 2);
+        HashSet<Pin> pins = new HashSet<>();
         pins.add(drain);
         return pins;
     }

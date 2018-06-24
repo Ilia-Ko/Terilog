@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--suppress ALL -->
+
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.shape.Polygon?>
 <?import java.lang.*?>
-<Pane xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml">
+<Pane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
 
     <!--anode-->
     <Line stroke="black" strokeWidth="0.1" startX="0" startY="1" endX="1" endY="1"/>
@@ -14,7 +14,7 @@
         <points>
             <Double fx:value="1"/> <Double fx:value="0"/>
             <Double fx:value="1"/> <Double fx:value="2"/>
-            <Double fx:value="2"/> <Double fx:value="1"/>
+            <Double fx:value="3"/> <Double fx:value="1"/>
         </points>
     </Polygon>
 

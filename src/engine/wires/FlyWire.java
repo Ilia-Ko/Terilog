@@ -64,8 +64,6 @@ public class FlyWire {
     }
     public void delete() {
         control.getParent().getChildren().removeAll(lineH, lineV);
-        control.getCircuit().del(lineH);
-        control.getCircuit().del(lineV);
     }
 
 }

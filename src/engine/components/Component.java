@@ -9,7 +9,6 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tooltip;
 import javafx.scene.effect.Bloom;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.Pane;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
@@ -17,7 +16,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
 
 public abstract class Component {
@@ -26,7 +24,7 @@ public abstract class Component {
     private ControlMain control;
     private Rotate rotate;
     private Scale scale;
-    private ArrayList<Pin> pins;
+    private HashSet<Pin> pins;
 
     // initialization
     private Component(ControlMain control, boolean isLayoutMode) {
@@ -75,7 +73,7 @@ public abstract class Component {
     protected ContextMenu buildContextMenu() {
         // move
         MenuItem itemMove = new MenuItem("Move");
-        itemMove.setAccelerator(KeyCombination.valueOf("Insert"));
+//        itemMove.setAccelerator(KeyCombination.valueOf("Insert"));
         itemMove.setOnAction(event -> {
             control.getCircuit().del(this);
             begin();
@@ -84,33 +82,33 @@ public abstract class Component {
 
         // delete
         MenuItem itemDelete = new MenuItem("Remove");
-        itemDelete.setAccelerator(KeyCombination.valueOf("Delete"));
-        itemDelete.setOnAction(event -> delete());
+//        itemDelete.setAccelerator(KeyCombination.valueOf("Delete"));
+        itemDelete.setOnAction(event -> delete(true));
 
         // rotate clockwise
         MenuItem itemRotCW = new MenuItem("Rotate right (CW)");
-        itemRotCW.setAccelerator(KeyCombination.valueOf("]"));
+//        itemRotCW.setAccelerator(KeyCombination.valueOf("]"));
         itemRotCW.setOnAction(event -> rotateCW());
 
         // rotate counterclockwise
         MenuItem itemRotCCW = new MenuItem("Rotate left (CCW)");
-        itemRotCCW.setAccelerator(KeyCombination.valueOf("["));
+//        itemRotCCW.setAccelerator(KeyCombination.valueOf("["));
         itemRotCCW.setOnAction(event -> rotateCCW());
 
         // mirror x
         MenuItem itemMirrorX = new MenuItem("Mirror X");
-        itemMirrorX.setAccelerator(KeyCombination.valueOf("\""));
+//        itemMirrorX.setAccelerator(KeyCombination.valueOf("\""));
         itemMirrorX.setOnAction(event -> mirrorX());
 
         // mirror y
         MenuItem itemMirrorY = new MenuItem("Mirror Y");
-        itemMirrorY.setAccelerator(KeyCombination.valueOf("\\"));
+//        itemMirrorY.setAccelerator(KeyCombination.valueOf("\\"));
         itemMirrorY.setOnAction(event -> mirrorY());
 
         return new ContextMenu(itemMove, itemDelete, itemRotCW, itemRotCCW, itemMirrorX, itemMirrorY);
     }
-    protected ArrayList<Pin> initPins() {
-        return new ArrayList<>();
+    protected HashSet<Pin> initPins() {
+        return new HashSet<>();
     }
 
     // layout mode
@@ -129,9 +127,9 @@ public abstract class Component {
 
         control.getCircuit().add(this);
     }
-    public void delete() {
+    public void delete(boolean fromCircuit) {
+        if (fromCircuit) control.getCircuit().del(this);
         control.getParent().getChildren().remove(root);
-        control.getCircuit().del(this);
     }
 
     // layout transforms
@@ -183,7 +181,7 @@ public abstract class Component {
     protected Scale getScale() {
         return scale;
     }
-    public ArrayList<Pin> getPins() {
+    public HashSet<Pin> getPins() {
         return pins;
     }
     private static String asInt(DoubleProperty d) {

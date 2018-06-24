@@ -23,6 +23,7 @@ public class ControlGrid {
     private Stage dialog;
     private IntegerProperty width, height;
 
+    // initialization
     void initialSetup(Stage dialog, ControlMain control) {
         this.dialog = dialog;
         width = control.getGridWidth();

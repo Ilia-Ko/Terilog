@@ -7,7 +7,6 @@ import engine.connectivity.Node;
 import gui.control.ControlMain;
 import org.w3c.dom.Element;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 
 public class Diode extends Component {
@@ -21,10 +20,10 @@ public class Diode extends Component {
     public Diode(ControlMain control, Element data) {
         super(control, data);
     }
-    @Override protected ArrayList<Pin> initPins() {
-        anode = new Pin(this, true, 0, 1);
-        cathode = new Pin(this, true, 4, 1);
-        ArrayList<Pin> pins = new ArrayList<>();
+    @Override protected HashSet<Pin> initPins() {
+        anode = new Pin(this, true, true, 0, 1);
+        cathode = new Pin(this, true, true, 4, 1);
+        HashSet<Pin> pins = new HashSet<>();
         pins.add(anode);
         pins.add(cathode);
         return pins;
@@ -34,8 +33,8 @@ public class Diode extends Component {
     @Override public HashSet<Node> simulate() {
         HashSet<Node> affected = new HashSet<>();
         boolean changedA = false, changedC = false;
-        LogicLevel a = anode.query();
-        LogicLevel c = cathode.query();
+        LogicLevel a = anode.querySigFromNode();
+        LogicLevel c = cathode.querySigFromNode();
 
         // simulate
         if (a == LogicLevel.ERR || c == LogicLevel.ERR) {
@@ -45,7 +44,7 @@ public class Diode extends Component {
             changedA = anode.update(LogicLevel.NEG);
         else if (a == LogicLevel.POS && c == LogicLevel.ZZZ)
             changedC = cathode.update(LogicLevel.POS);
-        else if (a == LogicLevel.POS && c == LogicLevel.NEG) {
+        else if (a.volts() > c.volts()) {
             changedA = anode.update(LogicLevel.ERR);
             changedC = cathode.update(LogicLevel.ERR);
         }

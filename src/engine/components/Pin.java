@@ -12,13 +12,16 @@ import java.util.HashSet;
 public class Pin extends Circle implements Connectible {
 
     private Component owner;
-    private Node node;
     private HashSet<Connectible> connectibles;
-    private boolean canInfluenceOwner;
+    private Node node;
+    private LogicLevel sigFromOwner;
+    private boolean canAffectOwner, canAffectNode;
 
-    public Pin(Component owner, boolean canInfluence, int xPosInOwner, int yPosInOwner) {
+    public Pin(Component owner, boolean affectsOwner, boolean affectsNode, int xPosInOwner, int yPosInOwner) {
         this.owner = owner;
-        canInfluenceOwner = canInfluence;
+        sigFromOwner = LogicLevel.ZZZ;
+        canAffectOwner = affectsOwner;
+        canAffectNode = affectsNode;
 
         setCenterX(xPosInOwner);
         setCenterY(yPosInOwner);
@@ -29,19 +32,21 @@ public class Pin extends Circle implements Connectible {
 
     // simulation
     public boolean update(LogicLevel signal) { // called by owner only
-        if (node != null && node.update(signal)) {
-            setFill(signal.colour());
-            return true;
-        }
-        return false;
+        sigFromOwner = signal;
+        setFill(signal.colour());
+        return node != null && canAffectNode && node.update();
     }
-    public LogicLevel query() {
+    public LogicLevel querySigFromNode() {
         if (node != null) return node.query();
+        else return LogicLevel.ZZZ;
+    }
+    public LogicLevel querySigFromOwner() {
+        if (canAffectNode) return sigFromOwner;
         else return LogicLevel.ZZZ;
     }
     public HashSet<Node> simulate() { // called by nodes only
         if (node != null) setFill(node.query().colour());
-        if (canInfluenceOwner) return owner.simulate();
+        if (canAffectOwner) return owner.simulate();
         else return new HashSet<>();
     }
     public Node getNode() {
@@ -49,11 +54,13 @@ public class Pin extends Circle implements Connectible {
     }
 
     // connectivity
-    @Override public void reset() {
-        node = null;
-        connectibles = new HashSet<>();
+    @Override public void reset(boolean denodify) {
+        if (denodify) {
+            node = null;
+            connectibles = new HashSet<>();
+        }
         setFill(LogicLevel.ZZZ.colour());
-        if (canInfluenceOwner) owner.simulate();
+        if (canAffectOwner) owner.simulate();
     }
     // parsing.stage1
     @Override public void inspect(Wire wire) {

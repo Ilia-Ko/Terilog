@@ -1,8 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.AnchorPane?>
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="gui.control.ControlCredits">
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<GridPane xmlns="http://javafx.com/javafx"
+          xmlns:fx="http://javafx.com/fxml"
+          fx:controller="gui.control.ControlCredits">
 
-</AnchorPane>
+    <Label text="Developer: Ilia-Ko"
+           GridPane.rowIndex="0"
+           GridPane.columnIndex="0"/>
+
+    <Label text="Special thanks to: Alagris"
+           GridPane.rowIndex="1"
+           GridPane.columnIndex="0"/>
+
+    <Label text="Terilog on GitHub:"
+           GridPane.rowIndex="2"
+           GridPane.columnIndex="0"/>
+
+    <Hyperlink text="https://github.com/Ilia-Ko/Terilog.git"
+           GridPane.rowIndex="2"
+           GridPane.columnIndex="1"/>
+
+    <Button text="Close"
+            onAction="#btnCloseClicked"
+            GridPane.rowIndex="3"
+            GridPane.columnIndex="0"/>
+
+</GridPane>

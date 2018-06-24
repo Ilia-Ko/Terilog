@@ -6,6 +6,8 @@ import engine.connectivity.Node;
 import gui.control.ControlMain;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.effect.Bloom;
 import javafx.scene.input.KeyCode;
 import javafx.scene.shape.Line;
@@ -56,6 +58,12 @@ public class Wire extends Line implements Connectible {
 
         confirm();
     }
+    private ContextMenu buildContextMenu() {
+        MenuItem itemDel = new MenuItem("Remove");
+        itemDel.setOnAction(action -> delete(true));
+
+        return new ContextMenu(itemDel);
+    }
 
     void confirm() {
         startXProperty().unbind();
@@ -77,17 +85,22 @@ public class Wire extends Line implements Connectible {
             }
         });
 
+        ContextMenu menu = buildContextMenu();
+        setOnContextMenuRequested(mouse -> menu.show(this, mouse.getScreenX(), mouse.getScreenY()));
+
         control.getCircuit().add(this);
     }
-    public void delete() {
-        control.getCircuit().del(this);
+    public void delete(boolean fromCircuit) {
+        if (fromCircuit) control.getCircuit().del(this);
         control.getParent().getChildren().remove(this);
     }
 
     // connectivity
-    @Override public void reset() {
-        node = null;
-        connectibles = new HashSet<>();
+    @Override public void reset(boolean denodify) {
+        if (denodify) {
+            node = null;
+            connectibles = new HashSet<>();
+        }
         setStroke(LogicLevel.ZZZ.colour());
     }
     // parsing.stage1

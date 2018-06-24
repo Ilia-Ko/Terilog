@@ -9,45 +9,67 @@
 
         <MenuBar HBox.hgrow="ALWAYS">
 
-            <Menu text="_File">
+            <Menu text="File">
 
-                <MenuItem text="_Open" accelerator="Ctrl+O" onAction="#menuOpen"/>
-                <MenuItem text="_Save" accelerator="Ctrl+S" onAction="#menuSave"/>
+                <MenuItem text="Open" accelerator="Ctrl+O" onAction="#menuOpen"/>
+                <MenuItem text="Save" accelerator="Ctrl+S" onAction="#menuSave"/>
                 <MenuItem text="Save as ..." accelerator="Shift+S" onAction="#menuSaveAs"/>
                 <SeparatorMenuItem/>
-                <MenuItem text="Toggle _fullscreen" accelerator="F11" onAction="#menuToggle"/>
-                <MenuItem text="_Quit" accelerator="Ctrl+Q" onAction="#menuQuit"/>
+                <MenuItem text="Toggle fullscreen" accelerator="F11" onAction="#menuToggle"/>
+                <MenuItem text="Quit" accelerator="Ctrl+Q" onAction="#menuQuit"/>
 
             </Menu>
-            <Menu text="_Add">
+            <Menu text="Add">
 
-                <MenuItem text="Hard _N" accelerator="N" onAction="#menuHardN"/>
-                <MenuItem text="Hard _P" accelerator="P" onAction="#menuHardP"/>
-                <MenuItem text="Soft N" accelerator="Shift+N" onAction="#menuSoftN"/>
-                <MenuItem text="Soft P" accelerator="Shift+P" onAction="#menuSoftP"/>
-                <SeparatorMenuItem/>
-                <MenuItem text="_Diode" accelerator="D" onAction="#menuDiode"/>
-                <MenuItem text="_Reconciliator" accelerator="R" onAction="#menuReconciliator"/>
-                <SeparatorMenuItem/>
-                <MenuItem text="_Indicator" accelerator="I" onAction="#menuIndicator"/>
-                <MenuItem text="_Voltage" accelerator="V" onAction="#menuVoltage"/>
-                <MenuItem text="_Wire" accelerator="W" onAction="#menuWire"/>
+                <Menu text="MOSFET">
+
+                    <MenuItem text="Hard N" accelerator="N" onAction="#menuHardN"/>
+                    <MenuItem text="Hard P" accelerator="P" onAction="#menuHardP"/>
+                    <MenuItem text="Soft N" accelerator="Shift+N" onAction="#menuSoftN"/>
+                    <MenuItem text="Soft P" accelerator="Shift+P" onAction="#menuSoftP"/>
+
+                </Menu>
+                <Menu text="Lumped">
+
+                    <MenuItem text="Diode" accelerator="D" onAction="#menuDiode"/>
+                    <MenuItem text="Reconciliator" accelerator="R" onAction="#menuReconciliator"/>
+                    <SeparatorMenuItem/>
+                    <MenuItem text="Indicator" accelerator="I" onAction="#menuIndicator"/>
+                    <MenuItem text="Voltage" accelerator="V" onAction="#menuVoltage"/>
+
+                </Menu>
+                <Menu text="Logic 1-arg">
+
+                    <MenuItem text="NTI" onAction="#menuNTI"/>
+                    <MenuItem text="STI" onAction="#menuSTI"/>
+                    <MenuItem text="PTI" onAction="#menuPTI"/>
+
+                </Menu>
+                <Menu text="Logic 2-arg">
+
+                    <MenuItem text="NAND" onAction="#menuNAND"/>
+                    <MenuItem text="NOR" onAction="#menuNOR"/>
+                    <MenuItem text="NCON" onAction="#menuNCON"/>
+                    <MenuItem text="NANY" onAction="#menuNANY"/>
+
+                </Menu>
+                <MenuItem text="Wire" accelerator="W" onAction="#menuWire"/>
 
             </Menu>
-            <Menu text="_Simulate">
+            <Menu text="Circuit">
 
                 <MenuItem text="Start" accelerator="F8" onAction="#menuPlay" fx:id="menuPlay"/>
                 <MenuItem text="Settings" accelerator="F2" onAction="#menuSettings"/>
 
             </Menu>
-            <Menu text="_Grid">
+            <Menu text="Grid">
 
                 <MenuItem text="Grid size   " accelerator="Ctrl+G" onAction="#menuGrid"/>
                 <MenuItem text="Zoom +12%" accelerator="=" onAction="#menuZoomIn" fx:id="menuZoomIn"/>
                 <MenuItem text="Zoom -12%" accelerator="-" onAction="#menuZoomOut" fx:id="menuZoomOut"/>
 
             </Menu>
-            <Menu text="_Help">
+            <Menu text="Help">
 
                 <MenuItem text="About" accelerator="F1" onAction="#menuAbout"/>
                 <MenuItem text="Credits" onAction="#menuCredits"/>

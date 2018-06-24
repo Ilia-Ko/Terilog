@@ -23,8 +23,8 @@ abstract class PChannel extends MOSFET {
     @Override public HashSet<Node> simulate() {
         HashSet<Node> affected = new HashSet<>();
         boolean changed;
-        LogicLevel g = gate.query();
-        LogicLevel s = source.query();
+        LogicLevel g = gate.querySigFromNode();
+        LogicLevel s = source.querySigFromNode();
 
         // simulate
         if (s == LogicLevel.ZZZ)

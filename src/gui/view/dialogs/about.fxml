@@ -1,8 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.AnchorPane?>
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="gui.control.ControlAbout">
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.GridPane?>
+<GridPane xmlns="http://javafx.com/javafx"
+          xmlns:fx="http://javafx.com/fxml"
+          fx:controller="gui.control.ControlAbout">
 
-</AnchorPane>
+    <Label text="TERILOG"/>
+
+    <TextArea text="Here some help about components and workflow should be placed."/>
+
+    <Button text="Close" onAction="#btnCloseClicked"/>
+
+</GridPane>
