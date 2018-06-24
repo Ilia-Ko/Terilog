@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--suppress ALL -->
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.*?>
+<Pane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+
+    <!--legs-->
+    <Line stroke="black" strokeWidth="0.1" startX="0" startY="1" endX="1" endY="1"/>
+    <Line stroke="black" strokeWidth="0.1" startX="0" startY="3" endX="1" endY="3"/>
+    <Line stroke="black" strokeWidth="0.1" startX="0" startY="5" endX="1" endY="5"/>
+    <Line stroke="black" strokeWidth="0.1" startX="5" startY="2" endX="6" endY="2"/>
+    <Line stroke="black" strokeWidth="0.1" startX="5" startY="4" endX="6" endY="4"/>
+
+    <!--body-->
+    <Rectangle stroke="black" strokeWidth="0.1" fill="lightgray" x="1" y="0" width="4" height="6"/>
+
+    <!--names-->
+    <Label text="A" layoutX="1.5" layoutY="0.5" textFill="black" style="-fx-font-size: 1px" textAlignment="CENTER"/>
+    <Label text="B" layoutX="1.5" layoutY="2.5" textFill="black" style="-fx-font-size: 1px" textAlignment="CENTER"/>
+    <Label text="C" layoutX="1.5" layoutY="4.5" textFill="black" style="-fx-font-size: 1px" textAlignment="CENTER"/>
+    <Label fx:id="lblS" text="S" layoutY="1.5" textFill="black" style="-fx-font-size: 1px" textAlignment="CENTER"/>
+    <Label fx:id="lblC" text="C" layoutY="3.5" textFill="black" style="-fx-font-size: 1px" textAlignment="CENTER"/>
+
+</Pane>

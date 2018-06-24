@@ -3,6 +3,7 @@ package gui.control;
 import engine.Circuit;
 import engine.TerilogIO;
 import engine.components.Component;
+import engine.components.arithmetic.FullAdder;
 import engine.components.arithmetic.HalfAdder;
 import engine.components.logic.one_arg.NTI;
 import engine.components.logic.one_arg.PTI;
@@ -403,6 +404,11 @@ public class ControlMain {
     @FXML private void menuHalfAdder() {
         breakInsertion();
         flyComp = new HalfAdder(this);
+        holdingComp = true;
+    }
+    @FXML private void menuFullAdder() {
+        breakInsertion();
+        flyComp = new FullAdder(this);
         holdingComp = true;
     }
     // menu.add.wire

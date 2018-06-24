@@ -32,8 +32,8 @@
 
     <!--names-->
     <Label text="A" layoutX="2" layoutY="0.5" textFill="black" style="-fx-font-size: 1px" textAlignment="CENTER"/>
-    <Label fx:id="lblB" text="B" layoutX="2" textFill="black" style="-fx-font-size: 1px" textAlignment="CENTER"/>
+    <Label text="B" layoutX="2" layoutY="2.5" textFill="black" style="-fx-font-size: 1px" textAlignment="CENTER"/>
     <Label fx:id="lblS" text="S" layoutY="0.5" textFill="black" style="-fx-font-size: 1px" textAlignment="CENTER"/>
-    <Label fx:id="lblC" text="C" textFill="black" style="-fx-font-size: 1px" textAlignment="CENTER"/>
+    <Label fx:id="lblC" text="C" layoutY="2.5" textFill="black" style="-fx-font-size: 1px" textAlignment="CENTER"/>
 
 </Pane>

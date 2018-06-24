@@ -59,6 +59,7 @@
                 <Menu text="Arithmetic">
 
                     <MenuItem text="Half Adder" onAction="#menuHalfAdder"/>
+                    <MenuItem text="Full Adder" onAction="#menuFullAdder"/>
 
                 </Menu>
                 <MenuItem text="Wire" accelerator="W" onAction="#menuWire"/>

@@ -2,6 +2,7 @@ package engine;
 
 import engine.components.Component;
 import engine.components.Pin;
+import engine.components.arithmetic.FullAdder;
 import engine.components.arithmetic.HalfAdder;
 import engine.components.logic.one_arg.NTI;
 import engine.components.logic.one_arg.PTI;
@@ -153,6 +154,9 @@ public class Circuit {
                     // arithmetic
                     case "halfadder":
                         add(new HalfAdder(control, comp));
+                        break;
+                    case "fulladder":
+                        add(new FullAdder(control, comp));
                         break;
                     default:
                         System.out.printf("WARNING: unknown component of class %s.\n", attrClass);
