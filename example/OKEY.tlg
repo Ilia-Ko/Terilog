@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<circuit name="Opened KEY">
+    <comp class="softp" mx="1" my="1" rot="0" x="13" y="9"/>
+    <comp class="softn" mx="1" my="-1" rot="0" x="13" y="15"/>
+    <comp class="voltage" mx="1" my="1" rot="-90" sig="MID" x="8" y="13"/>
+    <comp class="voltage" mx="1" my="1" rot="0" sig="HIGH" x="14" y="5"/>
+    <comp class="indicator" mx="1" my="1" rot="0" x="21" y="11"/>
+    <wire x0="13" x1="12" y0="11" y1="11"/>
+    <wire x0="12" x1="12" y0="11" y1="13"/>
+    <wire x0="12" x1="13" y0="13" y1="13"/>
+    <wire x0="17" x1="18" y0="11" y1="11"/>
+    <wire x0="18" x1="18" y0="11" y1="13"/>
+    <wire x0="18" x1="17" y0="13" y1="13"/>
+    <wire x0="10" x1="12" y0="12" y1="12"/>
+    <wire x0="15" x1="15" y0="7" y1="9"/>
+    <wire x0="15" x1="19" y0="8" y1="8"/>
+    <wire x0="19" x1="19" y0="8" y1="16"/>
+    <wire x0="19" x1="15" y0="16" y1="16"/>
+    <wire x0="15" x1="15" y0="16" y1="15"/>
+    <wire x0="18" x1="21" y0="12" y1="12"/>
+    <grid h="56" w="100"/>
+</circuit>

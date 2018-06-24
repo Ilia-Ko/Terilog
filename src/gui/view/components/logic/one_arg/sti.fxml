@@ -14,7 +14,7 @@
     <Line stroke="black" strokeWidth="0.1" startX="3.5" startY="1" endX="4" endY="1"/>
 
     <!--body-->
-    <Polygon stroke="black" strokeWidth="0.1" fill="lightgray">
+    <Polygon fx:id="body" stroke="black" strokeWidth="0.1" fill="lightgreen">
         <points>
             <Double fx:value="0.5"/> <Double fx:value="0"/>
             <Double fx:value="0.5"/> <Double fx:value="2"/>
@@ -23,6 +23,6 @@
     </Polygon>
 
     <!--head-->
-    <Circle stroke="black" strokeWidth="0.1" fill="lightgray" centerX="3" centerY="1" radius="0.5"/>
+    <Circle fx:id="head" stroke="black" strokeWidth="0.1" fill="lightgray" centerX="3" centerY="1" radius="0.5"/>
 
 </Pane>

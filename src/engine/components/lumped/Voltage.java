@@ -6,10 +6,7 @@ import engine.components.Pin;
 import engine.connectivity.Node;
 import gui.control.ControlMain;
 import javafx.beans.property.*;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import org.w3c.dom.Document;
@@ -23,6 +20,7 @@ public class Voltage extends Component {
     private StringProperty text;
     private LogicLevel signal;
     private Pin drain;
+    private ToggleGroup toggle;
 
     // initialization
     public Voltage(ControlMain control) {
@@ -59,12 +57,15 @@ public class Voltage extends Component {
     }
     @Override protected ContextMenu buildContextMenu() {
         LogicLevel[] levels = LogicLevel.values();
-        MenuItem[] items = new MenuItem[levels.length];
+        RadioMenuItem[] items = new RadioMenuItem[levels.length];
         for (int i = 0; i < levels.length; i++) {
             LogicLevel lev = levels[i];
-            items[i] = new MenuItem(String.format("%c (%s)", lev.getDigitCharacter(), lev.getStandardName()));
-            items[i].setOnAction(event -> setSignal(lev));
+            items[i] = new RadioMenuItem(String.format("%c (%s)", lev.getDigitCharacter(), lev.getStandardName()));
+            items[i].setOnAction(event -> setSignal(lev, false));
         }
+        toggle = new ToggleGroup();
+        toggle.getToggles().addAll(items);
+        toggle.selectToggle(items[3]);
 
         Menu menuSet = new Menu("Set voltage");
         menuSet.getItems().addAll(items);
@@ -83,10 +84,14 @@ public class Voltage extends Component {
         if (drain.update(signal)) affected.add(drain.getNode());
         return affected;
     }
-    private void setSignal(LogicLevel sig) {
+    private void setSignal(LogicLevel sig, boolean updateToggle) {
         colour.setValue(sig.colour());
         text.setValue(String.valueOf(sig.getDigitCharacter()));
         signal = sig;
+        if (updateToggle) {
+            Toggle item = toggle.getToggles().get(sig.ordinal());
+            toggle.selectToggle(item);
+        }
     }
 
     // xml info
@@ -100,9 +105,9 @@ public class Voltage extends Component {
         String sigAttr = comp.getAttribute("sig");
         LogicLevel sig = LogicLevel.parseName(sigAttr);
         if (sig == null)
-            System.out.printf("WARNING: unknown signal name '%s'. Using default Z value.", sigAttr);
+            System.out.printf("WARNING: unknown signal name '%s'. Using default Z value.\n", sigAttr);
         else
-            setSignal(sig);
+            setSignal(sig, true);
     }
 
 }

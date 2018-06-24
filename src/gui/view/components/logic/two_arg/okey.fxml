@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--suppress ALL -->
+
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.*?>
+<Pane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+
+    <!--legs-->
+    <Line stroke="black" strokeWidth="0.1" startX="0" startY="1" endX="0.5" endY="1"/>
+    <Line stroke="black" strokeWidth="0.1" startX="3.5" startY="1" endX="4" endY="1"/>
+    <Line stroke="black" strokeWidth="0.1" startX="2" startY="1.5" endX="2" endY="2"/>
+
+    <!--body-->
+    <Path stroke="black" strokeWidth="0.1" fill="lightgray">
+        <elements>
+            <MoveTo x="0.5" y="0"/>
+            <LineTo x="1.5" y="0"/>
+            <ArcTo x="2.5" y="0" radiusX="0.5" radiusY="0.5"/>
+            <LineTo x="3" y="0"/>
+            <LineTo x="3.5" y="0.5"/>
+            <LineTo x="3.5" y="1.5"/>
+            <LineTo x="3" y="2"/>
+            <LineTo x="2.5" y="2"/>
+            <ArcTo x="1.5" y="2" radiusX="0.5" radiusY="0.5"/>
+            <LineTo x="0.5" y="2"/>
+            <LineTo x="0.5" y="0"/>
+        </elements>
+    </Path>
+
+</Pane>

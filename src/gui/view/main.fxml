@@ -51,6 +51,9 @@
                     <MenuItem text="NOR" onAction="#menuNOR"/>
                     <MenuItem text="NCON" onAction="#menuNCON"/>
                     <MenuItem text="NANY" onAction="#menuNANY"/>
+                    <SeparatorMenuItem/>
+                    <MenuItem text="OKEY" onAction="#menuOKEY"/>
+                    <MenuItem text="CKEY" onAction="#menuCKEY"/>
 
                 </Menu>
                 <MenuItem text="Wire" accelerator="W" onAction="#menuWire"/>

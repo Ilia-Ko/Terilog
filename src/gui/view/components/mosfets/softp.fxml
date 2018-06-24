@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--suppress ALL -->
+
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.shape.*?>
 <?import java.lang.*?>

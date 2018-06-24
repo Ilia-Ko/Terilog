@@ -28,7 +28,7 @@ public enum LogicLevel {
             return signal == ZZZ;
         }
     },
-    ZZZ("Z",    '?',       0, false, Color.BLACK) {
+    ZZZ("Z",    '?',       2, false, Color.BLACK) {
         @Override public boolean conflicts(LogicLevel signal) {
             return false;
         }
@@ -36,7 +36,7 @@ public enum LogicLevel {
             return false;
         }
     }, // undefined, non-critical, like QNaN in FPU
-    ERR("E",    '!',      22, false, Color.YELLOW) {
+    ERR("E",    '!',      22, false, Color.LIGHTGOLDENRODYELLOW) {
         @Override public boolean conflicts(LogicLevel signal) {
             return !signal.isUnstable();
         }
@@ -45,8 +45,8 @@ public enum LogicLevel {
         }
     }; // undefined, critical, like SNaN in FPU
 
-    public static final int HARD_VOLTAGE = POS.voltage - NEG.voltage;
-    public static final int SOFT_VOLTAGE = POS.voltage - NIL.voltage;
+    public static final int HARD_VOLTAGE = 2;
+    public static final int SOFT_VOLTAGE = 1;
 
     private String standardName;
     private char digit;
@@ -74,6 +74,13 @@ public enum LogicLevel {
             if (signal.getStandardName().equals(standardName))
                 return signal;
         return null;
+    }
+    public static LogicLevel parseValue(int value) {
+        if (value == POS.voltage) return POS;
+        else if (value == NIL.voltage) return NIL;
+        else if (value == NEG.voltage) return NEG;
+        else if (value == ZZZ.voltage) return ZZZ;
+        else return ERR;
     }
 
     // useful info

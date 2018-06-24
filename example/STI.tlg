@@ -4,8 +4,7 @@
     <comp class="hardn" mx="1" my="1" rot="-90" x="21" y="21"/>
     <comp class="voltage" mx="1" my="-1" rot="0" sig="LOW" x="22" y="24"/>
     <comp class="voltage" mx="1" my="1" rot="-90" sig="MID" x="12" y="17"/>
-    <comp class="reconciliator" mx="1" my="1" rot="0" x="31" y="15"/>
-    <comp class="voltage" mx="1" my="1" rot="0" sig="MID" x="31" y="8"/>
+    <comp class="reconciliator" mx="1" my="1" rot="0" pull="MID" x="31" y="15"/>
     <comp class="indicator" mx="1" my="1" rot="0" x="39" y="15"/>
     <comp class="hardp" mx="-1" my="1" rot="-90" x="21" y="11"/>
     <wire x0="23" x1="23" y0="22" y1="21"/>
@@ -16,7 +15,6 @@
     <wire x0="19" x1="21" y0="19" y1="19"/>
     <wire x0="23" x1="31" y0="16" y1="16"/>
     <wire x0="19" x1="14" y0="16" y1="16"/>
-    <wire x0="32" x1="32" y0="10" y1="15"/>
     <wire x0="39" x1="33" y0="16" y1="16"/>
     <grid h="56" w="100"/>
 </circuit>

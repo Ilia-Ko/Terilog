@@ -3,9 +3,10 @@ package gui.control;
 import engine.Circuit;
 import engine.TerilogIO;
 import engine.components.Component;
-import engine.components.logic.inverters.NTI;
-import engine.components.logic.inverters.PTI;
-import engine.components.logic.inverters.STI;
+import engine.components.logic.one_arg.NTI;
+import engine.components.logic.one_arg.PTI;
+import engine.components.logic.one_arg.STI;
+import engine.components.logic.two_arg.*;
 import engine.components.lumped.Diode;
 import engine.components.lumped.Indicator;
 import engine.components.lumped.Reconciliator;
@@ -369,23 +370,33 @@ public class ControlMain {
     // menu.add.logic 2-arg
     @FXML private void menuNAND() {
         breakInsertion();
-//        flyComp = null;
-//        holdingComp = true;
+        flyComp = new NAND(this);
+        holdingComp = true;
     }
     @FXML private void menuNOR() {
         breakInsertion();
-//        flyComp = null;
-//        holdingComp = true;
+        flyComp = new NOR(this);
+        holdingComp = true;
     }
     @FXML private void menuNCON() {
         breakInsertion();
-//        flyComp = null;
-//        holdingComp = true;
+        flyComp = new NCON(this);
+        holdingComp = true;
     }
     @FXML private void menuNANY() {
         breakInsertion();
-//        flyComp = null;
-//        holdingComp = true;
+        flyComp = new NANY(this);
+        holdingComp = true;
+    }
+    @FXML private void menuOKEY() {
+        breakInsertion();
+        flyComp = new OKEY(this);
+        holdingComp = true;
+    }
+    @FXML private void menuCKEY() {
+        breakInsertion();
+        flyComp = new CKEY(this);
+        holdingComp = true;
     }
     // menu.add.wire
     @FXML private void menuWire() {

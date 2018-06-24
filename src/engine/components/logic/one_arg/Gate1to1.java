@@ -1,4 +1,4 @@
-package engine.components.logic.inverters;
+package engine.components.logic.one_arg;
 
 import engine.LogicLevel;
 import engine.components.Component;
@@ -13,20 +13,20 @@ import org.w3c.dom.Element;
 import java.io.IOException;
 import java.util.HashSet;
 
-abstract class Inverter extends Component {
+abstract class Gate1to1 extends Component {
 
     private Pin in, out;
 
     // initialization
-    Inverter(ControlMain control) {
+    Gate1to1(ControlMain control) {
         super(control);
     }
-    Inverter(ControlMain control, Element data) {
+    Gate1to1(ControlMain control, Element data) {
         super(control, data);
     }
     @Override protected Pane loadContent() {
         try {
-            String location = "view/components/logic/inverters/" + getClass().getSimpleName().toLowerCase() + ".fxml";
+            String location = "view/components/logic/one_arg/" + getClass().getSimpleName().toLowerCase() + ".fxml";
             return FXMLLoader.load(Main.class.getResource(location));
         } catch (IOException e) {
             return new Pane();
@@ -49,11 +49,11 @@ abstract class Inverter extends Component {
 
         // simulate
         if (i.isUnstable()) changed = out.update(LogicLevel.ERR);
-        else changed = out.update(invert(i));
+        else changed = out.update(function(i));
 
         if (changed) affected.add(out.getNode());
         return affected;
     }
-    protected abstract LogicLevel invert(LogicLevel a);
+    abstract LogicLevel function(LogicLevel a);
 
 }

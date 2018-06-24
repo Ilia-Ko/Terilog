@@ -2,6 +2,10 @@ package engine;
 
 import engine.components.Component;
 import engine.components.Pin;
+import engine.components.logic.one_arg.NTI;
+import engine.components.logic.one_arg.PTI;
+import engine.components.logic.one_arg.STI;
+import engine.components.logic.two_arg.*;
 import engine.components.lumped.Diode;
 import engine.components.lumped.Indicator;
 import engine.components.lumped.Reconciliator;
@@ -90,6 +94,7 @@ public class Circuit {
                 Element comp = (Element) list.item(i);
                 String attrClass = comp.getAttribute("class");
                 switch (attrClass) {
+                    // mosfets
                     case "hardn":
                         add(new HardN(control, comp));
                         break;
@@ -102,6 +107,7 @@ public class Circuit {
                     case "softp":
                         add(new SoftP(control, comp));
                         break;
+                    // lumped
                     case "diode":
                         add(new Diode(control, comp));
                         break;
@@ -113,6 +119,35 @@ public class Circuit {
                         break;
                     case "voltage":
                         add(new Voltage(control, comp));
+                        break;
+                    // logic.one_arg
+                    case "nti":
+                        add(new NTI(control, comp));
+                        break;
+                    case "sti":
+                        add(new STI(control, comp));
+                        break;
+                    case "pti":
+                        add(new PTI(control, comp));
+                        break;
+                    // logic.two_arg
+                    case "nand":
+                        add(new NAND(control, comp));
+                        break;
+                    case "nor":
+                        add(new NOR(control, comp));
+                        break;
+                    case "ncon":
+                        add(new NCON(control, comp));
+                        break;
+                    case "nany":
+                        add(new NANY(control, comp));
+                        break;
+                    case "okey":
+                        add(new OKEY(control, comp));
+                        break;
+                    case "ckey":
+                        add(new CKEY(control, comp));
                         break;
                     default:
                         System.out.printf("WARNING: unknown component of class %s.\n", attrClass);
@@ -132,7 +167,8 @@ public class Circuit {
         needsReparsing = true;
     }
     public void del(Wire wire) {
-        needsReparsing = wires.remove(wire);
+        wires.remove(wire);
+        needsReparsing = true;
     }
     public void add(Component comp) {
         components.add(comp);
@@ -141,8 +177,9 @@ public class Circuit {
         needsReparsing = true;
     }
     public void del(Component comp) {
-        needsReparsing = components.remove(comp);
+        components.remove(comp);
         if (comp.isEntryPoint()) entries.remove(comp);
+        needsReparsing = true;
     }
     void destroy() {
         name.setValue(DEF_NAME);
