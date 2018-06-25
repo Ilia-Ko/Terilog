@@ -67,7 +67,12 @@
             </Menu>
             <Menu text="Circuit">
 
-                <MenuItem text="Start" accelerator="F8" onAction="#menuPlay" fx:id="menuPlay"/>
+                <MenuItem text="Reset" accelerator="F5" onAction="#menuReset"/>
+                <MenuItem text="Parse" accelerator="F6" onAction="#menuParse"/>
+                <MenuItem text="Step into" accelerator="F7" onAction="#menuStepInto"/>
+                <MenuItem text="Step over" accelerator="F8" onAction="#menuStepOver"/>
+                <MenuItem text="Run" accelerator="F9" onAction="#menuRun" fx:id="menuRun"/>
+                <SeparatorMenuItem/>
                 <MenuItem text="Settings" accelerator="F2" onAction="#menuSettings"/>
 
             </Menu>

@@ -42,6 +42,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.transform.Scale;
@@ -67,7 +68,7 @@ public class ControlMain {
     @FXML private StackPane stack;
     @FXML private Canvas field; // background
     @FXML private Pane parent; // container for everything
-    @FXML private MenuItem menuPlay;
+    @FXML private MenuItem menuRun;
     @FXML private MenuItem menuZoomIn;
     @FXML private MenuItem menuZoomOut;
     @FXML private Label lblPoint; // display snapped mouse position
@@ -179,6 +180,7 @@ public class ControlMain {
         root.setPadding(new Insets(defSpacing, defSpacing, defSpacing, defSpacing));
         Scene scene = new Scene(root);
         Stage dialog = new Stage(StageStyle.UNDECORATED);
+        dialog.setTitle(Main.TITLE);
         dialog.setScene(scene);
         return dialog;
     }
@@ -254,7 +256,7 @@ public class ControlMain {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Open TLG file");
         chooser.setInitialDirectory(new File(System.getProperty("user.home")));
-        chooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("TLG files", "*.tlg"));
+        chooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("XML files", "*.xml"));
 
         // get file
         File tlg = chooser.showOpenDialog(stage);
@@ -293,7 +295,7 @@ public class ControlMain {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Save TLG file");
         chooser.setInitialDirectory(new File(System.getProperty("user.home")));
-        chooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("TLG files", "*.tlg"));
+        chooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("XML files", "*.xml"));
 
         // get file
         File save = chooser.showSaveDialog(stage);
@@ -419,7 +421,19 @@ public class ControlMain {
     }
 
     // menu.circuit
-    @FXML private void menuPlay() {
+    @FXML private void menuReset() {
+
+    }
+    @FXML private void menuParse() {
+
+    }
+    @FXML private void menuStepInto() {
+
+    }
+    @FXML private void menuStepOver() {
+
+    }
+    @FXML private void menuRun() {
         if (circuit.getSimRunProperty().get()) circuit.stopSimulation();
         else circuit.startSimulation();
     }
@@ -472,7 +486,14 @@ public class ControlMain {
     @FXML private void menuAbout() {
         try {
             FXMLLoader loader = new FXMLLoader(Main.class.getResource("view/dialogs/about.fxml"));
-            Stage dialog = initDialog(loader);
+            VBox root = loader.load();
+            root.setStyle(defFont);
+            root.setSpacing(defSpacing);
+            root.setPadding(new Insets(defSpacing, defSpacing, defSpacing, defSpacing));
+            Scene scene = new Scene(root);
+            Stage dialog = new Stage(StageStyle.UNDECORATED);
+            dialog.setTitle(Main.TITLE);
+            dialog.setScene(scene);
             ((ControlAbout) loader.getController()).initialSetup(dialog);
             dialog.showAndWait();
         } catch (IOException e) {
@@ -501,7 +522,7 @@ public class ControlMain {
         stage.setTitle(String.format("%s - %s", Main.TITLE, circuit.getNameProperty().get()));
 
         // bindings
-        circuit.getSimRunProperty().addListener((observable, oldValue, newValue) -> menuPlay.setText(newValue ? "Stop" : "Start"));
+        circuit.getSimRunProperty().addListener((observable, oldValue, newValue) -> menuRun.setText(newValue ? "Stop" : "Start"));
         circuit.getNameProperty().addListener(((observable, oldValue, newValue) -> stage.setTitle(String.format("%s - %s", Main.TITLE, newValue))));
     }
     public Pane getParent() {

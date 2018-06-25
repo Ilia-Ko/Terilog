@@ -1,8 +1,8 @@
-            TLG (Terilog) file specification
+            Terilog file specification
 
-TLG file stores the structure of a Circuit in the XML format. All info
+Terilog file stores the structure of a Circuit in the XML format. All info
 is stored inside <circuit> tag, which has the single attribute 'name'.
-This tag must exist in TLG file, but 'name' attribute can be empty.
+This tag must exist in XML file, but 'name' attribute can be empty.
 
 There are three types of tags inside <circuit>. They are <grid>, <comp>
 and <wire>. None of them are obligatory. The first one describes logical
@@ -38,7 +38,7 @@ II. Defining a wire. Inside the <wire> tag there are strictly four
     same: integers from [12; 144]. It is recommended to create only
     either horizontal or vertical wires.
 
-III. Example TLG:
+III. Example XML:
 
 <circuit name="Example">
 
