@@ -63,6 +63,11 @@ public class Indicator extends Component {
     }
 
     // simulation
+    @Override public void reset(boolean denodify) {
+        super.reset(denodify);
+        colour.setValue(LogicLevel.ZZZ.colour());
+        text.setValue(String.valueOf(LogicLevel.ZZZ.getDigitCharacter()));
+    }
     @Override public HashSet<Node> simulate() {
         LogicLevel signal = source.querySigFromNode();
         colour.setValue(signal.colour());

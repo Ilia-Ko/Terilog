@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<circuit depth="60" name="Untitled">
+    <comp class="voltage" mx="1" my="1" rot="0" sig="LOW" x="9" y="7"/>
+    <comp class="sti" mode="0to0" mx="1" my="1" rot="0" x="12" y="10"/>
+    <comp class="sti" mode="0toZ" mx="-1" my="1" rot="0" x="16" y="14"/>
+    <comp class="reconciliator" mx="1" my="1" pull="MID" rot="90" x="19" y="12"/>
+    <comp class="indicator" mx="1" my="1" rot="-90" x="17" y="9"/>
+    <wire x0="10" x1="12" y0="15" y1="15"/>
+    <wire x0="10" x1="10" y0="9" y1="15"/>
+    <wire x0="12" x1="10" y0="11" y1="11"/>
+    <wire x0="16" x1="18" y0="15" y1="15"/>
+    <wire x0="18" x1="18" y0="15" y1="14"/>
+    <wire x0="18" x1="18" y0="12" y1="9"/>
+    <wire x0="16" x1="18" y0="11" y1="11"/>
+    <grid h="56" w="100"/>
+</circuit>

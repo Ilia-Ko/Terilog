@@ -12,7 +12,7 @@
     <comp class="voltage" mx="1" my="1" rot="-90" sig="MID" x="7" y="18"/>
     <comp class="voltage" mx="1" my="1" rot="0" sig="HIGH" x="19" y="3"/>
     <comp class="voltage" mx="1" my="-1" rot="0" sig="LOW" x="19" y="39"/>
-    <comp class="reconciliator" mx="1" my="-1" rot="0" pull="MID" x="36" y="22"/>
+    <comp class="reconciliator" mx="1" my="-1" pull="MID" rot="0" x="36" y="22"/>
     <comp class="indicator" mx="1" my="1" rot="0" x="42" y="20"/>
     <wire x0="18" x1="18" y0="12" y1="13"/>
     <wire x0="22" x1="28" y0="7" y1="7"/>

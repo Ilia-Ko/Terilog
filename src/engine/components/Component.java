@@ -150,6 +150,9 @@ public abstract class Component {
     public boolean isEntryPoint() {
         return false;
     }
+    public void reset(boolean denodify) {
+        for (Pin pin : pins) pin.reset(denodify);
+    }
     public abstract HashSet<Node> simulate(); // should return list of affected nodes
 
     // xml info

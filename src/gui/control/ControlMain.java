@@ -31,10 +31,7 @@ import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
@@ -59,6 +56,7 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 
 public class ControlMain {
 
@@ -68,10 +66,11 @@ public class ControlMain {
     @FXML private StackPane stack;
     @FXML private Canvas field; // background
     @FXML private Pane parent; // container for everything
-    @FXML private MenuItem menuRun;
+//    @FXML private MenuItem menuRun, menuStop;
     @FXML private MenuItem menuZoomIn;
     @FXML private MenuItem menuZoomOut;
     @FXML private Label lblPoint; // display snapped mouse position
+//    @FXML private ProgressIndicator progress;
 
     // dimensions
     private DoubleProperty p; // in pixels
@@ -270,6 +269,8 @@ public class ControlMain {
             e.printStackTrace();
             // show IO alert
             Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.getDialogPane().setStyle(defFont);
+            alert.setResizable(true);
             alert.setTitle(Main.TITLE);
             alert.setHeaderText("IO Error:");
             alert.setContentText("Failed to open " + tlg.getAbsolutePath());
@@ -278,6 +279,8 @@ public class ControlMain {
             e.printStackTrace();
             // show XML alert
             Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.getDialogPane().setStyle(defFont);
+            alert.setResizable(true);
             alert.setTitle(Main.TITLE);
             alert.setHeaderText("XML error:");
             alert.setContentText("Failed to parse " + tlg.getAbsolutePath());
@@ -422,20 +425,65 @@ public class ControlMain {
 
     // menu.circuit
     @FXML private void menuReset() {
+        boolean doReset = true;
 
+        // ask confirmation
+        if (circuit.isReallyBig()) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.getDialogPane().setStyle(defFont);
+            alert.setResizable(true);
+            alert.setTitle(Main.TITLE);
+            alert.setHeaderText("Reset");
+            alert.setContentText("Are you sure to reset the circuit? After reset action circuit requires reparsing which may take some time.");
+
+            // reset if OK
+            Optional<ButtonType> res = alert.showAndWait();
+            doReset = res.isPresent() && res.get() == ButtonType.OK;
+        }
+
+        // reset
+        if (doReset) circuit.doReset();
     }
     @FXML private void menuParse() {
+        boolean doParsing = true;
 
+        // ask confirmation
+        if (!circuit.hasToBeParsed() && circuit.isReallyBig()) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.getDialogPane().setStyle(defFont);
+            alert.setResizable(true);
+            alert.setTitle(Main.TITLE);
+            alert.setHeaderText("Parsing");
+            alert.setContentText("Circuit is already parsed. Are you sure to begin reparsing? This may take some time.");
+            Optional<ButtonType> res = alert.showAndWait();
+            doParsing = res.isPresent() && res.get() == ButtonType.OK;
+        }
+
+        // (re)parse
+        if (doParsing) circuit.doParse();
     }
     @FXML private void menuStepInto() {
-
+        circuit.doStepInto();
     }
     @FXML private void menuStepOver() {
+        circuit.doStepOver();
 
+        // warn if simulation is not finished
+        if (!circuit.wasFinished()) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.getDialogPane().setStyle(defFont);
+            alert.setResizable(true);
+            alert.setTitle(Main.TITLE);
+            alert.setHeaderText("Step over");
+            alert.setContentText("Failed to stabilize circuit. Increase simulation depth or make few more steps into.");
+            alert.showAndWait();
+        }
     }
     @FXML private void menuRun() {
-        if (circuit.getSimRunProperty().get()) circuit.stopSimulation();
-        else circuit.startSimulation();
+
+    }
+    @FXML private void menuStop() {
+
     }
     @FXML private void menuSettings() {
         try {
@@ -519,11 +567,13 @@ public class ControlMain {
     }
     public void setCircuit(Circuit circuit) {
         this.circuit = circuit;
-        stage.setTitle(String.format("%s - %s", Main.TITLE, circuit.getNameProperty().get()));
+        stage.setTitle(String.format("%s - %s", Main.TITLE, circuit.nameProperty().get()));
 
         // bindings
-        circuit.getSimRunProperty().addListener((observable, oldValue, newValue) -> menuRun.setText(newValue ? "Stop" : "Start"));
-        circuit.getNameProperty().addListener(((observable, oldValue, newValue) -> stage.setTitle(String.format("%s - %s", Main.TITLE, newValue))));
+        circuit.nameProperty().addListener(((observable, oldName, newName) -> stage.setTitle(String.format("%s - %s", Main.TITLE, newName))));
+//        menuRun.disableProperty().bind(circuit.taskRunProperty());
+//        menuStop.disableProperty().bind(circuit.taskRunProperty().not());
+//        progress.visibleProperty().bind(circuit.taskRunProperty());
     }
     public Pane getParent() {
         return parent;
@@ -552,6 +602,8 @@ public class ControlMain {
         } catch (TransformerException e) {
             e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.getDialogPane().setStyle(defFont);
+            alert.setResizable(true);
             alert.setTitle(Main.TITLE);
             alert.setHeaderText("IO error:");
             alert.setContentText("Failed to save " + lastSave.getAbsolutePath());

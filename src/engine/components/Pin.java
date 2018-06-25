@@ -60,7 +60,6 @@ public class Pin extends Circle implements Connectible {
             connectibles = new HashSet<>();
         }
         setFill(LogicLevel.ZZZ.colour());
-        if (canAffectOwner) owner.simulate();
     }
     // parsing.stage1
     @Override public void inspect(Wire wire) {

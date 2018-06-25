@@ -71,8 +71,9 @@
                 <MenuItem text="Parse" accelerator="F6" onAction="#menuParse"/>
                 <MenuItem text="Step into" accelerator="F7" onAction="#menuStepInto"/>
                 <MenuItem text="Step over" accelerator="F8" onAction="#menuStepOver"/>
-                <MenuItem text="Run" accelerator="F9" onAction="#menuRun" fx:id="menuRun"/>
                 <SeparatorMenuItem/>
+                <MenuItem text="Run" accelerator="F9" onAction="#menuRun" disable="true"/>
+                <MenuItem text="Stop" accelerator="F10" onAction="#menuStop" disable="true"/>
                 <MenuItem text="Settings" accelerator="F2" onAction="#menuSettings"/>
 
             </Menu>
@@ -91,6 +92,7 @@
             </Menu>
 
         </MenuBar>
+        <ProgressIndicator visible="false"/>
         <Label fx:id="lblPoint"/>
 
     </HBox>

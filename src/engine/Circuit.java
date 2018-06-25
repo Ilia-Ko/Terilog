@@ -19,9 +19,8 @@ import engine.components.mosfets.SoftP;
 import engine.connectivity.Node;
 import engine.wires.Wire;
 import gui.control.ControlMain;
-import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import org.w3c.dom.Document;
@@ -63,6 +62,7 @@ public class Circuit {
     // those components, whose inputs are connected to them.
 
     private static final String DEF_NAME = "Untitled";
+    private static final int DEF_SIM_DEPTH = 60;
 
     // construction
     private StringProperty name;
@@ -71,14 +71,21 @@ public class Circuit {
     private ArrayList<Pin> pins;
     // simulation
     private ArrayList<Node> nodes;
-    private BooleanProperty simRunProperty; // flag for threading
-    private boolean needsReparsing;
+    private HashSet<Node> unstable;
+    private boolean needsParsing;
+    private boolean needsEntry;
+    private boolean isFinished;
+    private IntegerProperty maxSimDepth;
 
     public Circuit() {
         name = new SimpleStringProperty(DEF_NAME);
-        simRunProperty = new SimpleBooleanProperty(false);
-        needsReparsing = true;
+        maxSimDepth = new SimpleIntegerProperty(DEF_SIM_DEPTH);
 
+        // flags
+        needsParsing = true;
+        needsEntry = true;
+
+        // arrays
         components = new ArrayList<>();
         entries = new ArrayList<>();
         wires = new ArrayList<>();
@@ -87,6 +94,8 @@ public class Circuit {
     public Circuit(ControlMain control, Element c) {
         this();
         name.setValue(c.getAttribute("name"));
+        int depth = Integer.parseInt(c.getAttribute("depth"));
+        if (depth != 0) maxSimDepth.setValue(depth);
         NodeList list;
 
         // create components
@@ -173,22 +182,25 @@ public class Circuit {
     // construction
     public void add(Wire wire) {
         wires.add(wire);
-        needsReparsing = true;
+        needsParsing = true;
     }
     public void del(Wire wire) {
         wires.remove(wire);
-        needsReparsing = true;
+        needsParsing = true;
     }
     public void add(Component comp) {
         components.add(comp);
         if (comp.isEntryPoint()) entries.add(comp);
         pins.addAll(comp.getPins());
-        needsReparsing = true;
+        needsParsing = true;
     }
     public void del(Component comp) {
         components.remove(comp);
         if (comp.isEntryPoint()) entries.remove(comp);
-        needsReparsing = true;
+        needsParsing = true;
+    }
+    public boolean isReallyBig() {
+        return wires.size() + pins.size() > 20736;
     }
     void destroy() {
         name.setValue(DEF_NAME);
@@ -198,17 +210,34 @@ public class Circuit {
         components.clear();
     }
 
-    // first methods are the most 'algorithmic' part of Terilog
+    // simulation and connectivity
+    private void reset(boolean denodify) {
+        // reset nodes
+        if (denodify) nodes = new ArrayList<>();
+        else nodes.forEach(Node::reset);
+
+        // reset wires
+        wires.forEach(wire -> wire.reset(denodify));
+
+        // reset components
+        components.forEach(comp -> comp.reset(denodify));
+
+        // if nodes were eliminated, parsing is needed
+        needsParsing = denodify;
+        needsEntry = true;
+        unstable = new HashSet<>();
+    }
     private void parse() {
+        // reset
         reset(true);
 
-        // parsing.stage1.a: searching for connections between wires - O(n*n)
+        // parsing.stage1.a: searching for connections between wires - O(1/2 * n^2)
         int len = wires.size();
         for (int i = 0; i < len; i++)
             for (int j = i + 1; j < len; j++)
                 wires.get(i).inspect(wires.get(j));
 
-        // parsing.stage1.b: searching for connections between wires and pins - O(m*n)
+        // parsing.stage1.b: searching for connections between wires and pins - O(m * n)
         for (Pin pin : pins)
             for (Wire wire : wires)
                 pin.inspect(wire);
@@ -230,49 +259,60 @@ public class Circuit {
             }
 
         // Nice system of nodes is ready to simulation!
-        needsReparsing = false;
+        needsParsing = false;
+        unstable = new HashSet<>();
+        needsEntry = true;
     }
-    private void simulate() {
-        simRunProperty.setValue(true);
-        HashSet<Node> unstable = new HashSet<>();
-
-        // entry points
+    private void begin() {
         for (Component entry : entries) unstable.addAll(entry.simulate());
-
-        // continuous simulation
-        while (simRunProperty.get() && unstable.size() > 0) {
-            HashSet<Node> tmp = new HashSet<>(unstable);
-            unstable.clear();
-            for (Node node : tmp) unstable.addAll(node.simulate());
-        }
-
-        simRunProperty.setValue(false);
+        needsEntry = false;
     }
-    private void reset(boolean denodify) {
-        if (denodify) nodes = new ArrayList<>();
-        else nodes.forEach(Node::reset);
-        wires.forEach(wire -> wire.reset(denodify));
-        pins.forEach(pin -> pin.reset(denodify));
+    private void step() {
+        HashSet<Node> tmp = new HashSet<>(unstable);
+        unstable.clear();
+        for (Node node : tmp) unstable.addAll(node.simulate());
     }
 
-    // simulation
-    public void startSimulation() {
-        if (needsReparsing) parse();
+    // flags
+    public boolean hasToBeParsed() {
+        return needsParsing;
+    }
+    public boolean wasFinished() {
+        return isFinished;
+    }
+
+    // interaction
+    public void doReset() {
+        reset(true);
+    }
+    public void doParse() {
+        parse();
+    }
+    public void doStepInto() {
+        if (needsParsing) parse();
+        if (needsEntry) begin();
+        else step();
+    }
+    public void doStepOver() {
+        // prepare
+        if (needsParsing) parse();
         else reset(false);
 
-        Platform.runLater(this::simulate);
-    }
-    public void stopSimulation() {
-        simRunProperty.setValue(false);
-    }
-    public BooleanProperty getSimRunProperty() {
-        return simRunProperty;
+        // simulate
+        int attempts = 0;
+        begin();
+        while (attempts++ <= maxSimDepth.get() && unstable.size() > 0)
+            step();
+
+        // analyze state
+        isFinished = attempts < maxSimDepth.get();
     }
 
     // xml info
     Element writeCircuitToXML(Document doc) {
         Element c = doc.createElement("circuit");
         c.setAttribute("name", name.get());
+        c.setAttribute("depth", Integer.toString(maxSimDepth.get()));
 
         for (Component comp : components)
             c.appendChild(comp.writeXML(doc));
@@ -282,8 +322,11 @@ public class Circuit {
 
         return c;
     }
-    public StringProperty getNameProperty() {
+    public StringProperty nameProperty() {
         return name;
+    }
+    public IntegerProperty simDepthProperty() {
+        return maxSimDepth;
     }
 
 }
