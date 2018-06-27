@@ -31,6 +31,8 @@ abstract class PChannel extends MOSFET {
             changed = drain.update(LogicLevel.ZZZ);
         else if (s == LogicLevel.ERR || g.isUnstable())
             changed = drain.update(LogicLevel.ERR);
+        else if (s == LogicLevel.NEG)
+            changed = drain.update(LogicLevel.NEG);
         else if (g.volts() - s.volts() <= -vgsth)
             changed = drain.update(s);
         else

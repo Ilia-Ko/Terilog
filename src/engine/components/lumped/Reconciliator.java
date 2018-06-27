@@ -8,7 +8,6 @@ import gui.control.ControlMain;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.*;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -17,20 +16,18 @@ import java.util.HashSet;
 
 public class Reconciliator extends Component {
 
-    private ObjectProperty<Color> colour;
     private Pin source, drain;
-    private LogicLevel pull;
+    private ObjectProperty<LogicLevel> pull;
     private ToggleGroup toggle;
 
     // initialization
     public Reconciliator(ControlMain control) {
         super(control);
-        pull = LogicLevel.NIL;
 
-        // init colouring
         Polygon body = (Polygon) getRoot().lookup("#body");
-        colour = new SimpleObjectProperty<>(pull.colour());
-        body.fillProperty().bind(colour);
+        pull = new SimpleObjectProperty<>();
+        pull.addListener((observable, oldPull, newPull) -> body.setFill(newPull.colour()));
+        pull.setValue(LogicLevel.NIL);
     }
     public Reconciliator(ControlMain control, Element data) {
         this(control);
@@ -76,21 +73,18 @@ public class Reconciliator extends Component {
         LogicLevel s = source.querySigFromNode();
 
         // simulate
-        if (s.isUnstable())
-            changed = drain.update(pull);
-        else
-            changed = drain.update(s);
+        if (s.isUnstable()) changed = drain.update(pull.get());
+        else changed = drain.update(s);
 
         // report about affected nodes
         HashSet<Node> affected = new HashSet<>();
         if (changed) affected.add(drain.getNode());
         return affected;
     }
-    private void setPull(LogicLevel sig, boolean updateToggle) {
-        pull = sig;
-        colour.setValue(pull.colour());
+    private void setPull(LogicLevel signal, boolean updateToggle) {
+        pull.setValue(signal);
         if (updateToggle) {
-            Toggle item = toggle.getToggles().get(sig.ordinal());
+            Toggle item = toggle.getToggles().get(signal.ordinal());
             toggle.selectToggle(item);
         }
     }
@@ -98,7 +92,7 @@ public class Reconciliator extends Component {
     // xml info
     @Override public Element writeXML(Document doc) {
         Element r = super.writeXML(doc);
-        r.setAttribute("pull", pull.getStandardName());
+        r.setAttribute("pull", pull.get().getStandardName());
         return r;
     }
     @Override protected void readXML(Element comp) {

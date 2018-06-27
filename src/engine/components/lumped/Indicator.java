@@ -5,7 +5,10 @@ import engine.components.Component;
 import engine.components.Pin;
 import engine.connectivity.Node;
 import gui.control.ControlMain;
-import javafx.beans.property.*;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
@@ -18,37 +21,34 @@ import java.util.HashSet;
 
 public class Indicator extends Component {
 
-    private ObjectProperty<Color> colour;
-    private StringProperty text;
+    private ObjectProperty<LogicLevel> signal;
     private Pin source;
 
     // initialization
     public Indicator(ControlMain control) {
         super(control);
 
-        // init colouring
-        Circle body = (Circle) getRoot().lookup("#body");
-        colour = new SimpleObjectProperty<>();
-        colour.addListener((observable, oldValue, newValue) -> {
-            RadialGradient gradient = new RadialGradient(0, 0, 1, 1, 1,
-                    false, CycleMethod.NO_CYCLE,
-                    new Stop(0.0, newValue),
-                    new Stop(1.0, Color.GRAY));
-            body.setFill(gradient);
-        });
-        colour.setValue(LogicLevel.ZZZ.colour());
-        body.strokeProperty().bind(colour);
-
         // init indication
-        text = new SimpleStringProperty(String.valueOf(LogicLevel.ZZZ.getDigitCharacter()));
+        Circle body = (Circle) getRoot().lookup("#body");
         Label value = (Label) getRoot().lookup("#value");
-        value.textProperty().bind(text);
         DoubleProperty size = new SimpleDoubleProperty(2.0);
         value.layoutXProperty().bind(size.subtract(value.widthProperty()).divide(2.0));
         value.layoutYProperty().bind(size.subtract(value.heightProperty()).divide(2.0));
         value.rotateProperty().bind(getRotation().angleProperty().negate());
         value.scaleXProperty().bind(getScale().xProperty());
         value.scaleYProperty().bind(getScale().yProperty());
+
+        // init signal
+        signal = new SimpleObjectProperty<>();
+        signal.addListener((observable, oldSignal, newSignal) -> {
+            RadialGradient gradient = new RadialGradient(0, 0, 1, 1, 1,
+                    false, CycleMethod.NO_CYCLE,
+                    new Stop(0.0, newSignal.colour()),
+                    new Stop(1.0, Color.GRAY));
+            body.setFill(gradient);
+            body.setStroke(newSignal.colour());
+            value.setText(String.valueOf(newSignal.getDigitCharacter()));
+        });
     }
     public Indicator(ControlMain control, Element data) {
         this(control);
@@ -65,13 +65,10 @@ public class Indicator extends Component {
     // simulation
     @Override public void reset(boolean denodify) {
         super.reset(denodify);
-        colour.setValue(LogicLevel.ZZZ.colour());
-        text.setValue(String.valueOf(LogicLevel.ZZZ.getDigitCharacter()));
+        signal.setValue(LogicLevel.ZZZ);
     }
     @Override public HashSet<Node> simulate() {
-        LogicLevel signal = source.querySigFromNode();
-        colour.setValue(signal.colour());
-        text.setValue(String.valueOf(signal.getDigitCharacter()));
+        signal.setValue(source.querySigFromNode());
         return new HashSet<>();
     }
 

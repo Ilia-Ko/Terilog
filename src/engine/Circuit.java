@@ -70,7 +70,6 @@ public class Circuit {
     private ArrayList<Wire> wires;
     private ArrayList<Pin> pins;
     // simulation
-    private ArrayList<Node> nodes;
     private HashSet<Node> unstable;
     private boolean needsParsing;
     private boolean needsEntry;
@@ -211,25 +210,23 @@ public class Circuit {
     }
 
     // simulation and connectivity
-    private void reset(boolean denodify) {
+    private void reset() {
         // reset nodes
-        if (denodify) nodes = new ArrayList<>();
-        else nodes.forEach(Node::reset);
 
         // reset wires
-        wires.forEach(wire -> wire.reset(denodify));
+        wires.forEach(wire -> wire.reset(true));
 
         // reset components
-        components.forEach(comp -> comp.reset(denodify));
+        components.forEach(comp -> comp.reset(true));
 
         // if nodes were eliminated, parsing is needed
-        needsParsing = denodify;
+        needsParsing = true;
         needsEntry = true;
         unstable = new HashSet<>();
     }
     private void parse() {
         // reset
-        reset(true);
+        reset();
 
         // parsing.stage1.a: searching for connections between wires - O(1/2 * n^2)
         int len = wires.size();
@@ -244,19 +241,13 @@ public class Circuit {
 
         // parsing.stage2.a: nodify wires - O(n)
         for (Wire wire : wires)
-            if (wire.isNodeFree()) {
-                Node node = new Node();
-                wire.nodify(node);
-                nodes.add(node);
-            }
+            if (wire.isNodeFree())
+                wire.nodify(new Node());
 
         // parsing.stage2.b: nodify pins - O(m)
         for (Pin pin : pins)
-            if (pin.isNodeFree()) {
-                Node node = new Node();
-                pin.nodify(node);
-                nodes.add(node);
-            }
+            if (pin.isNodeFree())
+                pin.nodify(new Node());
 
         // Nice system of nodes is ready to simulation!
         needsParsing = false;
@@ -282,8 +273,11 @@ public class Circuit {
     }
 
     // interaction
+    public void addUnstable(Node node) {
+        if (unstable != null) unstable.add(node);
+    }
     public void doReset() {
-        reset(true);
+        reset();
     }
     public void doParse() {
         parse();
@@ -296,11 +290,10 @@ public class Circuit {
     public void doStepOver() {
         // prepare
         if (needsParsing) parse();
-        else reset(false);
+        if (needsEntry) begin();
 
         // simulate
         int attempts = 0;
-        begin();
         while (attempts++ <= maxSimDepth.get() && unstable.size() > 0)
             step();
 
