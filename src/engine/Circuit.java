@@ -93,8 +93,10 @@ public class Circuit {
     public Circuit(ControlMain control, Element c) {
         this();
         name.setValue(c.getAttribute("name"));
-        int depth = Integer.parseInt(c.getAttribute("depth"));
-        if (depth != 0) maxSimDepth.setValue(depth);
+        try {
+            int depth = Integer.parseInt(c.getAttribute("depth"));
+            if (depth != 0) maxSimDepth.setValue(depth);
+        } catch (NumberFormatException e) { maxSimDepth.setValue(DEF_SIM_DEPTH); }
         NodeList list;
 
         // create components

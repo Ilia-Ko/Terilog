@@ -11,6 +11,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.effect.Bloom;
 import javafx.scene.input.KeyCode;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -29,6 +30,7 @@ public class Wire extends Line implements Connectible {
 
     private static final Bloom HIGHLIGHT = new Bloom(0.7);
 
+    private Rectangle r1, r2;
     private ControlMain control;
     private HashSet<Connectible> connectibles;
     private Node node;
@@ -89,10 +91,18 @@ public class Wire extends Line implements Connectible {
         setOnContextMenuRequested(mouse -> menu.show(this, mouse.getScreenX(), mouse.getScreenY()));
 
         control.getCircuit().add(this);
+
+        // add squares
+        double a = 1.0 / 6.0, b = a * 2.0;
+        r1 = new Rectangle(getStartX() - a, getStartY() - a, b, b);
+        r1.fillProperty().bind(strokeProperty());
+        r2 = new Rectangle(getEndX() - a, getEndY() - a, b, b);
+        r2.fillProperty().bind(strokeProperty());
+        control.getParent().getChildren().addAll(r1, r2);
     }
     public void delete(boolean fromCircuit) {
         if (fromCircuit) control.getCircuit().del(this);
-        control.getParent().getChildren().remove(this);
+        control.getParent().getChildren().removeAll(this, r1, r2);
     }
 
     // connectivity
