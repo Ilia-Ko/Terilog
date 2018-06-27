@@ -2,9 +2,29 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Schematic grid</title>
+    <title>Grid</title>
 </head>
 <body>
-
+<h1>Grid</h1>
+<p>
+    Grid is very important and convenient invention of humanity, because it allows to rasterize a plane and deal with
+    integers rather than real numbers.
+</p>
+<p>
+    Terilog pointer (a red circle over the circuit) always snaps to grid in order to keep integer coordinates everywhere.
+    Thus it is (luckily) impossible to insert a component or a wire somewhere between grid points. Moreover, all the
+    transformations (rotating and mirroring) preserve the integrity of component coordinates. It is vital for parsing
+    process before simulation that wire endings and components (actually, their pins) stayed strictly onto the grid points.
+    Otherwise connections cannot be detected.
+</p>
+<p>
+    The fundamental parameter of the grid is the distance between two neighbour points. It can be adjusted by zooming
+    the grid in and out. Zooming can be done either by corresponding menus or by pressing keys <b>= (+)</b> and <b>-</b>.
+</p>
+<p>
+    Other important parameters are grid width and size. They can be adjusted inside a 'Grid size' dialog (called by Ctrl+G
+    key combination or corresponding menu). These values are measured in grid points and therefore must be natural integers.
+    Current release of Terilog does not allow to set grid dimensions below 12 or above 144 grid points.
+</p>
 </body>
 </html>

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.web.WebView?>
 <VBox xmlns="http://javafx.com/javafx"
@@ -10,10 +9,20 @@
 
     <HBox VBox.vgrow="ALWAYS">
 
-        <TreeView fx:id="content" HBox.hgrow="SOMETIMES"/>
+        <TreeView fx:id="content"/>
+        <Separator/>
         <WebView fx:id="text" HBox.hgrow="ALWAYS"/>
 
     </HBox>
-    <Button text="Close" onAction="#btnCloseClicked" VBox.vgrow="SOMETIMES"/>
+    <HBox VBox.vgrow="SOMETIMES">
+
+        <Button text="Zoom In" onAction="#btnZoomIn"/>
+        <Separator/>
+        <Button text="Zoom Out" onAction="#btnZoomOut"/>
+        <Separator/>
+        <Button text="Close" onAction="#btnCloseClicked"/>
+
+    </HBox>
+
 
 </VBox>

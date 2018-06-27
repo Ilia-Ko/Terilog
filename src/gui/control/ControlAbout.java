@@ -20,6 +20,7 @@ public class ControlAbout {
     void initialSetup(Stage dialog) {
         this.dialog = dialog;
         loadTree();
+        onItemClick("About");
     }
     private void loadTree() {
         // roots
@@ -114,11 +115,17 @@ public class ControlAbout {
     // events
     private void onItemClick(String name) {
         String path = "manuals/" + name + ".html";
-        path = getClass().getResource(path).getRef();
+        path = getClass().getResource(path).toExternalForm();
         text.getEngine().load(path);
     }
     @FXML private void btnCloseClicked() {
         dialog.close();
+    }
+    @FXML private void btnZoomIn() {
+        text.setZoom(text.getZoom() * 1.12);
+    }
+    @FXML private void btnZoomOut() {
+        text.setZoom(text.getZoom() * 0.88);
     }
 
 }

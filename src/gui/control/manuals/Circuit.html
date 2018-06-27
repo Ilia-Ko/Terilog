@@ -5,6 +5,91 @@
     <title>Simulation</title>
 </head>
 <body>
+<h1>Simulation</h1>
+<p>
+    Circuit simulation is the most interesting part of Terilog. Before simulation started, Terilog does not
+    'understand' your circuit at all. It 'sees' just few terrible bunches of wires and several components enmeshed
+    among them. But there is a 'Parse' action which makes the app try to 'understand' the circuit and find out,
+    who is connected with whom. After the circuit is parsed, the simulation can be done. Voltages invoke the circuit
+    and their signals spread among the components. But you should not worry about parsing - it will be done automatically
+    if you directly begin simulation by pressing 'Step into' or 'Step over'. See corresponding chapters for more info.
+</p>
+<h1>Signals</h1>
+<p>
+    Few words about signals. As Terilog is digital ternary simulator, you might have said that only three types of
+    signals are enough. Even they are, in an ideal circuit, though. Of course, digital simulation implies that the
+    circuit is ideal, but Terilog goes a little bit (no, trit :) further and offers two additional signals. Here is the
+    brief description of all five possible signals.
+</p>
 
+<h2>Stable signals</h2>
+<p>
+    Stable (strong) signals are powerful and clear voltage levels, which occupy the whole wire once they enter it. If
+    two or more of them clashes on the single wire, an error occur. In a real circuit such an error will cause fatal
+    energy leakage and may even damage the circuit. Thus, be aware of mixing strong signals together and design your
+    circuits in a way to avoid errors like that.
+</p>
+
+<h4>Positive voltage level</h4>
+<table>
+    <tr><td>Short name:</td><td>POS</td></tr>
+    <tr><td>Standard name:</td><td>HIGH</td></tr>
+    <tr><td>Boolean name:</td><td>TRUE</td></tr>
+    <tr><td>Math equivalent:</td><td>+1</td></tr>
+    <tr><td>Digit:</td><td>1</td></tr>
+    <tr><td>Voltage:</td><td>+1.5 Volts</td></tr>
+</table>
+
+<h4>Zero voltage level</h4>
+<table>
+    <tr><td>Short name:</td><td>NIL</td></tr>
+    <tr><td>Standard name:</td><td>MID</td></tr>
+    <tr><td>Boolean name:</td><td>UNKNOWN</td></tr>
+    <tr><td>Math equivalent:</td><td>0</td></tr>
+    <tr><td>Digit:</td><td>0</td></tr>
+    <tr><td>Voltage:</td><td>0.0 Volts</td></tr>
+</table>
+
+<h4>Negative voltage level</h4>
+<table>
+    <tr><td>Short name:</td><td>NEG</td></tr>
+    <tr><td>Standard name:</td><td>LOW</td></tr>
+    <tr><td>Boolean name:</td><td>FALSE</td></tr>
+    <tr><td>Math equivalent:</td><td>-1</td></tr>
+    <tr><td>Digit:</td><td>&#x03bb</td></tr>
+    <tr><td>Voltage:</td><td>-1.5 Volts</td></tr>
+</table>
+
+<h2>Unstable signals</h2>
+<p>
+    Unstable (weak) signals are uncertain and dirty voltage levels, which behave badly. They would be a real pain, but
+    they remind us that ideal circuits exist only inside a simulator, whereas there is nothing ideal in hardware.
+    Anyway, Reconciliator component exist in Terilog to deal with them.
+</p>
+
+<h4>No signal</h4>
+<table>
+    <tr><td>Short name:</td><td>Z</td></tr>
+    <tr><td>Standard name:</td><td>ZZZ</td></tr>
+    <tr><td>Boolean name:</td><td>N/A</td></tr>
+    <tr><td>Math equivalent:</td><td>N/A</td></tr>
+    <tr><td>Digit:</td><td>?</td></tr>
+    <tr><td>Voltage:</td><td>none</td></tr>
+</table>
+ZZZ signal is initial signal of every wire and pin, because it means the absence of voltage. No voltage is applied to
+a wire/pin and component cannot draw any current from it and therefore cannot 'read' a signal. That's why behaviour of
+the component who received Z signal is undefined and many components will just produce an error on their output(s).
+
+<h4>Error signal</h4>
+<table>
+    <tr><td>Short name:</td><td>E</td></tr>
+    <tr><td>Standard name:</td><td>ERR</td></tr>
+    <tr><td>Boolean name:</td><td>N/A</td></tr>
+    <tr><td>Math equivalent:</td><td>1/0</td></tr>
+    <tr><td>Digit:</td><td>!</td></tr>
+    <tr><td>Voltage:</td><td>any</td></tr>
+</table>
+ERR signal appears when two or more strong signals clash on a single wire or when a component receives ZZZ signal.
+This signal is fatal, a circuit is very likely to crash if ERR signal once appeared.
 </body>
 </html>
