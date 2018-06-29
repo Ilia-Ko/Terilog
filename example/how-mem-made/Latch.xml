@@ -4,8 +4,8 @@
     <comp class="ckey" mx="1" my="1" rot="90" x="28" y="5"/>
     <comp class="reconciliator" mx="1" my="1" pull="MID" rot="-90" x="18" y="15"/>
     <comp class="sti" mode="0to0" mx="1" my="1" rot="90" x="28" y="17"/>
-    <comp class="voltage" mx="1" my="1" rot="0" signal="MID" x="26" y="2"/>
-    <comp class="voltage" mx="1" my="1" rot="0" signal="MID" x="18" y="2"/>
+    <comp class="voltage" mx="1" my="1" rot="0" sig="MID" x="26" y="2"/>
+    <comp class="voltage" mx="1" my="1" rot="0" sig="MID" x="18" y="2"/>
     <comp class="softp" mx="1" my="-1" rot="-90" x="22" y="21"/>
     <comp class="softn" mx="1" my="1" rot="-90" x="16" y="21"/>
     <comp class="sti" mode="0to0" mx="1" my="1" rot="90" x="17" y="7"/>

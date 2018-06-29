@@ -37,12 +37,12 @@ public class Voltage extends Component {
         value.scaleYProperty().bind(getScale().yProperty());
 
         // init signal
-        signal = new SimpleObjectProperty<>(LogicLevel.ZZZ);
+        signal = new SimpleObjectProperty<>();
         signal.addListener((observable, oldSignal, newSignal) -> {
             body.setFill(newSignal.colour());
             value.setText(String.valueOf(newSignal.getDigitCharacter()));
             control.getCircuit().addUnstable(drain.getNode());
-            drain.update(newSignal);
+//            drain.update(newSignal);
         });
         signal.setValue(LogicLevel.ZZZ);
     }
@@ -97,7 +97,7 @@ public class Voltage extends Component {
     // xml info
     @Override public Element writeXML(Document doc) {
         Element v = super.writeXML(doc);
-        v.setAttribute("signal", signal.get().getStandardName());
+        v.setAttribute("sig", signal.get().getStandardName());
         return v;
     }
     @Override protected void readXML(Element comp) {

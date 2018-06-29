@@ -49,6 +49,7 @@ public class Indicator extends Component {
             body.setStroke(newSignal.colour());
             value.setText(String.valueOf(newSignal.getDigitCharacter()));
         });
+        signal.setValue(LogicLevel.ZZZ);
     }
     public Indicator(ControlMain control, Element data) {
         this(control);
