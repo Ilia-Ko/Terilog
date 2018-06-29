@@ -20,7 +20,7 @@ public class ControlAbout {
     void initialSetup(Stage dialog) {
         this.dialog = dialog;
         loadTree();
-        onItemClick("About");
+        onItemClick("roots/about.html");
     }
     private void loadTree() {
         // roots
