@@ -5,6 +5,38 @@
     <title>MOSFET</title>
 </head>
 <body>
-
+<h1>MOSFET</h1>
+<p>
+    MOSFET = Metal-oxide-semiconductor field-effect transistor.
+</p>
+<p>
+    MOSFETs are the most popular transistors nowadays. Of course, BJTs (Bipolar Junction Transistors) are not forgotten,
+    but MOSFETs have some advantages (like lower power consumption) in logic-level circuitry applications.
+</p>
+<p>
+    Terilog simulates a MOSFET like ideal voltage-controlled switch. It is closed when no zero voltage is applied to
+    controlling terminals and suddenly opens when voltage between them reaches the threshold voltage (V<sub>gs(th)</sub>).
+    Practice shows that this idealization of the transistor is enough for reliable circuit design. MOSFET has three
+    terminals: source, gate and drain. First two are controlling terminals.
+</p>
+<p>
+    <b>Source</b> is a pin that contacts with two legs of a MOSFET (because bulk is usually connected to source). It works
+    like an input terminal. This means, that the voltage on the source (V<sub>s</sub>) always affects the MOSFET, whereas
+    it cannot affect the wire connected to it.
+</p>
+<p>
+    <b>Gate</b> is a pin that has no contact with legs (because it is usually isolated from conducting zones). It works
+    like an input terminal too. The voltage on the gate (V<sub>g</sub>) is vital for MOSFET because its behaviour directly
+    depends on the difference V<sub>gs</sub> = V<sub>g</sub> - V<sub>s</sub>.
+</p>
+<p>
+    <b>Drain</b> is a pin that contact with only one remaining leg of the MOSFET. It is an 'output' of a MOSFET - it
+    does not affect the behaviour of the transistor, but always affects the wire connected to it. Terilog approximates
+    the MOSFET like a function that takes V<sub>g</sub>, V<sub>s</sub> and computes drain voltage (V<sub>d</sub>).
+</p>
+<p>
+    The underlying chapters about available MOSFETs (Hard N, Hard P, Soft N, Soft P) will briefly describe every transistor
+    and (the last, but not the least!) will give tables defining their approximating functions.
+</p>
 </body>
 </html>

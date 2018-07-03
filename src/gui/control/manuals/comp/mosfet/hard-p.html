@@ -5,6 +5,27 @@
     <title>Hard P</title>
 </head>
 <body>
+<h1>Hard P</h1>
+<h2>Shortcut: P</h2>
+<p>
+    Hard P is p-channel MOSFET with V<sub>gs(th)</sub> = -3.0V. It means that it would open if V<sub>g</sub> - V<sub>s</sub>
+    &lt;= -3.0V. And it would really do if it were totally ideal. But Terilog tries not to forget completely about
+    unideal nature of components. That's why you should feel like Hard P 'does not like' negative source voltages: if
+    source is negative and gate is stable - the drain will go negative (regardless to V<sub>g</sub>). Here is summarizing
+    table of Hard P behaviour.
+</p>
+<p>
+    V<sub>d</sub> as function of V<sub>g</sub> (top row) and V<sub>s</sub> (left column).
+</p>
+<table>
+    <tr><th></th><th>&#x03bb</th><th>0</th><th>1</th><th>Z</th><th>E</th></tr>
 
+    <tr><th>&#x03bb</th>    <td>&#x03bb</td><td>&#x03bb</td><td>&#x03bb</td><td>E</td><td>E</td></tr>
+    <tr><th>0</th>          <td>Z</td><td>Z</td><td>Z</td><td>E</td><td>E</td></tr>
+    <tr><th>1</th>          <td>1</td><td>Z</td><td>Z</td><td>E</td><td>E</td></tr>
+    <tr><th>Z</th>          <td>Z</td><td>Z</td><td>Z</td><td>Z</td><td>Z</td></tr>
+    <tr><th>E</th>          <td>E</td><td>E</td><td>E</td><td>E</td><td>E</td></tr>
+
+</table>
 </body>
 </html>

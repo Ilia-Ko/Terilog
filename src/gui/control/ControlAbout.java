@@ -54,11 +54,11 @@ public class ControlAbout {
 
         // about: comp.MOSFET
         TreeItem<Label> compMOSFET = newItem("MOSFET", "comp/mosfet/mosfet.html");
-        TreeItem<Label> compMOSFETHardN = newItem("Hard N", "comp/mosfet/hard-n.html");
         TreeItem<Label> compMOSFETHardP = newItem("Hard P", "comp/mosfet/hard-p.html");
-        TreeItem<Label> compMOSFETSoftN = newItem("Soft N", "comp/mosfet/soft-n.html");
+        TreeItem<Label> compMOSFETHardN = newItem("Hard N", "comp/mosfet/hard-n.html");
         TreeItem<Label> compMOSFETSoftP = newItem("Soft P", "comp/mosfet/soft-p.html");
-        compMOSFET.getChildren().addAll(compMOSFETHardN, compMOSFETHardP, compMOSFETSoftN, compMOSFETSoftP);
+        TreeItem<Label> compMOSFETSoftN = newItem("Soft N", "comp/mosfet/soft-n.html");
+        compMOSFET.getChildren().addAll(compMOSFETHardP, compMOSFETHardN, compMOSFETSoftP, compMOSFETSoftN);
         rootComp.getChildren().add(compMOSFET);
 
         // about: comp.lumped

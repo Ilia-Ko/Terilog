@@ -23,10 +23,10 @@
 
                 <Menu text="MOSFET">
 
-                    <MenuItem text="Hard N" accelerator="N" onAction="#menuHardN"/>
                     <MenuItem text="Hard P" accelerator="P" onAction="#menuHardP"/>
-                    <MenuItem text="Soft N" accelerator="Shift+N" onAction="#menuSoftN"/>
+                    <MenuItem text="Hard N" accelerator="N" onAction="#menuHardN"/>
                     <MenuItem text="Soft P" accelerator="Shift+P" onAction="#menuSoftP"/>
+                    <MenuItem text="Soft N" accelerator="Shift+N" onAction="#menuSoftN"/>
 
                 </Menu>
                 <Menu text="Lumped">
