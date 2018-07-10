@@ -5,6 +5,18 @@
     <title>Full Adder</title>
 </head>
 <body>
-
+<h1>Full Adder</h1>
+<p>
+    Full Adder is a circuit with three inputs (trits A, B and input carry Cin) and two outputs (Sum trit and output
+    carry Cout). Normal Full Adder takes trits A, B and Cin, adds them together and sends their sum and carry to the
+    outputs. Terilog tries to find the best (smaller amount of transistors) solution for the Full Adder and therefore
+    uses the model of Full Adder with negated carries. It means that if trits A and B have normal values and Cin has
+    inverted value (by STI), then Sum trit contains normal value and Cout trit contains inverted value. As in the case
+    of Half Adder it is okay for arithmetic implementation, because carries should be inverted only twice (at max) even
+    in the arbitrary big array of Full Adders.
+</p>
+<p>
+    Here is the complete truth table for normal Full Adder. Note that Terilog offers only Full Adder with inverted carries.
+</p>
 </body>
 </html>
