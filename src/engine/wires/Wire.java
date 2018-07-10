@@ -3,9 +3,9 @@ package engine.wires;
 import engine.LogicLevel;
 import engine.connectivity.Connectible;
 import engine.connectivity.Node;
+import engine.connectivity.Selectable;
 import gui.control.ControlMain;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.*;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.effect.Bloom;
@@ -17,7 +17,7 @@ import org.w3c.dom.Element;
 
 import java.util.HashSet;
 
-public class Wire extends Line implements Connectible {
+public class Wire extends Line implements Connectible, Selectable {
 
     // Wire is a line, connecting two points on the circuit grid.
     // For layout convenience, FlyWire class is created.
@@ -28,12 +28,11 @@ public class Wire extends Line implements Connectible {
     // graphical instance until simulation starts. But before the
     // simulation process Terilog does its best and parses the circuit.
 
-    private static final Bloom HIGHLIGHT = new Bloom(0.7);
-
     private Rectangle r1, r2;
     private ControlMain control;
     private HashSet<Connectible> connectibles;
     private Node node;
+    private BooleanProperty isSelected;
 
     // initialization
     Wire(ControlMain control, IntegerProperty x0, IntegerProperty y0, IntegerProperty x1, IntegerProperty y1) {
@@ -74,11 +73,8 @@ public class Wire extends Line implements Connectible {
         endYProperty().unbind();
 
         setOpacity(1.0);
-        setOnMouseEntered(mouse -> {
-            requestFocus();
-            setEffect(HIGHLIGHT);
-        });
-        setOnMouseExited(mouse -> setEffect(null));
+        isSelected = new SimpleBooleanProperty(false);
+        isSelected.addListener((observable, wasSelected, nowSelected) -> setEffect(nowSelected ? new Bloom() : null));
         setOnKeyPressed(key -> {
             KeyCode code = key.getCode();
             if (code == KeyCode.DELETE) {
@@ -88,7 +84,10 @@ public class Wire extends Line implements Connectible {
         });
 
         ContextMenu menu = buildContextMenu();
-        setOnContextMenuRequested(mouse -> menu.show(this, mouse.getScreenX(), mouse.getScreenY()));
+        setOnContextMenuRequested(mouse -> {
+            if (isSelected.not().get())
+                menu.show(this, mouse.getScreenX(), mouse.getScreenY());
+        });
 
         control.getCircuit().add(this);
 
@@ -103,6 +102,33 @@ public class Wire extends Line implements Connectible {
     public void delete(boolean fromCircuit) {
         if (fromCircuit) control.getCircuit().del(this);
         control.getParent().getChildren().removeAll(this, r1, r2);
+    }
+    @Override public boolean checkSelection(Rectangle sel) {
+        isSelected.setValue(sel.intersects(getBoundsInParent()));
+        return isSelected.get();
+    }
+    @Override public void delete() {
+        delete(true);
+        isSelected.setValue(false);
+    }
+    @Override public void move() {
+        control.getCircuit().del(this);
+        setOpacity(0.4);
+
+        // move
+        control.getParent().getChildren().removeAll(r1, r2);
+        IntegerProperty dStartX = new SimpleIntegerProperty(startXProperty().intValue() - control.getMouseX().get());
+        IntegerProperty dStartY = new SimpleIntegerProperty(startYProperty().intValue() - control.getMouseY().get());
+        IntegerProperty dEndX = new SimpleIntegerProperty(endXProperty().intValue() - control.getMouseX().get());
+        IntegerProperty dEndY = new SimpleIntegerProperty(endYProperty().intValue() - control.getMouseY().get());
+        startXProperty().bind(control.getMouseX().add(dStartX));
+        startYProperty().bind(control.getMouseY().add(dStartY));
+        endXProperty().bind(control.getMouseX().add(dEndX));
+        endYProperty().bind(control.getMouseY().add(dEndY));
+    }
+    @Override public void stop() {
+        confirm();
+        isSelected.setValue(false);
     }
 
     // connectivity

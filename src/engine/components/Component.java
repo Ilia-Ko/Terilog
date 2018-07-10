@@ -1,15 +1,17 @@
 package engine.components;
 
 import engine.connectivity.Node;
+import engine.connectivity.Selectable;
 import gui.Main;
 import gui.control.ControlMain;
-import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.*;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tooltip;
 import javafx.scene.effect.Bloom;
 import javafx.scene.layout.Pane;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import org.w3c.dom.Document;
@@ -18,13 +20,14 @@ import org.w3c.dom.Element;
 import java.io.IOException;
 import java.util.HashSet;
 
-public abstract class Component {
+public abstract class Component implements Selectable {
 
     private Pane root;
     private ControlMain control;
     private Rotate rotate;
     private Scale scale;
     private HashSet<Pin> pins;
+    private BooleanProperty isSelected;
 
     // initialization
     private Component(ControlMain control, boolean isLayoutMode) {
@@ -32,18 +35,17 @@ public abstract class Component {
         root = loadContent();
         root.setId(Integer.toString(hashCode()));
         control.getParent().getChildren().add(root);
+        isSelected = new SimpleBooleanProperty(false);
 
         // attach context menu
         ContextMenu menu = buildContextMenu();
-        root.setOnContextMenuRequested(mouse -> menu.show(root, mouse.getScreenX(), mouse.getScreenY()));
+        root.setOnContextMenuRequested(mouse -> {
+            if (isSelected.not().get())
+                menu.show(root, mouse.getScreenX(), mouse.getScreenY());
+        });
 
         // hover effect
-        root.hoverProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue)
-                root.setEffect(new Bloom(0.7));
-            else
-                root.setEffect(null);
-        });
+        isSelected.addListener((observable, wasSelected, nowSelected) -> root.setEffect(nowSelected ? new Bloom() : null));
 
         // layout transforms
         rotate = new Rotate(0, 0, 0);
@@ -122,7 +124,6 @@ public abstract class Component {
         root.layoutYProperty().unbind();
 
         root.setOpacity(1.0);
-        root.setOnMouseEntered(mouse -> root.requestFocus());
         Tooltip.install(root, new Tooltip(getClass().getSimpleName()));
 
         control.getCircuit().add(this);
@@ -130,6 +131,28 @@ public abstract class Component {
     public void delete(boolean fromCircuit) {
         if (fromCircuit) control.getCircuit().del(this);
         control.getParent().getChildren().remove(root);
+    }
+    @Override public boolean checkSelection(Rectangle sel) {
+        isSelected.setValue(sel.intersects(root.getBoundsInParent()));
+        return isSelected.get();
+    }
+    @Override public void delete() {
+        delete(true);
+        isSelected.setValue(false);
+    }
+    @Override public void move() {
+        control.getCircuit().del(this);
+        root.setOpacity(0.4);
+
+        // move
+        IntegerProperty dX = new SimpleIntegerProperty(root.layoutXProperty().intValue() - control.getMouseX().get());
+        IntegerProperty dY = new SimpleIntegerProperty(root.layoutYProperty().intValue() - control.getMouseY().get());
+        root.layoutXProperty().bind(control.getMouseX().add(dX));
+        root.layoutYProperty().bind(control.getMouseY().add(dY));
+    }
+    @Override public void stop() {
+        confirm();
+        isSelected.setValue(false);
     }
 
     // layout transforms

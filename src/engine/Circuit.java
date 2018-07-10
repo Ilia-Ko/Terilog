@@ -17,12 +17,14 @@ import engine.components.mosfets.HardP;
 import engine.components.mosfets.SoftN;
 import engine.components.mosfets.SoftP;
 import engine.connectivity.Node;
+import engine.connectivity.Selectable;
 import engine.wires.Wire;
 import gui.control.ControlMain;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.scene.shape.Rectangle;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -69,6 +71,8 @@ public class Circuit {
     private ArrayList<Component> components, entries;
     private ArrayList<Wire> wires;
     private ArrayList<Pin> pins;
+    private ArrayList<Selectable> selected;
+    private boolean hasSelected, isSelMoving;
     // simulation
     private HashSet<Node> unstable;
     private boolean needsParsing;
@@ -83,6 +87,8 @@ public class Circuit {
         // flags
         needsParsing = true;
         needsEntry = true;
+        hasSelected = false;
+        isSelMoving = false;
 
         // arrays
         components = new ArrayList<>();
@@ -199,6 +205,43 @@ public class Circuit {
         components.remove(comp);
         if (comp.isEntryPoint()) entries.remove(comp);
         needsParsing = true;
+    }
+    public void sel(Rectangle sel) {
+        selected = new ArrayList<>();
+        components.forEach(comp -> {
+            if (comp.checkSelection(sel))
+                selected.add(comp);
+        });
+        wires.forEach(wire -> {
+            if (wire.checkSelection(sel))
+                selected.add(wire);
+        });
+        hasSelected = selected.size() > 0;
+    }
+    public boolean hasSelectedItems() {
+        return hasSelected;
+    }
+    public boolean isSelectionMoving() {
+        return isSelMoving;
+    }
+    public void selMove() {
+        if (hasSelected) {
+            selected.forEach(Selectable::move);
+            isSelMoving = true;
+        }
+    }
+    public void selStop() {
+        if (hasSelected && isSelMoving) {
+            isSelMoving = false;
+            hasSelected = false;
+            selected.forEach(Selectable::stop);
+        }
+    }
+    public void selDel() {
+        if (hasSelected) {
+            selected.forEach(Selectable::delete);
+            hasSelected = false;
+        }
     }
     public boolean isReallyBig() {
         return wires.size() + pins.size() > 20736;

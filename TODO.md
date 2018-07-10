@@ -4,4 +4,3 @@ Manuals:
 
 Engine:
 * Implement 'history of actions' mechanism (undo & redo - Ctrl+Z & Ctrl+Y)
-* Add 'selection' mechanism (selecting a lot of comps/wires and moving/deleting them all together)

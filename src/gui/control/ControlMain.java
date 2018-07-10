@@ -20,10 +20,7 @@ import engine.components.mosfets.SoftP;
 import engine.wires.FlyWire;
 import gui.Main;
 import javafx.application.Platform;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -42,6 +39,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -89,6 +87,10 @@ public class ControlMain {
     private boolean holdingWire, holdingComp;
     private FlyWire flyWire;
     private Component flyComp;
+    // dragging and selecting
+    private BooleanProperty isSelecting;
+    private IntegerProperty selStartX, selStartY;
+    private ContextMenu selMenu;
 
     // initialization
     public void initialSetup(Stage stage, String defFont, double screenWidth, double screenHeight) {
@@ -106,9 +108,20 @@ public class ControlMain {
         // init events
         mouseX = new SimpleIntegerProperty();
         mouseY = new SimpleIntegerProperty();
+        selStartX = new SimpleIntegerProperty();
+        selStartY = new SimpleIntegerProperty();
+        isSelecting = new SimpleBooleanProperty(false);
+
         scroll.addEventFilter(MouseEvent.MOUSE_DRAGGED, mouse -> {
-            if (mouse.getButton() == MouseButton.PRIMARY)
+            if (mouse.getButton() == MouseButton.PRIMARY) {
+                if (!isSelecting.get()) {
+                    isSelecting.setValue(true);
+                    selStartX.setValue(mouseX.get());
+                    selStartY.setValue(mouseY.get());
+                }
+                onGlobalMouseMoved(mouse);
                 mouse.consume();
+            }
         });
         scroll.addEventFilter(MouseEvent.MOUSE_CLICKED, this::onGlobalMouseClicked);
         scroll.addEventFilter(KeyEvent.KEY_PRESSED, this::onGlobalKeyPressed);
@@ -139,6 +152,34 @@ public class ControlMain {
         point.centerXProperty().bind(mouseX);
         point.centerYProperty().bind(mouseY);
         parent.getChildren().add(point);
+
+        // init 'selection'
+        Rectangle sel = new Rectangle();
+        sel.setFill(Color.rgb(255, 255, 0, 0.5));
+        sel.setStroke(Color.BLACK);
+        sel.setStrokeWidth(0.1);
+        sel.xProperty().bind(selStartX);
+        sel.yProperty().bind(selStartY);
+        sel.widthProperty().bind(mouseX.subtract(selStartX));
+        sel.heightProperty().bind(mouseY.subtract(selStartY));
+        sel.visibleProperty().bind(isSelecting);
+        sel.setMouseTransparent(true);
+        parent.getChildren().add(sel);
+        scroll.addEventFilter(MouseEvent.MOUSE_RELEASED, mouse -> {
+            if (isSelecting.get()) circuit.sel(sel);
+            isSelecting.setValue(false);
+        });
+
+        // init selection menu
+        MenuItem itemMove = new MenuItem("Move");
+        itemMove.setOnAction(action -> circuit.selMove());
+        MenuItem itemDel = new MenuItem("Remove");
+        itemDel.setOnAction(action -> circuit.selDel());
+        selMenu = new ContextMenu(itemMove, itemDel);
+        parent.setOnContextMenuRequested(mouse -> {
+            if (circuit.hasSelectedItems())
+                selMenu.show(parent, mouse.getScreenX(), mouse.getScreenY());
+        });
 
         // init circuit
         setCircuit(new Circuit());
@@ -186,7 +227,7 @@ public class ControlMain {
 
     // some actions
     private void onGlobalMouseMoved(MouseEvent mouse) {
-        // update coordinates (I don't know how to bind them!)
+        // update coordinates
         int mx = (int) Math.round(mouse.getX() / p.get());
         int my = (int) Math.round(mouse.getY() / p.get());
         mouseX.setValue(mx);
@@ -194,9 +235,6 @@ public class ControlMain {
 
         // update mouse position label
         lblPoint.setText(String.format("%3d : %3d ", mx, my));
-
-        // stop panning by left-button drag
-        if (mouse.isDragDetect() && mouse.getButton() == MouseButton.PRIMARY) mouse.consume();
     }
     private void onGlobalMouseClicked(MouseEvent mouse) {
         if (mouse.getButton() == MouseButton.PRIMARY) {
@@ -206,7 +244,7 @@ public class ControlMain {
             } else if (holdingComp) {
                 flyComp.confirm();
                 holdingComp = false;
-            }
+            } else if (circuit.isSelectionMoving()) circuit.selStop();
         }
     }
     private void onGlobalKeyPressed(KeyEvent key) {
