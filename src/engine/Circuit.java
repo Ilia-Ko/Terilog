@@ -12,7 +12,7 @@ import engine.components.lumped.Diode;
 import engine.components.lumped.Indicator;
 import engine.components.lumped.Reconciliator;
 import engine.components.lumped.Voltage;
-import engine.components.memory.Trigger;
+import engine.components.memory.*;
 import engine.components.mosfets.HardN;
 import engine.components.mosfets.HardP;
 import engine.components.mosfets.SoftN;
@@ -178,6 +178,18 @@ public class Circuit {
                     // memory
                     case "trigger":
                         add(new Trigger(control, comp));
+                        break;
+                    case "triplet":
+                        add(new Triplet(control, comp));
+                        break;
+                    case "tryte":
+                        add(new Tryte(control, comp));
+                        break;
+                    case "word":
+                        add(new Word(control, comp));
+                        break;
+                    case "dword":
+                        add(new Dword(control, comp));
                         break;
                     default:
                         System.out.printf("WARNING: unknown component of class %s.\n", attrClass);

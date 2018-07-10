@@ -31,7 +31,7 @@ public class TerilogIO {
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
         transformer.setOutputProperty(OutputKeys.METHOD, "xml");
         transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-        transformer.setOutputProperty(OutputKeys.MEDIA_TYPE, "Terilog circuit");
+        transformer.setOutputProperty(OutputKeys.MEDIA_TYPE, "Terilog circuit layout");
     }
 
     public void saveTLG(File outputFile) throws TransformerException {

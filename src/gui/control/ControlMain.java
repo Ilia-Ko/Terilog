@@ -13,7 +13,7 @@ import engine.components.lumped.Diode;
 import engine.components.lumped.Indicator;
 import engine.components.lumped.Reconciliator;
 import engine.components.lumped.Voltage;
-import engine.components.memory.Trigger;
+import engine.components.memory.*;
 import engine.components.mosfets.HardN;
 import engine.components.mosfets.HardP;
 import engine.components.mosfets.SoftN;
@@ -506,6 +506,26 @@ public class ControlMain {
     @FXML private void menuTrigger() {
         breakInsertion();
         flyComp = new Trigger(this);
+        holdingComp = true;
+    }
+    @FXML private void menuTriplet() {
+        breakInsertion();
+        flyComp = new Triplet(this);
+        holdingComp = true;
+    }
+    @FXML private void menuTryte() {
+        breakInsertion();
+        flyComp = new Tryte(this);
+        holdingComp = true;
+    }
+    @FXML private void menuWord() {
+        breakInsertion();
+        flyComp = new Word(this);
+        holdingComp = true;
+    }
+    @FXML private void menuDword() {
+        breakInsertion();
+        flyComp = new Dword(this);
         holdingComp = true;
     }
     // menu.add.wire

@@ -72,6 +72,10 @@
                 <Menu text="Memory">
 
                     <MenuItem text="Trigger" accelerator="T" onAction="#menuTrigger"/>
+                    <MenuItem text="Triplet" onAction="#menuTriplet"/>
+                    <MenuItem text="Tryte" onAction="#menuTryte"/>
+                    <MenuItem text="Word" onAction="#menuWord"/>
+                    <MenuItem text="Dword" onAction="#menuDword"/>
 
                 </Menu>
                 <MenuItem text="Wire" accelerator="W" onAction="#menuWire"/>

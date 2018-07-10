@@ -76,11 +76,16 @@ public enum LogicLevel {
         return null;
     }
     public static LogicLevel parseValue(int value) {
-        if (value == POS.voltage) return POS;
-        else if (value == NIL.voltage) return NIL;
-        else if (value == NEG.voltage) return NEG;
-        else if (value == ZZZ.voltage) return ZZZ;
-        else return ERR;
+        for (LogicLevel signal : values())
+            if (signal.voltage == value)
+                return signal;
+        return ERR;
+    }
+    public static LogicLevel parseDigit(char digit) {
+        for (LogicLevel signal : values())
+            if (signal.digit == digit)
+                return signal;
+        return null;
     }
 
     // useful info

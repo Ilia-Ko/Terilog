@@ -104,7 +104,11 @@ public class ControlAbout {
         // about: comp.memory
         TreeItem<Label> compMemory = newItem("Memory", "comp/memory/memory.html");
         TreeItem<Label> compMemoryTrigger = newItem("Trigger", "comp/memory/trigger.html");
-        compMemory.getChildren().add(compMemoryTrigger);
+        TreeItem<Label> compMemoryTriplet = newItem("", "comp/memory/triplet.html");
+        TreeItem<Label> compMemoryTryte = newItem("", "comp/memory/tryte.html");
+        TreeItem<Label> compMemoryWord = newItem("", "comp/memory/word.html");
+        TreeItem<Label> compMemoryDword = newItem("", "comp/memory/dword.html");
+        compMemory.getChildren().addAll(compMemoryTrigger, compMemoryTriplet, compMemoryTryte, compMemoryWord, compMemoryDword);
         rootComp.getChildren().add(compMemory);
 
         // setup tree

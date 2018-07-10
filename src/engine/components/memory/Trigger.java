@@ -6,9 +6,7 @@ import engine.components.Pin;
 import engine.connectivity.Node;
 import gui.Main;
 import gui.control.ControlMain;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
@@ -32,13 +30,6 @@ public class Trigger extends Component {
 
         // init indication
         Circle body = (Circle) getRoot().lookup("#body");
-        Label value = (Label) getRoot().lookup("#value");
-        DoubleProperty size = new SimpleDoubleProperty(2.0);
-        value.layoutXProperty().bind(size.subtract(value.widthProperty()).divide(2.0));
-        value.layoutYProperty().bind(size.subtract(value.heightProperty()).divide(2.0));
-        value.rotateProperty().bind(getRotation().angleProperty().negate());
-        value.scaleXProperty().bind(getScale().xProperty());
-        value.scaleYProperty().bind(getScale().yProperty());
 
         // init memory
         trit = new SimpleObjectProperty<>();
