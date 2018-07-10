@@ -224,6 +224,9 @@ public abstract class Component implements Selectable {
     protected Pane getRoot() {
         return root;
     }
+    protected String getDefaultFont() {
+        return control.getDefaultFont();
+    }
     public HashSet<Pin> getPins() {
         return pins;
     }

@@ -6,13 +6,10 @@ import engine.components.Pin;
 import engine.connectivity.Node;
 import gui.Main;
 import gui.control.ControlMain;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputDialog;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -27,6 +24,7 @@ public abstract class Linear extends Component {
     private LogicLevel[] mem;
     private Pin control, clock;
     private Pin[] write, read;
+    private Label value;
 
     // initialization
     Linear(ControlMain control, int digits) {
@@ -34,6 +32,11 @@ public abstract class Linear extends Component {
         this.digits = digits;
         mem = new LogicLevel[digits];
         for (int i = 0; i < digits; i++) mem[i] = LogicLevel.ZZZ;
+
+        value = (Label) getRoot().lookup("#value");
+        value.setText(memToString());
+        value.layoutXProperty().bind(widthProperty().subtract(value.widthProperty()).divide(2.0));
+        value.layoutYProperty().bind(heightProperty().subtract(value.heightProperty()).divide(2.0));
     }
     Linear(ControlMain control, Element data, int digits) {
         this(control, digits);
@@ -56,28 +59,36 @@ public abstract class Linear extends Component {
             dialog.setTitle(Main.TITLE);
             dialog.setHeaderText(getClass().getSimpleName());
             dialog.setContentText(String.format("Set memory to (%d trits):", digits));
+            dialog.getDialogPane().setStyle(getDefaultFont());
             TextField txt = dialog.getEditor();
-            txt.addEventFilter(KeyEvent.KEY_PRESSED, key -> {
-                KeyCode code = key.getCode();
-                String text = txt.getText();
-                switch (code) {
-                    case MINUS:
-                        txt.setText(text + String.valueOf(LogicLevel.NEG.getDigitCharacter()));
-                        break;
-                    case DIGIT0:
-                    case NUMPAD0:
-                        txt.setText(text + "0");
-                        break;
-                    case DIGIT1:
-                    case NUMPAD1:
-                    case PLUS:
-                        txt.setText(text + "1");
-                        break;
-                    case BACK_SPACE:
-                        txt.setText(text.substring(0, text.length() - 1));
-                        break;
+            txt.setOnKeyTyped(key -> {
+                int pos = txt.getCaretPosition();
+                StringBuilder builder = new StringBuilder();
+                int c = 1;
+                char lambda = LogicLevel.NEG.getDigitCharacter();
+                for (char symbol : txt.getText().toCharArray()) {
+                    if (symbol == '-' || symbol == lambda) builder.append(lambda);
+                    else if (symbol == '+' || symbol == '=' || symbol == '1') builder.append('1');
+                    else if (symbol == '0' || symbol == ' ') builder.append('0');
+                    else if (symbol == 'z' || symbol == 'Z' || symbol == '?') builder.append('?');
+                    else if (symbol == 'e' || symbol == 'E' || symbol == '!') builder.append('!');
+                    else if (c < pos) pos--;
+                    if (c % 4 == 3) {
+                        builder.append('\'');
+                        if (c < pos) pos++;
+                    }
+                    c++;
                 }
-                key.consume();
+                int len = builder.length();
+                if (len > 0 && builder.charAt(len - 1) == '\'') builder.deleteCharAt(len - 1);
+                int mustLen = digits + digits / 3 - 1;
+                if (len < mustLen) {
+                    for (int i = 0; i < mustLen - len; i++) builder.append('0');
+                } else if (len > mustLen) {
+                    builder.delete(mustLen, len);
+                }
+                txt.setText(builder.toString());
+                txt.positionCaret(pos);
             });
             Optional<String> res = dialog.showAndWait();
             res.ifPresent(this::parseString);
@@ -92,7 +103,7 @@ public abstract class Linear extends Component {
 
         // managing pins
         control = new Pin(this, true, false, 0, 1);
-        clock = new Pin(this, true, false, 0, 3);
+        clock = new Pin(this, true, false, 0, 2);
         pins.add(control);
         pins.add(clock);
 
@@ -101,12 +112,16 @@ public abstract class Linear extends Component {
         read = new Pin[digits];
         for (int i = 0; i < digits; i++) {
             write[i] = new Pin(this, true, false, 1 + i, 0);
-            read[i] = new Pin(this, false, true, 1 + i, 4);
+            read[i] = new Pin(this, false, true, 1 + i, 3);
             pins.add(write[i]);
             pins.add(read[i]);
         }
 
         return pins;
+    }
+    protected abstract DoubleProperty widthProperty();
+    private DoubleProperty heightProperty() {
+        return new SimpleDoubleProperty(3.0);
     }
 
     // simulate
@@ -127,6 +142,7 @@ public abstract class Linear extends Component {
                 if (ctrl == LogicLevel.POS && clck == LogicLevel.POS) {
                     for (int i = 0; i < digits; i++)
                         mem[i] = write[i].querySigFromNode();
+                    value.setText(memToString());
                 }
                 for (int i = 0; i < digits; i++)
                     changed[i] = read[i].update(LogicLevel.ZZZ);
@@ -154,19 +170,27 @@ public abstract class Linear extends Component {
     // utils
     private String memToString() {
         StringBuilder builder = new StringBuilder();
-        for (LogicLevel sig : mem)
+        int c = 0;
+        for (LogicLevel sig : mem) {
             builder.append(sig.getDigitCharacter());
-        return builder.toString();
+            if (c++ == 2) {
+                builder.append('\'');
+                c = 0;
+            }
+        }
+        return builder.deleteCharAt(builder.length() - 1).toString();
     }
     private void parseString(String str) {
-        for (int i = 0; i < digits; i++) {
-            char d = str.charAt(i);
+        int c = digits;
+        for (char d : str.toCharArray()) {
+            if (d == '\'') continue;
             LogicLevel sig = LogicLevel.parseDigit(d);
             if (sig == null)
                 System.out.printf("WARNING: unknown digit '%c'. Using default Z value.\n", d);
             else
-                mem[digits - 1 - i] = sig;
+                mem[--c] = sig;
         }
+        value.setText(memToString());
     }
 
 }

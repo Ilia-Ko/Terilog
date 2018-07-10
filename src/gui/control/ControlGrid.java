@@ -5,8 +5,6 @@ import javafx.beans.property.IntegerProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 public class ControlGrid {
@@ -30,21 +28,6 @@ public class ControlGrid {
         height = control.getGridHeight();
         txtWidth.setText(Integer.toString(width.get()));
         txtHeight.setText(Integer.toString(height.get()));
-    }
-
-    // text fields
-    @FXML private void txtWidthKeyPressed(KeyEvent key) {
-        filterKey(txtWidth, key.getCode());
-    }
-    @FXML private void txtHeightKeyPressed(KeyEvent key) {
-        filterKey(txtHeight, key.getCode());
-    }
-    private void filterKey(TextField txt, KeyCode key) {
-        if (key.isLetterKey() || key.isWhitespaceKey()) {
-            String text = txt.getText();
-            text = text.substring(0, text.length() - 1);
-            txt.setText(text);
-        }
     }
 
     // events

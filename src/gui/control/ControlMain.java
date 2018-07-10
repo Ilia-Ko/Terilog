@@ -690,6 +690,9 @@ public class ControlMain {
     public Pane getParent() {
         return parent;
     }
+    public String getDefaultFont() {
+        return defFont;
+    }
     public IntegerProperty getMouseX() {
         return mouseX;
     }
