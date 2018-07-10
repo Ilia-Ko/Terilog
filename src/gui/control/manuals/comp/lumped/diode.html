@@ -5,6 +5,21 @@
     <title>Diode</title>
 </head>
 <body>
-
+<h1>Diode</h1>
+<h2>Shortcut: D</h2>
+<p>
+    Diode is a semiconductor component with two terminals: anode and cathode. Terilog uses "one-way conductor" ideal
+    model of diode. It means that diode transfers positive voltage from anode to cathode (and transfers negative
+    voltage from cathode to anode). Described behaviour is normal diode functioning in Terilog.
+</p>
+<p>
+    But what if I apply POS to anode and NEG to cathode? As our diode is ideal conductor in this case, you simply
+    get a short circuit which causes collapse of strong POS and NEG signals. As a result both anode and cathode will
+    signalize about error in a circuit.
+</p>
+<p>
+    Here is complete table of diode behaviour:
+</p>
+TODO: insert table picture.
 </body>
 </html>

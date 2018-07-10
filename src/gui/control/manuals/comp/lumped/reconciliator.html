@@ -5,6 +5,25 @@
     <title>Reconciliator</title>
 </head>
 <body>
-
+<h1>Reconciliator</h1>
+<h2>Shortcut: R</h2>
+<p>
+    If you've ever designed digital circuits with the use of MOSFETs, you must remember the pain brought to you by
+    'hanging' (suspended) wires. When a wire has no voltage (ZZZ signal in Terilog), every MOSFET treats it the way
+    its gate's charge wants!
+</p>
+<p>
+    In real world you would probably pull that terrible 'hanging' wire to ground with 100k resistor. But there is no
+    resistors in Terilog (because there is no currents too (and there is no currents, because Terilog uses MOSFETs
+    instead of BJTs)). Here comes Reconciliator!
+</p>
+<p>
+    Reconciliator has one input (source) and one output (drain) and is usually inserted in a wire. The colour of a
+    reconciliator shows, to which logic level it is going to pull its drain if the source is suspended (ZZZ signal).
+</p>
+<p>
+    Here is the complete table describing Reconciliator's behaviour:
+</p>
+TODO: insert reconciliator table image
 </body>
 </html>
