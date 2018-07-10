@@ -8,7 +8,6 @@ import gui.control.ControlMain;
 import javafx.beans.property.*;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.effect.Bloom;
 import javafx.scene.input.KeyCode;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
@@ -37,6 +36,8 @@ public class Wire extends Line implements Connectible, Selectable {
     // initialization
     Wire(ControlMain control, IntegerProperty x0, IntegerProperty y0, IntegerProperty x1, IntegerProperty y1) {
         this.control = control;
+        isSelected = new SimpleBooleanProperty(false);
+        isSelected.addListener((observable, wasSelected, nowSelected) -> setEffect(nowSelected ? HIGHLIGHT : null));
 
         // create wire in layout mode
         startXProperty().bind(x0);
@@ -49,6 +50,8 @@ public class Wire extends Line implements Connectible, Selectable {
     }
     public Wire(ControlMain control, Element w) {
         this.control = control;
+        isSelected = new SimpleBooleanProperty(false);
+        isSelected.addListener((observable, wasSelected, nowSelected) -> setEffect(nowSelected ? HIGHLIGHT : null));
 
         startXProperty().setValue(getInt(w, "x0"));
         startYProperty().setValue(getInt(w, "y0"));
@@ -66,6 +69,7 @@ public class Wire extends Line implements Connectible, Selectable {
         return new ContextMenu(itemDel);
     }
 
+    // layout mode
     void confirm() {
         startXProperty().unbind();
         startYProperty().unbind();
@@ -73,8 +77,6 @@ public class Wire extends Line implements Connectible, Selectable {
         endYProperty().unbind();
 
         setOpacity(1.0);
-        isSelected = new SimpleBooleanProperty(false);
-        isSelected.addListener((observable, wasSelected, nowSelected) -> setEffect(nowSelected ? new Bloom() : null));
         setOnKeyPressed(key -> {
             KeyCode code = key.getCode();
             if (code == KeyCode.DELETE) {
@@ -103,9 +105,14 @@ public class Wire extends Line implements Connectible, Selectable {
         if (fromCircuit) control.getCircuit().del(this);
         control.getParent().getChildren().removeAll(this, r1, r2);
     }
+
+    // selection
     @Override public boolean checkSelection(Rectangle sel) {
         isSelected.setValue(sel.intersects(getBoundsInParent()));
         return isSelected.get();
+    }
+    @Override public void breakSelection() {
+        isSelected.setValue(false);
     }
     @Override public void delete() {
         delete(true);

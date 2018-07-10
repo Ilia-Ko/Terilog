@@ -9,7 +9,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tooltip;
-import javafx.scene.effect.Bloom;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Rotate;
@@ -44,8 +43,8 @@ public abstract class Component implements Selectable {
                 menu.show(root, mouse.getScreenX(), mouse.getScreenY());
         });
 
-        // hover effect
-        isSelected.addListener((observable, wasSelected, nowSelected) -> root.setEffect(nowSelected ? new Bloom() : null));
+        // selection effect
+        isSelected.addListener((observable, wasSelected, nowSelected) -> root.setEffect(nowSelected ? HIGHLIGHT : null));
 
         // layout transforms
         rotate = new Rotate(0, 0, 0);
@@ -132,9 +131,14 @@ public abstract class Component implements Selectable {
         if (fromCircuit) control.getCircuit().del(this);
         control.getParent().getChildren().remove(root);
     }
+
+    // selection
     @Override public boolean checkSelection(Rectangle sel) {
         isSelected.setValue(sel.intersects(root.getBoundsInParent()));
         return isSelected.get();
+    }
+    @Override public void breakSelection() {
+        isSelected.setValue(false);
     }
     @Override public void delete() {
         delete(true);

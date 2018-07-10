@@ -155,7 +155,8 @@ public class ControlMain {
 
         // init 'selection'
         Rectangle sel = new Rectangle();
-        sel.setFill(Color.rgb(255, 255, 0, 0.5));
+        sel.setFill(Color.LIGHTGOLDENRODYELLOW);
+        sel.setOpacity(0.8);
         sel.setStroke(Color.BLACK);
         sel.setStrokeWidth(0.1);
         sel.xProperty().bind(selStartX);
@@ -250,9 +251,9 @@ public class ControlMain {
     private void onGlobalKeyPressed(KeyEvent key) {
         // insertion logic
         KeyCode code = key.getCode();
-        if (code == KeyCode.ESCAPE) { // stop insertion
-            if (holdingComp || holdingWire)
-                breakInsertion();
+        if (code == KeyCode.ESCAPE) { // stop insertion or selection
+            if (holdingComp || holdingWire) breakInsertion();
+            if (circuit.hasSelectedItems()) circuit.unsel();
         } else if (code == KeyCode.SPACE && holdingWire) { // flip flying wire
             flyWire.flip();
             key.consume(); // prevent ScrollPane from receiving space key

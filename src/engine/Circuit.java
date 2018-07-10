@@ -206,6 +206,15 @@ public class Circuit {
         if (comp.isEntryPoint()) entries.remove(comp);
         needsParsing = true;
     }
+    void destroy() {
+        name.setValue(DEF_NAME);
+        wires.forEach(wire -> wire.delete(false));
+        wires.clear();
+        components.forEach(comp -> comp.delete(false));
+        components.clear();
+    }
+
+    // selection
     public void sel(Rectangle sel) {
         selected = new ArrayList<>();
         components.forEach(comp -> {
@@ -217,6 +226,11 @@ public class Circuit {
                 selected.add(wire);
         });
         hasSelected = selected.size() > 0;
+    }
+    public void unsel() {
+        if (isSelMoving) selDel();
+        else if (hasSelected) selected.forEach(Selectable::breakSelection);
+        hasSelected = false;
     }
     public boolean hasSelectedItems() {
         return hasSelected;
@@ -242,16 +256,6 @@ public class Circuit {
             selected.forEach(Selectable::delete);
             hasSelected = false;
         }
-    }
-    public boolean isReallyBig() {
-        return wires.size() + pins.size() > 20736;
-    }
-    void destroy() {
-        name.setValue(DEF_NAME);
-        wires.forEach(wire -> wire.delete(false));
-        wires.clear();
-        components.forEach(comp -> comp.delete(false));
-        components.clear();
     }
 
     // simulation and connectivity
@@ -310,6 +314,9 @@ public class Circuit {
     }
 
     // flags
+    public boolean isReallyBig() {
+        return wires.size() + pins.size() > 20736;
+    }
     public boolean hasToBeParsed() {
         return needsParsing;
     }
