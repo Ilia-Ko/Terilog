@@ -45,22 +45,16 @@ public class FlyWire {
         lineV.endXProperty().bind(x);
     }
     public void confirm() { // enter main mode
-        if (lineV.getStartY() == lineV.getEndY()) {
-            // lineV is redundant
+        if (lineV.getStartY() == lineV.getEndY()) { // lineV is redundant
             lineH.confirm();
             control.getParent().getChildren().remove(lineV);
-        } else if (lineH.getStartX() == lineH.getEndX()) {
-            // lineH is redundant
+        } else if (lineH.getStartX() == lineH.getEndX()) { // lineH is redundant
             lineV.confirm();
             control.getParent().getChildren().remove(lineH);
-        } else {
-            // nobody is redundant
+        } else { // nobody is redundant
             lineH.confirm();
             lineV.confirm();
         }
-
-        lineH = null;
-        lineV = null;
     }
     public void delete() {
         control.getParent().getChildren().removeAll(lineH, lineV);

@@ -5,10 +5,10 @@ import engine.connectivity.Connectible;
 import engine.connectivity.Node;
 import engine.connectivity.Selectable;
 import gui.control.ControlMain;
+import gui.control.HistoricalEvent;
 import javafx.beans.property.*;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.input.KeyCode;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import org.w3c.dom.Document;
@@ -32,6 +32,7 @@ public class Wire extends Line implements Connectible, Selectable {
     private HashSet<Connectible> connectibles;
     private Node node;
     private BooleanProperty isSelected;
+    private HistoricalEvent toBeOrNotToBe;
 
     // initialization
     Wire(ControlMain control, IntegerProperty x0, IntegerProperty y0, IntegerProperty x1, IntegerProperty y1) {
@@ -64,7 +65,11 @@ public class Wire extends Line implements Connectible, Selectable {
     }
     private ContextMenu buildContextMenu() {
         MenuItem itemDel = new MenuItem("Remove");
-        itemDel.setOnAction(action -> delete(true));
+        itemDel.setOnAction(action -> {
+            control.rewriteHistory(toBeOrNotToBe);
+            delete(true);
+            control.appendHistory(HistoricalEvent.invert(toBeOrNotToBe));
+        });
 
         return new ContextMenu(itemDel);
     }
@@ -76,21 +81,13 @@ public class Wire extends Line implements Connectible, Selectable {
         endXProperty().unbind();
         endYProperty().unbind();
 
-        setOpacity(1.0);
-        setOnKeyPressed(key -> {
-            KeyCode code = key.getCode();
-            if (code == KeyCode.DELETE) {
-                control.getParent().getChildren().remove(this);
-                control.getCircuit().del(this);
-            }
-        });
-
         ContextMenu menu = buildContextMenu();
         setOnContextMenuRequested(mouse -> {
             if (isSelected.not().get())
                 menu.show(this, mouse.getScreenX(), mouse.getScreenY());
         });
 
+        setOpacity(1.0);
         control.getCircuit().add(this);
 
         // add squares
@@ -100,6 +97,20 @@ public class Wire extends Line implements Connectible, Selectable {
         r2 = new Rectangle(getEndX() - a, getEndY() - a, b, b);
         r2.fillProperty().bind(strokeProperty());
         control.getParent().getChildren().addAll(r1, r2);
+
+        // history
+        final Wire me = this;
+        toBeOrNotToBe = new HistoricalEvent() {
+            @Override public void undo() {
+                control.getParent().getChildren().removeAll(me, r1, r2);
+                control.getCircuit().del(me);
+            }
+            @Override public void redo() {
+                control.getParent().getChildren().addAll(me, r1, r2);
+                control.getCircuit().add(me);
+            }
+        };
+        control.appendHistory(toBeOrNotToBe);
     }
     public void delete(boolean fromCircuit) {
         if (fromCircuit) control.getCircuit().del(this);
