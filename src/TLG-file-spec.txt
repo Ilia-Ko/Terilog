@@ -21,8 +21,8 @@ belong to the range [12; 144].
     | Attribute | Type   | Range  | Description                        |
     --------------------------------------------------------------------
     | class     | String | latin  | Component class name in lowercase. |
-    | x         | int    | 12-144 | Component x coordinate.            |
-    | y         | int    | 12-144 | Component y coordinate.            |
+    | x         | int    |  0-144 | Component x coordinate.            |
+    | y         | int    |  0-144 | Component y coordinate.            |
     | rot       | int    | 90 * n | Component rotation in degrees.     |
     | mx        | int    | +1, -1 | Component mirroring along x axis.  |
     | my        | int    | +1, -1 | Component mirroring along y axis.  |
