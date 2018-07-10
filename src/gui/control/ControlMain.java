@@ -13,6 +13,7 @@ import engine.components.lumped.Diode;
 import engine.components.lumped.Indicator;
 import engine.components.lumped.Reconciliator;
 import engine.components.lumped.Voltage;
+import engine.components.memory.Trigger;
 import engine.components.mosfets.HardN;
 import engine.components.mosfets.HardP;
 import engine.components.mosfets.SoftN;
@@ -499,6 +500,12 @@ public class ControlMain {
     @FXML private void menuFullAdder() {
         breakInsertion();
         flyComp = new FullAdder(this);
+        holdingComp = true;
+    }
+    // menu.add.memory
+    @FXML private void menuTrigger() {
+        breakInsertion();
+        flyComp = new Trigger(this);
         holdingComp = true;
     }
     // menu.add.wire

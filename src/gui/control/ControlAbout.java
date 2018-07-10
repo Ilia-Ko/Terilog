@@ -101,6 +101,12 @@ public class ControlAbout {
         compArith.getChildren().addAll(compArithHalfAdder, compArithFullAdder);
         rootComp.getChildren().add(compArith);
 
+        // about: comp.memory
+        TreeItem<Label> compMemory = newItem("Memory", "comp/memory/memory.html");
+        TreeItem<Label> compMemoryTrigger = newItem("Trigger", "comp/memory/trigger.html");
+        compMemory.getChildren().add(compMemoryTrigger);
+        rootComp.getChildren().add(compMemory);
+
         // setup tree
         rootGlob.setExpanded(true);
         rootMenu.setExpanded(true);

@@ -69,6 +69,11 @@
                     <MenuItem text="Full Adder" onAction="#menuFullAdder"/>
 
                 </Menu>
+                <Menu text="Memory">
+
+                    <MenuItem text="Trigger" accelerator="T" onAction="#menuTrigger"/>
+
+                </Menu>
                 <MenuItem text="Wire" accelerator="W" onAction="#menuWire"/>
 
             </Menu>

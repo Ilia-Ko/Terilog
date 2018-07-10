@@ -63,7 +63,7 @@ public class Voltage extends Component {
         for (int i = 0; i < levels.length; i++) {
             LogicLevel lev = levels[i];
             items[i] = new RadioMenuItem(String.format("%c (%s)", lev.getDigitCharacter(), lev.getStandardName()));
-            items[i].setOnAction(event -> setSignal(lev, false));
+            items[i].setOnAction(event -> signal.setValue(lev));
         }
         toggle = new ToggleGroup();
         toggle.getToggles().addAll(items);
@@ -86,12 +86,10 @@ public class Voltage extends Component {
         if (drain.update(signal.get())) affected.add(drain.getNode());
         return affected;
     }
-    private void setSignal(LogicLevel signal, boolean updateToggle) {
+    private void setSignal(LogicLevel signal) {
         this.signal.setValue(signal);
-        if (updateToggle) {
-            Toggle item = toggle.getToggles().get(signal.ordinal());
-            toggle.selectToggle(item);
-        }
+        Toggle item = toggle.getToggles().get(signal.ordinal());
+        toggle.selectToggle(item);
     }
 
     // xml info
@@ -107,7 +105,7 @@ public class Voltage extends Component {
         if (sig == null)
             System.out.printf("WARNING: unknown signal name '%s'. Using default Z value.\n", sigAttr);
         else
-            setSignal(sig, true);
+            setSignal(sig);
     }
 
 }

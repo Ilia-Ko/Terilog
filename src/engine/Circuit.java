@@ -12,6 +12,7 @@ import engine.components.lumped.Diode;
 import engine.components.lumped.Indicator;
 import engine.components.lumped.Reconciliator;
 import engine.components.lumped.Voltage;
+import engine.components.memory.Trigger;
 import engine.components.mosfets.HardN;
 import engine.components.mosfets.HardP;
 import engine.components.mosfets.SoftN;
@@ -173,6 +174,10 @@ public class Circuit {
                         break;
                     case "fulladder":
                         add(new FullAdder(control, comp));
+                        break;
+                    // memory
+                    case "trigger":
+                        add(new Trigger(control, comp));
                         break;
                     default:
                         System.out.printf("WARNING: unknown component of class %s.\n", attrClass);

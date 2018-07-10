@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.Rectangle?>
+<Pane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+
+    <Rectangle  strokeWidth="0.1" stroke="black" fill="transparent" width="4" height="4"/>
+    <Circle fx:id="body" strokeWidth="0.1" stroke="black" centerX="2" centerY="2" radius="1"/>
+    <Label fx:id="trit" textFill="white" style="-fx-font-size: 1.5px" textAlignment="CENTER"/>
+
+</Pane>
