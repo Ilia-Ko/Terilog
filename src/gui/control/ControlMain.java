@@ -55,6 +55,7 @@ import javax.xml.transform.TransformerException;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.Stack;
 
 public class ControlMain {
 
@@ -67,6 +68,8 @@ public class ControlMain {
 //    @FXML private MenuItem menuRun, menuStop;
     @FXML private MenuItem menuZoomIn;
     @FXML private MenuItem menuZoomOut;
+    @FXML private MenuItem menuUndo;
+    @FXML private MenuItem menuRedo;
     @FXML private Label lblPoint; // display snapped mouse position
 //    @FXML private ProgressIndicator progress;
 
@@ -91,6 +94,9 @@ public class ControlMain {
     private BooleanProperty isSelecting;
     private IntegerProperty selStartX, selStartY;
     private ContextMenu selMenu;
+
+    // actions history
+    private Stack<HistoricalEvent> histUndo, histRedo;
 
     // initialization
     public void initialSetup(Stage stage, String defFont, double screenWidth, double screenHeight) {
@@ -181,6 +187,10 @@ public class ControlMain {
             if (circuit.hasSelectedItems())
                 selMenu.show(parent, mouse.getScreenX(), mouse.getScreenY());
         });
+
+        // init history
+        histUndo = new Stack<>();
+        histRedo = new Stack<>();
 
         // init circuit
         setCircuit(new Circuit());
@@ -353,6 +363,42 @@ public class ControlMain {
     @FXML private void menuQuit() {
         Platform.exit();
         System.exit(0);
+    }
+
+    // menu.edit
+    @FXML private void menuUndo() {
+        if (!histUndo.empty()) {
+            HistoricalEvent action = histUndo.pop();
+            menuUndo.setDisable(histUndo.empty());
+            histRedo.push(action);
+            menuRedo.setDisable(false);
+            action.undo();
+        }
+    }
+    @FXML private void menuRedo() {
+        if (!histRedo.empty()) {
+            HistoricalEvent action = histRedo.pop();
+            menuRedo.setDisable(histRedo.empty());
+            histUndo.push(action);
+            menuUndo.setDisable(false);
+            action.redo();
+        }
+    }
+    public void appendHistory(HistoricalEvent event) {
+        histUndo.push(event);
+        menuUndo.setDisable(false);
+    }
+    public void rewriteHistory(HistoricalEvent event) {
+        histUndo.remove(event);
+        histRedo.remove(event);
+        menuUndo.setDisable(histUndo.empty());
+        menuRedo.setDisable(histRedo.empty());
+    }
+    public void forgetHistory() {
+        histUndo.clear();
+        histRedo.clear();
+        menuUndo.setDisable(true);
+        menuRedo.setDisable(true);
     }
 
     // menu.add.mosfet

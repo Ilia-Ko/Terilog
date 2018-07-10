@@ -19,6 +19,13 @@
                 <MenuItem text="Quit" accelerator="Ctrl+Q" onAction="#menuQuit"/>
 
             </Menu>
+            <Menu text="Edit">
+
+                <MenuItem text="Undo" accelerator="Ctrl+Z" onAction="#menuUndo" disable="true" fx:id="menuUndo"/>
+                <MenuItem text="Redo" accelerator="Ctrl+Y" onAction="#menuRedo" disable="true" fx:id="menuRedo"/>
+                <MenuItem text="Clear history" onAction="#forgetHistory"/>
+
+            </Menu>
             <Menu text="Add">
 
                 <Menu text="MOSFET">

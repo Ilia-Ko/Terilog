@@ -3,4 +3,4 @@ Manuals:
 * Correct lexical and grammatical mistakes (make them readable :)
 
 Engine:
-* Implement 'history of actions' mechanism (undo & redo - Ctrl+Z & Ctrl+Y)
+* Code '/src/engine/components/memory' package

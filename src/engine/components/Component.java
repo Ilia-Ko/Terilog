@@ -4,6 +4,7 @@ import engine.connectivity.Node;
 import engine.connectivity.Selectable;
 import gui.Main;
 import gui.control.ControlMain;
+import gui.control.HistoricalEvent;
 import javafx.beans.property.*;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ContextMenu;
@@ -27,6 +28,7 @@ public abstract class Component implements Selectable {
     private Scale scale;
     private HashSet<Pin> pins;
     private BooleanProperty isSelected;
+    private HistoricalEvent toBeOrNotToBe;
 
     // initialization
     private Component(ControlMain control, boolean isLayoutMode) {
@@ -74,8 +76,8 @@ public abstract class Component implements Selectable {
     protected ContextMenu buildContextMenu() {
         // move
         MenuItem itemMove = new MenuItem("Move");
-//        itemMove.setAccelerator(KeyCombination.valueOf("Insert"));
         itemMove.setOnAction(event -> {
+            control.rewriteHistory(toBeOrNotToBe);
             control.getCircuit().del(this);
             begin();
             control.setFlyComp(this);
@@ -83,27 +85,26 @@ public abstract class Component implements Selectable {
 
         // delete
         MenuItem itemDelete = new MenuItem("Remove");
-//        itemDelete.setAccelerator(KeyCombination.valueOf("Delete"));
-        itemDelete.setOnAction(event -> delete(true));
+        itemDelete.setOnAction(event -> {
+            control.rewriteHistory(toBeOrNotToBe);
+            delete(true);
+            control.appendHistory(HistoricalEvent.invert(toBeOrNotToBe));
+        });
 
         // rotate clockwise
         MenuItem itemRotCW = new MenuItem("Rotate right (CW)");
-//        itemRotCW.setAccelerator(KeyCombination.valueOf("]"));
         itemRotCW.setOnAction(event -> rotateCW());
 
         // rotate counterclockwise
         MenuItem itemRotCCW = new MenuItem("Rotate left (CCW)");
-//        itemRotCCW.setAccelerator(KeyCombination.valueOf("["));
         itemRotCCW.setOnAction(event -> rotateCCW());
 
         // mirror x
         MenuItem itemMirrorX = new MenuItem("Mirror X");
-//        itemMirrorX.setAccelerator(KeyCombination.valueOf("\""));
         itemMirrorX.setOnAction(event -> mirrorX());
 
         // mirror y
         MenuItem itemMirrorY = new MenuItem("Mirror Y");
-//        itemMirrorY.setAccelerator(KeyCombination.valueOf("\\"));
         itemMirrorY.setOnAction(event -> mirrorY());
 
         return new ContextMenu(itemMove, itemDelete, itemRotCW, itemRotCCW, itemMirrorX, itemMirrorY);
@@ -126,6 +127,18 @@ public abstract class Component implements Selectable {
         Tooltip.install(root, new Tooltip(getClass().getSimpleName()));
 
         control.getCircuit().add(this);
+
+        final Component me = this;
+        toBeOrNotToBe = new HistoricalEvent() {
+            @Override public void undo() {
+                delete(true);
+            }
+            @Override public void redo() {
+                control.getParent().getChildren().add(me.root);
+                control.getCircuit().add(me);
+            }
+        };
+        control.appendHistory(toBeOrNotToBe);
     }
     public void delete(boolean fromCircuit) {
         if (fromCircuit) control.getCircuit().del(this);
@@ -202,14 +215,14 @@ public abstract class Component implements Selectable {
     }
 
     // misc
-    protected Pane getRoot() {
-        return root;
-    }
     protected Rotate getRotation() {
         return rotate;
     }
     protected Scale getScale() {
         return scale;
+    }
+    protected Pane getRoot() {
+        return root;
     }
     public HashSet<Pin> getPins() {
         return pins;
