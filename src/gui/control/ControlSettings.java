@@ -11,6 +11,7 @@ public class ControlSettings {
     // gui
     @FXML private TextField txtName;
     @FXML private TextField txtDepth;
+    @FXML private TextField txtFreq;
 
     // callback
     private Stage dialog;
@@ -36,6 +37,7 @@ public class ControlSettings {
     @FXML private void btnApplyClicked() {
         control.getCircuit().nameProperty().setValue(txtName.getText());
         control.getCircuit().simDepthProperty().setValue(Integer.parseInt(txtDepth.getText()));
+        control.getCircuit().simFrequencyProperty().setValue(Double.parseDouble(txtFreq.getText()));
         dialog.close();
     }
     @FXML private void btnCloseClicked() {

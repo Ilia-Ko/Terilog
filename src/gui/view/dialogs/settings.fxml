@@ -22,13 +22,21 @@
                GridPane.columnIndex="1"
                GridPane.rowIndex="1"/>
 
+    <Label text="Simulation frequency (Hz):"
+           GridPane.columnIndex="0"
+           GridPane.rowIndex="2"/>
+    <TextField fx:id="txtFreq"
+               onKeyPressed="#txtKeyPressed"
+               GridPane.columnIndex="1"
+               GridPane.rowIndex="2"/>
+
     <Button text="Apply"
             onAction="#btnApplyClicked"
             GridPane.columnIndex="0"
-            GridPane.rowIndex="2"/>
+            GridPane.rowIndex="3"/>
     <Button text="Close"
             onAction="#btnCloseClicked"
             GridPane.columnIndex="1"
-            GridPane.rowIndex="2"/>
+            GridPane.rowIndex="3"/>
 
 </GridPane>

@@ -8,10 +8,7 @@ import engine.components.logic.one_arg.NTI;
 import engine.components.logic.one_arg.PTI;
 import engine.components.logic.one_arg.STI;
 import engine.components.logic.two_arg.*;
-import engine.components.lumped.Diode;
-import engine.components.lumped.Indicator;
-import engine.components.lumped.Reconciliator;
-import engine.components.lumped.Voltage;
+import engine.components.lumped.*;
 import engine.components.memory.*;
 import engine.components.mosfets.HardN;
 import engine.components.mosfets.HardP;
@@ -21,10 +18,8 @@ import engine.connectivity.Node;
 import engine.connectivity.Selectable;
 import engine.wires.Wire;
 import gui.control.ControlMain;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.application.Platform;
+import javafx.beans.property.*;
 import javafx.scene.shape.Rectangle;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -78,18 +73,22 @@ public class Circuit {
     private HashSet<Node> unstable;
     private boolean needsParsing;
     private boolean needsEntry;
-    private boolean isFinished;
+    private boolean isStepFinished;
+    private boolean isSimRunning;
     private IntegerProperty maxSimDepth;
+    private DoubleProperty simFrequency;
 
     public Circuit() {
         name = new SimpleStringProperty(DEF_NAME);
         maxSimDepth = new SimpleIntegerProperty(DEF_SIM_DEPTH);
+        simFrequency = new SimpleDoubleProperty(Clock.DEF_FREQUENCY);
 
         // flags
         needsParsing = true;
         needsEntry = true;
         hasSelected = false;
         isSelMoving = false;
+        isSimRunning = false;
 
         // arrays
         components = new ArrayList<>();
@@ -138,6 +137,9 @@ public class Circuit {
                         break;
                     case "voltage":
                         add(new Voltage(control, comp));
+                        break;
+                    case "clock":
+                        add(new Clock(control, comp));
                         break;
                     // logic.one_arg
                     case "nti":
@@ -338,7 +340,7 @@ public class Circuit {
         return needsParsing;
     }
     public boolean wasFinished() {
-        return isFinished;
+        return isStepFinished;
     }
 
     // interaction
@@ -367,7 +369,32 @@ public class Circuit {
             step();
 
         // analyze state
-        isFinished = attempts < maxSimDepth.get();
+        isStepFinished = unstable.size() == 0;
+    }
+    public void doRun() {
+        // prepare
+        if (needsParsing) parse();
+        if (needsEntry) begin();
+
+        // run
+        new Thread(() -> {
+            isSimRunning = true;
+            isStepFinished = true;
+            long period = Math.round(1000.0 / simFrequency.get()); // period in millis
+
+            while (isSimRunning && isStepFinished) {
+                try { Thread.sleep(period); } catch (InterruptedException ignored) {}
+                Platform.runLater(() -> {
+                    begin();
+                    int attempts = 0;
+                    while (isSimRunning && attempts++ < maxSimDepth.get() && unstable.size() > 0) step();
+                    isStepFinished = unstable.size() == 0;
+                });
+            }
+        }).start();
+    }
+    public void doStop() {
+        isSimRunning = false;
     }
 
     // xml info
@@ -389,6 +416,9 @@ public class Circuit {
     }
     public IntegerProperty simDepthProperty() {
         return maxSimDepth;
+    }
+    public DoubleProperty simFrequencyProperty() {
+        return simFrequency;
     }
 
 }

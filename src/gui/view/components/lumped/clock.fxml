@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.Polyline?>
+<?import javafx.scene.shape.Rectangle?>
+<?import java.lang.*?>
+<Pane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+
+    <Rectangle strokeWidth="0.1" stroke="black" fill="lightgray" width="4" height="4" arcHeight="1" arcWidth="1"/>
+
+    <Polyline strokeWidth="0.1" stroke="black">
+        <points>
+            <Double fx:value="1"/><Double fx:value="3"/>
+            <Double fx:value="1"/><Double fx:value="2"/>
+            <Double fx:value="3"/><Double fx:value="2"/>
+            <Double fx:value="3"/><Double fx:value="1"/>
+        </points>
+    </Polyline>
+
+</Pane>

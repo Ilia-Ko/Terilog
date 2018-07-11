@@ -9,10 +9,7 @@ import engine.components.logic.one_arg.NTI;
 import engine.components.logic.one_arg.PTI;
 import engine.components.logic.one_arg.STI;
 import engine.components.logic.two_arg.*;
-import engine.components.lumped.Diode;
-import engine.components.lumped.Indicator;
-import engine.components.lumped.Reconciliator;
-import engine.components.lumped.Voltage;
+import engine.components.lumped.*;
 import engine.components.memory.*;
 import engine.components.mosfets.HardN;
 import engine.components.mosfets.HardP;
@@ -66,13 +63,10 @@ public class ControlMain {
     @FXML private StackPane stack;
     @FXML private Canvas field; // background
     @FXML private Pane parent; // container for everything
-//    @FXML private MenuItem menuRun, menuStop;
-    @FXML private MenuItem menuZoomIn;
-    @FXML private MenuItem menuZoomOut;
-    @FXML private MenuItem menuUndo;
-    @FXML private MenuItem menuRedo;
+    @FXML private MenuItem menuReset, menuParse, menuStepInto, menuStepOver, menuRun, menuStop, menuSettings;
+    @FXML private MenuItem menuZoomIn, menuZoomOut;
+    @FXML private MenuItem menuUndo, menuRedo;
     @FXML private Label lblPoint; // display snapped mouse position
-//    @FXML private ProgressIndicator progress;
 
     // dimensions
     private DoubleProperty p; // in pixels
@@ -192,6 +186,13 @@ public class ControlMain {
         // init history
         histUndo = new Stack<>();
         histRedo = new Stack<>();
+
+        // bind menus
+        menuReset.disableProperty().bind(menuRun.disableProperty());
+        menuParse.disableProperty().bind(menuRun.disableProperty());
+        menuStepInto.disableProperty().bind(menuRun.disableProperty());
+        menuStepOver.disableProperty().bind(menuRun.disableProperty());
+        menuSettings.disableProperty().bind(menuRun.disableProperty());
 
         // init circuit
         setCircuit(new Circuit());
@@ -446,6 +447,11 @@ public class ControlMain {
         flyComp = new Indicator(this);
         holdingComp = true;
     }
+    @FXML private void menuClock() {
+        breakInsertion();
+        flyComp = new Clock(this);
+        holdingComp = true;
+    }
     // menu.add.logic 1-arg
     @FXML private void menuNTI() {
         breakInsertion();
@@ -594,10 +600,14 @@ public class ControlMain {
         }
     }
     @FXML private void menuRun() {
-
+        circuit.doRun();
+        menuRun.setDisable(true);
+        menuStop.setDisable(false);
     }
     @FXML private void menuStop() {
-
+        circuit.doStop();
+        menuStop.setDisable(true);
+        menuRun.setDisable(false);
     }
     @FXML private void menuSettings() {
         try {

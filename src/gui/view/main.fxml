@@ -43,6 +43,8 @@
                     <SeparatorMenuItem/>
                     <MenuItem text="Indicator" accelerator="I" onAction="#menuIndicator"/>
                     <MenuItem text="Voltage" accelerator="V" onAction="#menuVoltage"/>
+                    <SeparatorMenuItem/>
+                    <MenuItem text="Clock" accelerator="C" onAction="#menuClock"/>
 
                 </Menu>
                 <Menu text="Logic 1-arg">
@@ -83,14 +85,14 @@
             </Menu>
             <Menu text="Circuit">
 
-                <MenuItem text="Reset" accelerator="F5" onAction="#menuReset"/>
-                <MenuItem text="Parse" accelerator="F6" onAction="#menuParse"/>
-                <MenuItem text="Step into" accelerator="F7" onAction="#menuStepInto"/>
-                <MenuItem text="Step over" accelerator="F8" onAction="#menuStepOver"/>
+                <MenuItem text="Reset" accelerator="F5" onAction="#menuReset" fx:id="menuReset"/>
+                <MenuItem text="Parse" accelerator="F6" onAction="#menuParse" fx:id="menuParse"/>
+                <MenuItem text="Step into" accelerator="F7" onAction="#menuStepInto" fx:id="menuStepInto"/>
+                <MenuItem text="Step over" accelerator="F8" onAction="#menuStepOver" fx:id="menuStepOver"/>
                 <SeparatorMenuItem/>
-                <MenuItem text="Run" accelerator="F9" onAction="#menuRun" disable="true"/>
-                <MenuItem text="Stop" accelerator="F10" onAction="#menuStop" disable="true"/>
-                <MenuItem text="Settings" accelerator="F2" onAction="#menuSettings"/>
+                <MenuItem text="Run" accelerator="F9" onAction="#menuRun" fx:id="menuRun"/>
+                <MenuItem text="Stop" accelerator="F10" onAction="#menuStop" fx:id="menuStop" disable="true"/>
+                <MenuItem text="Settings" accelerator="F2" onAction="#menuSettings" fx:id="menuSettings"/>
 
             </Menu>
             <Menu text="Grid">
@@ -108,7 +110,6 @@
             </Menu>
 
         </MenuBar>
-        <ProgressIndicator visible="false"/>
         <Label fx:id="lblPoint"/>
 
     </HBox>
