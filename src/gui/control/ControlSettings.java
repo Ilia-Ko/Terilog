@@ -23,6 +23,7 @@ public class ControlSettings {
         this.control = control;
         txtName.setText(control.getCircuit().nameProperty().get());
         txtDepth.setText(Integer.toString(control.getCircuit().simDepthProperty().get()));
+        txtFreq.setText(Integer.toString(control.getCircuit().simFrequencyProperty().intValue()));
     }
 
     // events

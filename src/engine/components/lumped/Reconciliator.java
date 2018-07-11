@@ -27,7 +27,11 @@ public class Reconciliator extends Component {
 
         Polygon body = (Polygon) getRoot().lookup("#body");
         pull = new SimpleObjectProperty<>();
-        pull.addListener((observable, oldPull, newPull) -> body.setFill(newPull.colour()));
+        pull.addListener((observable, oldPull, newPull) -> {
+            body.setFill(newPull.colour());
+            control.getCircuit().addUnstable(drain.getNode());
+            drain.update(newPull);
+        });
         pull.setValue(LogicLevel.NIL);
     }
     public Reconciliator(ControlMain control, Element data) {
@@ -83,8 +87,8 @@ public class Reconciliator extends Component {
         return affected;
     }
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
-        summary.addResistor();
-        summary.addInput(pull.get());
+        summary.addResistor(1);
+        summary.addInput(pull.get(), 1);
     }
 
     private void setPull(LogicLevel signal, boolean updateToggle) {

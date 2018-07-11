@@ -43,7 +43,7 @@ public class Voltage extends Component {
             body.setFill(newSignal.colour());
             value.setText(String.valueOf(newSignal.getDigitCharacter()));
             control.getCircuit().addUnstable(drain.getNode());
-//            drain.update(newSignal);
+            drain.update(newSignal);
         });
         signal.setValue(LogicLevel.ZZZ);
     }
@@ -88,7 +88,7 @@ public class Voltage extends Component {
         return affected;
     }
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
-        summary.addInput(signal.get());
+        summary.addInput(signal.get(), 1);
     }
 
     private void setSignal(LogicLevel signal) {

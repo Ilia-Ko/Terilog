@@ -20,8 +20,8 @@ public class NANY extends Gate2to1 {
         summary.addMOSFET(Circuit.Summary.SOFT, Circuit.Summary.P_CH, 2);
         summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.N_CH, 2);
         summary.addMOSFET(Circuit.Summary.SOFT, Circuit.Summary.N_CH, 2);
-        summary.addResistor();
-        summary.addInput(LogicLevel.NIL);
+        summary.addResistor(1);
+        summary.addInput(LogicLevel.NIL, 1);
     }
 
     // simulation

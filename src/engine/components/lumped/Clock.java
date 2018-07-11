@@ -50,7 +50,7 @@ public class Clock extends Component {
     }
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
         summary.takeClockIntoAccount();
-        summary.addInput(LogicLevel.NIL);
+        summary.addInput(LogicLevel.NIL, 1);
     }
 
 }

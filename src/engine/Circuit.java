@@ -457,17 +457,17 @@ public class Circuit {
         public void addDiode() {
             numDiodes++;
         }
-        public void addResistor() {
-            numRes++;
+        public void addResistor(int qty) {
+            numRes += qty;
         }
         public void takeClockIntoAccount() {
             needsClock = true;
         }
-        public void addInput(LogicLevel sig) {
-            numInputs++;
-            if (sig == LogicLevel.POS) numVoltPos++;
-            else if (sig == LogicLevel.NIL) numVoltNil++;
-            else if (sig == LogicLevel.NEG) numVoltNeg++;
+        public void addInput(LogicLevel sig, int qty) {
+            numInputs += qty;
+            if (sig == LogicLevel.POS) numVoltPos += qty;
+            else if (sig == LogicLevel.NIL) numVoltNil += qty;
+            else if (sig == LogicLevel.NEG) numVoltNeg += qty;
         }
         public void addOutput() {
             numOutputs++;
@@ -496,7 +496,7 @@ public class Circuit {
             info += String.format("NEG DC Load:\t%.1f%%\n", perNeg);
             info += String.format("NIL DC Load:\t%.1f%%\n", perNil);
             info += String.format("POS DC Load:\t%.1f%%\n", perPos);
-            info += String.format("DC Imbalance:\t%.3f\n", imbalance);
+            info += String.format("DC Imbalance:\t%.3f%%\n", imbalance);
             return info;
         }
 

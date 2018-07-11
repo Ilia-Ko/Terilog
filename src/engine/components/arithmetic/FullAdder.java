@@ -104,22 +104,10 @@ public class FullAdder extends Component {
         summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.N_CH, 13);
         summary.addMOSFET(Circuit.Summary.SOFT, Circuit.Summary.P_CH, 8);
         summary.addMOSFET(Circuit.Summary.SOFT, Circuit.Summary.N_CH, 8);
-        summary.addResistor();
-        summary.addResistor();
-        summary.addResistor();
-        summary.addResistor();
-        summary.addResistor();
-        summary.addInput(LogicLevel.NIL);
-        summary.addInput(LogicLevel.POS);
-        summary.addInput(LogicLevel.POS);
-        summary.addInput(LogicLevel.POS);
-        summary.addInput(LogicLevel.POS);
-        summary.addInput(LogicLevel.POS);
-        summary.addInput(LogicLevel.NEG);
-        summary.addInput(LogicLevel.NEG);
-        summary.addInput(LogicLevel.NEG);
-        summary.addInput(LogicLevel.NEG);
-        summary.addInput(LogicLevel.NEG);
+        summary.addResistor(5);
+        summary.addInput(LogicLevel.NIL, 1);
+        summary.addInput(LogicLevel.POS, 5);
+        summary.addInput(LogicLevel.NEG, 5);
     }
 
 }

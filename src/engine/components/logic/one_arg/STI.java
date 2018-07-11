@@ -65,8 +65,8 @@ public class STI extends Gate1to1 {
         summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.P_CH, 1);
         summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.N_CH, 1);
         if (convertNILToZZZ.not().get()) {
-            summary.addResistor();
-            summary.addInput(LogicLevel.NIL);
+            summary.addResistor(1);
+            summary.addInput(LogicLevel.NIL, 1);
         }
     }
 

@@ -24,6 +24,7 @@ public class Pin extends Circle implements Connectible {
     // initialization
     public Pin(Component owner, int role, int xPosInOwner, int yPosInOwner) {
         this.owner = owner;
+        connectibles = new HashSet<>();
         sigFromOwner = LogicLevel.ZZZ;
         canAffectOwner = (role & IN) != 0;
         canAffectNode = (role & OUT) != 0;

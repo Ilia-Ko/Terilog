@@ -89,7 +89,14 @@ public abstract class Linear extends Component {
         return affected;
     }
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
-
+        summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.P_CH, 5 * digits);
+        summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.N_CH, 5 * digits);
+        summary.addMOSFET(Circuit.Summary.SOFT, Circuit.Summary.P_CH, 3 * digits);
+        summary.addMOSFET(Circuit.Summary.SOFT, Circuit.Summary.N_CH, 2 * digits);
+        summary.addResistor(5 * digits);
+        summary.addInput(LogicLevel.POS, 2 * digits);
+        summary.addInput(LogicLevel.NIL, digits);
+        summary.addInput(LogicLevel.NEG, digits);
     }
 
     // xml info

@@ -18,8 +18,8 @@ public class NOR extends Gate2to1 {
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
         summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.P_CH, 2);
         summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.N_CH, 2);
-        summary.addResistor();
-        summary.addInput(LogicLevel.NIL);
+        summary.addResistor(1);
+        summary.addInput(LogicLevel.NIL, 1);
     }
 
     // simulation
