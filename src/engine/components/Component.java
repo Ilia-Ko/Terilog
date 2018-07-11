@@ -221,11 +221,11 @@ public abstract class Component implements Selectable {
     protected Scale getScale() {
         return scale;
     }
-    protected Pane getRoot() {
-        return root;
+    protected ControlMain getControl() {
+        return control;
     }
-    protected String getDefaultFont() {
-        return control.getDefaultFont();
+    public Pane getRoot() {
+        return root;
     }
     public HashSet<Pin> getPins() {
         return pins;

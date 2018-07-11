@@ -224,11 +224,13 @@ public class ControlMain {
         // finish rendering
         gc.restore();
     }
-    private Stage initDialog(FXMLLoader loader) throws IOException {
+    public Stage initDialog(FXMLLoader loader, boolean setGaps) throws IOException {
         GridPane root = loader.load();
         root.setStyle(defFont);
-        root.setHgap(defSpacing);
-        root.setVgap(defSpacing);
+        if (setGaps) {
+            root.setHgap(defSpacing);
+            root.setVgap(defSpacing);
+        }
         root.setPadding(new Insets(defSpacing, defSpacing, defSpacing, defSpacing));
         Scene scene = new Scene(root);
         Stage dialog = new Stage(StageStyle.UNDECORATED);
@@ -600,7 +602,7 @@ public class ControlMain {
     @FXML private void menuSettings() {
         try {
             FXMLLoader loader = new FXMLLoader(Main.class.getResource("view/dialogs/settings.fxml"));
-            Stage dialog = initDialog(loader);
+            Stage dialog = initDialog(loader, true);
             ((ControlSettings) loader.getController()).initialSetup(dialog, this);
             dialog.showAndWait();
         } catch (IOException e) {
@@ -613,7 +615,7 @@ public class ControlMain {
     @FXML private void menuGrid() {
         try {
             FXMLLoader loader = new FXMLLoader(Main.class.getResource("view/dialogs/grid.fxml"));
-            Stage dialog = initDialog(loader);
+            Stage dialog = initDialog(loader, true);
             ((ControlGrid) loader.getController()).initialSetup(dialog, this);
             dialog.showAndWait();
         } catch (IOException e) {
@@ -664,7 +666,7 @@ public class ControlMain {
     @FXML private void menuCredits() {
         try {
             FXMLLoader loader = new FXMLLoader(Main.class.getResource("view/dialogs/credits.fxml"));
-            Stage dialog = initDialog(loader);
+            Stage dialog = initDialog(loader, true);
             ((ControlCredits) loader.getController()).initialSetup(dialog);
             dialog.showAndWait();
         } catch (IOException e) {
@@ -689,9 +691,6 @@ public class ControlMain {
     }
     public Pane getParent() {
         return parent;
-    }
-    public String getDefaultFont() {
-        return defFont;
     }
     public IntegerProperty getMouseX() {
         return mouseX;

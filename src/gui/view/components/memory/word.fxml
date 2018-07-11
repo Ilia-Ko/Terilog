@@ -1,15 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--suppress ALL -->
-<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.Pane?>
-<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.shape.*?>
 <Pane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
 
-    <Rectangle strokeWidth="0.1" stroke="black" fill="lightgray" width="15" height="3"/>
-    <Rectangle strokeWidth="0.1" stroke="black" fill="white" x="0.5" y="0.5" width="14" height="2" arcWidth="1" arcHeight="1"/>
+    <Rectangle strokeWidth="0.1" stroke="black" fill="lightgray" width="16" height="3"/>
     <Rectangle strokeWidth="0.1" stroke="black" fill="white" x="0.0" y="1.5" width="0.3" height="1.5"/>
 
-    <Label fx:id="value" textFill="black" style="-fx-font-size: 1.5px" textAlignment="CENTER" layoutX="0.5" layoutY="0.5"/>
+    <Rectangle strokeWidth="0.1" stroke="black" fill="white" x="0.5" y="0.5" width="3" height="2" arcWidth="1" arcHeight="1"/>
+    <Label fx:id="t32" style="-fx-font-size: 1.5px" layoutX= "0.5" textAlignment="CENTER"/>
+    <Label fx:id="t31" style="-fx-font-size: 1.5px" layoutX= "1.5" textAlignment="CENTER"/>
+    <Label fx:id="t30" style="-fx-font-size: 1.5px" layoutX= "2.5" textAlignment="CENTER"/>
+
+    <Rectangle strokeWidth="0.1" stroke="black" fill="white" x="4.5" y="0.5" width="3" height="2" arcWidth="1" arcHeight="1"/>
+    <Label fx:id="t22" style="-fx-font-size: 1.5px" layoutX= "4.5" textAlignment="CENTER"/>
+    <Label fx:id="t21" style="-fx-font-size: 1.5px" layoutX= "5.5" textAlignment="CENTER"/>
+    <Label fx:id="t20" style="-fx-font-size: 1.5px" layoutX= "6.5" textAlignment="CENTER"/>
+
+    <Rectangle strokeWidth="0.1" stroke="black" fill="white" x="8.5" y="0.5" width="3" height="2" arcWidth="1" arcHeight="1"/>
+    <Label fx:id="t12" style="-fx-font-size: 1.5px" layoutX= "8.5" textAlignment="CENTER"/>
+    <Label fx:id="t11" style="-fx-font-size: 1.5px" layoutX= "9.5" textAlignment="CENTER"/>
+    <Label fx:id="t10" style="-fx-font-size: 1.5px" layoutX="10.5" textAlignment="CENTER"/>
+
+    <Rectangle strokeWidth="0.1" stroke="black" fill="white" x="12.5" y="0.5" width="3" height="2" arcWidth="1" arcHeight="1"/>
+    <Label fx:id="t02" style="-fx-font-size: 1.5px" layoutX="12.5" textAlignment="CENTER"/>
+    <Label fx:id="t01" style="-fx-font-size: 1.5px" layoutX="13.5" textAlignment="CENTER"/>
+    <Label fx:id="t00" style="-fx-font-size: 1.5px" layoutX="14.5" textAlignment="CENTER"/>
 
 </Pane>

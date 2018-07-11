@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<GridPane xmlns="http://javafx.com/javafx"
+          xmlns:fx="http://javafx.com/fxml"
+          fx:controller="gui.control.ControlMemSet"
+          alignment="CENTER">
+
+    <Label text="21" GridPane.columnIndex= "3" GridPane.rowIndex="0"/>
+    <Label text="18" GridPane.columnIndex= "6" GridPane.rowIndex="0"/>
+    <Label text="15" GridPane.columnIndex= "9" GridPane.rowIndex="0"/>
+    <Label text="12" GridPane.columnIndex="12" GridPane.rowIndex="0"/>
+    <Label text= "9" GridPane.columnIndex="15" GridPane.rowIndex="0"/>
+    <Label text= "6" GridPane.columnIndex="18" GridPane.rowIndex="0"/>
+    <Label text= "3" GridPane.columnIndex="21" GridPane.rowIndex="0"/>
+    <Label text= "0" GridPane.columnIndex="24" GridPane.rowIndex="0"/>
+
+    <TextField fx:id="t00" GridPane.columnIndex="24" GridPane.rowIndex="1" text="-" editable="false" focusTraversable="false" onKeyTyped="#keyTyped"/>
+    <TextField fx:id="t01" GridPane.columnIndex="23" GridPane.rowIndex="1" text="-" editable="false" focusTraversable="false" onKeyTyped="#keyTyped"/>
+    <TextField fx:id="t02" GridPane.columnIndex="22" GridPane.rowIndex="1" text="-" editable="false" focusTraversable="false" onKeyTyped="#keyTyped"/>
+    <TextField fx:id="t10" GridPane.columnIndex="21" GridPane.rowIndex="1" text="-" editable="false" focusTraversable="false" onKeyTyped="#keyTyped"/>
+    <TextField fx:id="t11" GridPane.columnIndex="20" GridPane.rowIndex="1" text="-" editable="false" focusTraversable="false" onKeyTyped="#keyTyped"/>
+    <TextField fx:id="t12" GridPane.columnIndex="19" GridPane.rowIndex="1" text="-" editable="false" focusTraversable="false" onKeyTyped="#keyTyped"/>
+    <TextField fx:id="t20" GridPane.columnIndex="18" GridPane.rowIndex="1" text="-" editable="false" focusTraversable="false" onKeyTyped="#keyTyped"/>
+    <TextField fx:id="t21" GridPane.columnIndex="17" GridPane.rowIndex="1" text="-" editable="false" focusTraversable="false" onKeyTyped="#keyTyped"/>
+    <TextField fx:id="t22" GridPane.columnIndex="16" GridPane.rowIndex="1" text="-" editable="false" focusTraversable="false" onKeyTyped="#keyTyped"/>
+    <TextField fx:id="t30" GridPane.columnIndex="15" GridPane.rowIndex="1" text="-" editable="false" focusTraversable="false" onKeyTyped="#keyTyped"/>
+    <TextField fx:id="t31" GridPane.columnIndex="14" GridPane.rowIndex="1" text="-" editable="false" focusTraversable="false" onKeyTyped="#keyTyped"/>
+    <TextField fx:id="t32" GridPane.columnIndex="13" GridPane.rowIndex="1" text="-" editable="false" focusTraversable="false" onKeyTyped="#keyTyped"/>
+    <TextField fx:id="t40" GridPane.columnIndex="12" GridPane.rowIndex="1" text="-" editable="false" focusTraversable="false" onKeyTyped="#keyTyped"/>
+    <TextField fx:id="t41" GridPane.columnIndex="11" GridPane.rowIndex="1" text="-" editable="false" focusTraversable="false" onKeyTyped="#keyTyped"/>
+    <TextField fx:id="t42" GridPane.columnIndex="10" GridPane.rowIndex="1" text="-" editable="false" focusTraversable="false" onKeyTyped="#keyTyped"/>
+    <TextField fx:id="t50" GridPane.columnIndex= "9" GridPane.rowIndex="1" text="-" editable="false" focusTraversable="false" onKeyTyped="#keyTyped"/>
+    <TextField fx:id="t51" GridPane.columnIndex= "8" GridPane.rowIndex="1" text="-" editable="false" focusTraversable="false" onKeyTyped="#keyTyped"/>
+    <TextField fx:id="t52" GridPane.columnIndex= "7" GridPane.rowIndex="1" text="-" editable="false" focusTraversable="false" onKeyTyped="#keyTyped"/>
+    <TextField fx:id="t60" GridPane.columnIndex= "6" GridPane.rowIndex="1" text="-" editable="false" focusTraversable="false" onKeyTyped="#keyTyped"/>
+    <TextField fx:id="t61" GridPane.columnIndex= "5" GridPane.rowIndex="1" text="-" editable="false" focusTraversable="false" onKeyTyped="#keyTyped"/>
+    <TextField fx:id="t62" GridPane.columnIndex= "4" GridPane.rowIndex="1" text="-" editable="false" focusTraversable="false" onKeyTyped="#keyTyped"/>
+    <TextField fx:id="t70" GridPane.columnIndex= "3" GridPane.rowIndex="1" text="-" editable="false" focusTraversable="false" onKeyTyped="#keyTyped"/>
+    <TextField fx:id="t71" GridPane.columnIndex= "2" GridPane.rowIndex="1" text="-" editable="false" focusTraversable="false" onKeyTyped="#keyTyped"/>
+    <TextField fx:id="t72" GridPane.columnIndex= "1" GridPane.rowIndex="1" text="-" editable="false" focusTraversable="false" onKeyTyped="#keyTyped"/>
+
+    <Label text=" " GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+
+    <Button
+        text="Confirm"
+        onAction="#btnConfirmClicked"
+        GridPane.columnIndex="1"
+        GridPane.columnSpan="5"
+        GridPane.rowIndex="3"/>
+
+    <Button
+        text="Cancel"
+        onAction="#btnCancelClicked"
+        GridPane.columnIndex="7"
+        GridPane.columnSpan="5"
+        GridPane.rowIndex="3"/>
+
+    <Button
+        text="Clear"
+        onAction="#btnClearClicked"
+        GridPane.columnIndex="13"
+        GridPane.columnSpan="5"
+        GridPane.rowIndex="3"/>
+
+    <Button
+        text="Reset"
+        onAction="#btnResetClicked"
+        GridPane.columnIndex="19"
+        GridPane.columnSpan="5"
+        GridPane.rowIndex="3"/>
+
+</GridPane>
