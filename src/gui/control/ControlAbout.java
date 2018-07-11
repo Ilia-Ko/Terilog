@@ -67,7 +67,8 @@ public class ControlAbout {
         TreeItem<Label> compLumpedReconciliator = newItem("Reconciliator", "comp/lumped/reconciliator.html");
         TreeItem<Label> compLumpedIndicator = newItem("Indicator", "comp/lumped/indicator.html");
         TreeItem<Label> compLumpedVoltage = newItem("Voltage", "comp/lumped/voltage.html");
-        compLumped.getChildren().addAll(compLumpedDiode, compLumpedIndicator, compLumpedReconciliator, compLumpedVoltage);
+        TreeItem<Label> compLumpedClock = newItem("Clock", "comp/lumped/clock.html");
+        compLumped.getChildren().addAll(compLumpedDiode, compLumpedIndicator, compLumpedReconciliator, compLumpedVoltage, compLumpedClock);
 
         // about: comp.logic 1-arg
         TreeItem<Label> compLog1 = newItem("Logic 1-arg", "comp/log1/log-1-arg.html");
