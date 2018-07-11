@@ -620,6 +620,15 @@ public class ControlMain {
             System.out.println("Failed to show Simulation Settings dialog.");
         }
     }
+    @FXML private void menuStat() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.getDialogPane().setStyle(defFont);
+        alert.setResizable(true);
+        alert.setTitle(Main.TITLE);
+        alert.setHeaderText("Statistics");
+        alert.setContentText(circuit.getStatistics());
+        alert.showAndWait();
+    }
 
     // menu.grid
     @FXML private void menuGrid() {

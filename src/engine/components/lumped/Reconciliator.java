@@ -1,5 +1,6 @@
 package engine.components.lumped;
 
+import engine.Circuit;
 import engine.LogicLevel;
 import engine.components.Component;
 import engine.components.Pin;
@@ -81,6 +82,11 @@ public class Reconciliator extends Component {
         if (changed) affected.add(drain.getNode());
         return affected;
     }
+    @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
+        summary.addResistor();
+        summary.addInput(pull.get());
+    }
+
     private void setPull(LogicLevel signal, boolean updateToggle) {
         pull.setValue(signal);
         if (updateToggle) {

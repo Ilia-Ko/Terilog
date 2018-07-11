@@ -1,5 +1,6 @@
 package engine.components.lumped;
 
+import engine.Circuit;
 import engine.LogicLevel;
 import engine.components.Component;
 import engine.components.Pin;
@@ -53,6 +54,9 @@ public class Diode extends Component {
         if (changedA) affected.add(anode.getNode());
         if (changedC) affected.add(cathode.getNode());
         return affected;
+    }
+    @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
+        summary.addDiode();
     }
 
 }

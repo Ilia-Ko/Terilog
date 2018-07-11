@@ -1,5 +1,6 @@
 package engine.components.memory;
 
+import engine.Circuit;
 import engine.LogicLevel;
 import engine.components.Component;
 import engine.components.Pin;
@@ -86,6 +87,9 @@ public abstract class Linear extends Component {
             if (node != null) affected.add(node);
         }
         return affected;
+    }
+    @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
+
     }
 
     // xml info

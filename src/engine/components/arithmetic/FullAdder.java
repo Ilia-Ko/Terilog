@@ -1,5 +1,6 @@
 package engine.components.arithmetic;
 
+import engine.Circuit;
 import engine.LogicLevel;
 import engine.components.Component;
 import engine.components.Pin;
@@ -97,6 +98,28 @@ public class FullAdder extends Component {
         if (changedS) affected.add(outS.getNode());
         if (changedC) affected.add(outC.getNode());
         return affected;
+    }
+    @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
+        summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.P_CH, 13);
+        summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.N_CH, 13);
+        summary.addMOSFET(Circuit.Summary.SOFT, Circuit.Summary.P_CH, 8);
+        summary.addMOSFET(Circuit.Summary.SOFT, Circuit.Summary.N_CH, 8);
+        summary.addResistor();
+        summary.addResistor();
+        summary.addResistor();
+        summary.addResistor();
+        summary.addResistor();
+        summary.addInput(LogicLevel.NIL);
+        summary.addInput(LogicLevel.POS);
+        summary.addInput(LogicLevel.POS);
+        summary.addInput(LogicLevel.POS);
+        summary.addInput(LogicLevel.POS);
+        summary.addInput(LogicLevel.POS);
+        summary.addInput(LogicLevel.NEG);
+        summary.addInput(LogicLevel.NEG);
+        summary.addInput(LogicLevel.NEG);
+        summary.addInput(LogicLevel.NEG);
+        summary.addInput(LogicLevel.NEG);
     }
 
 }

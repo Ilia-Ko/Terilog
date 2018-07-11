@@ -1,5 +1,6 @@
 package engine.components.lumped;
 
+import engine.Circuit;
 import engine.LogicLevel;
 import engine.components.Component;
 import engine.components.Pin;
@@ -71,6 +72,9 @@ public class Indicator extends Component {
     @Override public HashSet<Node> simulate() {
         signal.setValue(source.querySigFromNode());
         return new HashSet<>();
+    }
+    @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
+        summary.addOutput();
     }
 
 }

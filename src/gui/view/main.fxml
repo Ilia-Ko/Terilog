@@ -92,7 +92,9 @@
                 <SeparatorMenuItem/>
                 <MenuItem text="Run" accelerator="F9" onAction="#menuRun" fx:id="menuRun"/>
                 <MenuItem text="Stop" accelerator="F10" onAction="#menuStop" fx:id="menuStop" disable="true"/>
+                <SeparatorMenuItem/>
                 <MenuItem text="Settings" accelerator="F2" onAction="#menuSettings" fx:id="menuSettings"/>
+                <MenuItem text="Statistics" onAction="#menuStat"/>
 
             </Menu>
             <Menu text="Grid">

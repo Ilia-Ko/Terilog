@@ -1,5 +1,6 @@
 package engine.components.lumped;
 
+import engine.Circuit;
 import engine.LogicLevel;
 import engine.components.Component;
 import engine.components.Pin;
@@ -86,6 +87,10 @@ public class Voltage extends Component {
         if (drain.update(signal.get())) affected.add(drain.getNode());
         return affected;
     }
+    @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
+        summary.addInput(signal.get());
+    }
+
     private void setSignal(LogicLevel signal) {
         this.signal.setValue(signal);
         Toggle item = toggle.getToggles().get(signal.ordinal());

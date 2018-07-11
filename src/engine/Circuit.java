@@ -396,6 +396,11 @@ public class Circuit {
     public void doStop() {
         isSimRunning = false;
     }
+    public String getStatistics() {
+        Summary summary = new Summary();
+        components.forEach(comp -> comp.itIsAFinalCountdown(summary));
+        return summary.makeFinalCountdown();
+    }
 
     // xml info
     Element writeCircuitToXML(Document doc) {
@@ -419,6 +424,82 @@ public class Circuit {
     }
     public DoubleProperty simFrequencyProperty() {
         return simFrequency;
+    }
+
+    public class Summary {
+
+        public static final int P_CH = 1, N_CH = -1, HARD = 2, SOFT = 1;
+
+        private int numHardP, numHardN, numSoftP, numSoftN;
+        private int numDiodes, numRes;
+        private int numComps, numWires;
+        private int numInputs, numOutputs;
+        private int numVoltPos, numVoltNil, numVoltNeg;
+        private boolean needsClock;
+        private String info;
+
+        private Summary() {
+            numComps = components.size();
+            numWires = wires.size();
+            needsClock = false;
+            info = "";
+        }
+
+        public void addMOSFET(int type, int channel, int qty) {
+            if (type == HARD) {
+                if (channel == P_CH) numHardP += qty;
+                else if (channel == N_CH) numHardN += qty;
+            } else if (type == SOFT) {
+                if (channel == P_CH) numSoftP += qty;
+                else if (channel == N_CH) numSoftN += qty;
+            }
+        }
+        public void addDiode() {
+            numDiodes++;
+        }
+        public void addResistor() {
+            numRes++;
+        }
+        public void takeClockIntoAccount() {
+            needsClock = true;
+        }
+        public void addInput(LogicLevel sig) {
+            numInputs++;
+            if (sig == LogicLevel.POS) numVoltPos++;
+            else if (sig == LogicLevel.NIL) numVoltNil++;
+            else if (sig == LogicLevel.NEG) numVoltNeg++;
+        }
+        public void addOutput() {
+            numOutputs++;
+        }
+
+        private String makeFinalCountdown() {
+            // general quantities
+            info += String.format("Circuit '%s' summary:\n", name.get());
+            info += String.format("Components total:\t%d\n", numComps);
+            info += String.format("Hard P:\t\t\t%d\n", numHardP);
+            info += String.format("Hard N:\t\t\t%d\n", numHardN);
+            info += String.format("Soft P:\t\t\t%d\n", numSoftP);
+            info += String.format("Soft N:\t\t\t%d\n", numSoftN);
+            info += String.format("Diodes:\t\t\t%d\n", numDiodes);
+            info += String.format("Resistors:\t\t%d\n", numRes);
+            info += String.format("Wires:\t\t\t%d\n", numWires);
+            info += String.format("Inputs:\t\t\t%d\n", numInputs);
+            info += String.format("Outputs:\t\t%d\n", numOutputs);
+            info += needsClock ? "The circuit uses clock.\n" : "The circuit does not use clock.\n";
+            // percentage
+            double numVolts = numVoltNeg + numVoltNil + numVoltPos;
+            double perNeg = 100.0 * numVoltNeg / numVolts;
+            double perNil = 100.0 * numVoltNil / numVolts;
+            double perPos = 100.0 - perNeg - perNil;
+            double imbalance = 100.0 * Math.abs(numVoltPos - numVoltNeg) / (double) numVoltNil;
+            info += String.format("NEG DC Load:\t%.1f%%\n", perNeg);
+            info += String.format("NIL DC Load:\t%.1f%%\n", perNil);
+            info += String.format("POS DC Load:\t%.1f%%\n", perPos);
+            info += String.format("DC Imbalance:\t%.3f\n", imbalance);
+            return info;
+        }
+
     }
 
 }

@@ -1,5 +1,6 @@
 package engine.components.logic.two_arg;
 
+import engine.Circuit;
 import engine.LogicLevel;
 import engine.components.Pin;
 import gui.control.ControlMain;
@@ -25,6 +26,11 @@ public class OKEY extends Gate2to1 {
         pins.add(inB);
         pins.add(out);
         return pins;
+    }
+
+    @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
+        summary.addMOSFET(Circuit.Summary.SOFT, Circuit.Summary.N_CH, 1);
+        summary.addMOSFET(Circuit.Summary.SOFT, Circuit.Summary.P_CH, 1);
     }
 
     // simulation

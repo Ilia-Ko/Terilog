@@ -1,5 +1,6 @@
 package engine.components;
 
+import engine.Circuit;
 import engine.connectivity.Node;
 import engine.connectivity.Selectable;
 import gui.Main;
@@ -194,6 +195,7 @@ public abstract class Component implements Selectable {
         for (Pin pin : pins) pin.reset(denodify);
     }
     public abstract HashSet<Node> simulate(); // should return list of affected nodes
+    public abstract void itIsAFinalCountdown(Circuit.Summary summary);
 
     // xml info
     public Element writeXML(Document doc) {

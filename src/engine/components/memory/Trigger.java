@@ -1,5 +1,6 @@
 package engine.components.memory;
 
+import engine.Circuit;
 import engine.LogicLevel;
 import engine.components.Component;
 import engine.components.Pin;
@@ -103,6 +104,10 @@ public class Trigger extends Component {
         if (changed) affected.add(read.getNode());
         return affected;
     }
+    @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
+
+    }
+
     private void setMemory(LogicLevel mem) {
         trit.setValue(mem);
         Toggle item = toggle.getToggles().get(mem.ordinal());

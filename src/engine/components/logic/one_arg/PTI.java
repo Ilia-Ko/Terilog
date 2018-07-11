@@ -1,5 +1,6 @@
 package engine.components.logic.one_arg;
 
+import engine.Circuit;
 import engine.LogicLevel;
 import gui.control.ControlMain;
 import org.w3c.dom.Element;
@@ -12,6 +13,11 @@ public class PTI extends Gate1to1 {
     }
     public PTI(ControlMain control, Element data) {
         super(control, data);
+    }
+
+    @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
+        summary.addMOSFET(Circuit.Summary.SOFT, Circuit.Summary.P_CH, 1);
+        summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.N_CH, 1);
     }
 
     // simulation

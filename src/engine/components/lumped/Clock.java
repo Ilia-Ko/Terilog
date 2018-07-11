@@ -1,5 +1,6 @@
 package engine.components.lumped;
 
+import engine.Circuit;
 import engine.LogicLevel;
 import engine.components.Component;
 import engine.components.Pin;
@@ -46,6 +47,10 @@ public class Clock extends Component {
         HashSet<Node> affected = new HashSet<>();
         if (drain.update(impulse)) affected.add(drain.getNode());
         return affected;
+    }
+    @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
+        summary.takeClockIntoAccount();
+        summary.addInput(LogicLevel.NIL);
     }
 
 }

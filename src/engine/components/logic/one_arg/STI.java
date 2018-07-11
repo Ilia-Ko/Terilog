@@ -1,5 +1,6 @@
 package engine.components.logic.one_arg;
 
+import engine.Circuit;
 import engine.LogicLevel;
 import gui.control.ControlMain;
 import javafx.beans.property.BooleanProperty;
@@ -58,6 +59,15 @@ public class STI extends Gate1to1 {
         ContextMenu menu = super.buildContextMenu();
         menu.getItems().add(0, menuMode);
         return menu;
+    }
+
+    @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
+        summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.P_CH, 1);
+        summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.N_CH, 1);
+        if (convertNILToZZZ.not().get()) {
+            summary.addResistor();
+            summary.addInput(LogicLevel.NIL);
+        }
     }
 
     // simulation
