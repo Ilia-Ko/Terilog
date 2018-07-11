@@ -17,9 +17,9 @@ public class CKEY extends Gate2to1 {
         super(control, data);
     }
     @Override protected HashSet<Pin> initPins() {
-        inA = new Pin(this, true, false, 0, 1);
-        inB = new Pin(this, true, false, 2, 2);
-        out = new Pin(this, false, true, 4, 1);
+        inA = new Pin(this, Pin.IN, 0, 1);
+        inB = new Pin(this, Pin.IN, 2, 2);
+        out = new Pin(this, Pin.OUT, 4, 1);
         HashSet<Pin> pins = new HashSet<>();
         pins.add(inA);
         pins.add(inB);

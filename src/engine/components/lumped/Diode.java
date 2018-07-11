@@ -21,8 +21,8 @@ public class Diode extends Component {
         super(control, data);
     }
     @Override protected HashSet<Pin> initPins() {
-        anode = new Pin(this, true, true, 0, 1);
-        cathode = new Pin(this, true, true, 4, 1);
+        anode = new Pin(this, Pin.BOTH, 0, 1);
+        cathode = new Pin(this, Pin.BOTH, 4, 1);
         HashSet<Pin> pins = new HashSet<>();
         pins.add(anode);
         pins.add(cathode);

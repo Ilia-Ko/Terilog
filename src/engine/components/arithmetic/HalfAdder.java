@@ -49,10 +49,10 @@ public class HalfAdder extends Component {
         }
     }
     @Override protected HashSet<Pin> initPins() {
-        inA = new Pin(this, true, false, 0, 1);
-        inB = new Pin(this, true, false, 0, 3);
-        outS = new Pin(this, false, true, 8, 1);
-        outC = new Pin(this, false, true, 8, 3);
+        inA = new Pin(this, Pin.IN, 0, 1);
+        inB = new Pin(this, Pin.IN, 0, 3);
+        outS = new Pin(this, Pin.OUT, 8, 1);
+        outC = new Pin(this, Pin.OUT, 8, 3);
         HashSet<Pin> pins = new HashSet<>();
         pins.add(inA);
         pins.add(inB);

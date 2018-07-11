@@ -50,11 +50,11 @@ public class FullAdder extends Component {
         }
     }
     @Override protected HashSet<Pin> initPins() {
-        inA = new Pin(this, true, false, 0, 1);
-        inB = new Pin(this, true, false, 0, 3);
-        inC = new Pin(this, true, false, 0, 5);
-        outS = new Pin(this, false, true, 6, 2);
-        outC = new Pin(this, false, true, 6, 4);
+        inA = new Pin(this, Pin.IN, 0, 1);
+        inB = new Pin(this, Pin.IN, 0, 3);
+        inC = new Pin(this, Pin.IN, 0, 5);
+        outS = new Pin(this, Pin.OUT, 6, 2);
+        outC = new Pin(this, Pin.OUT, 6, 4);
         HashSet<Pin> pins = new HashSet<>();
         pins.add(inA);
         pins.add(inB);
@@ -77,7 +77,7 @@ public class FullAdder extends Component {
             changedC = outC.update(LogicLevel.ERR);
         } else {
             int sum, carry;
-            sum = a.volts() + b.volts() + c.volts();
+            sum = a.volts() + b.volts() - c.volts(); // note that Cin is inverted
             if (sum == -2) {
                 sum = +1;
                 carry = -1;
@@ -89,7 +89,7 @@ public class FullAdder extends Component {
                 sum %= 3;
             }
             changedS = outS.update(LogicLevel.parseValue(sum));
-            changedC = outC.update(LogicLevel.parseValue(carry));
+            changedC = outC.update(LogicLevel.parseValue(-carry)); // note that Cout is inverted too
         }
 
         // report about affected nodes

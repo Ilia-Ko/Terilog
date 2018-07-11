@@ -35,8 +35,8 @@ public class Reconciliator extends Component {
         readXML(data);
     }
     @Override protected HashSet<Pin> initPins() {
-        source = new Pin(this, true, false, 0, 1);
-        drain = new Pin(this, false, true, 2, 1);
+        source = new Pin(this, Pin.IN, 0, 1);
+        drain = new Pin(this, Pin.OUT, 2, 1);
         HashSet<Pin> pins = new HashSet<>();
         pins.add(source);
         pins.add(drain);

@@ -11,17 +11,22 @@ import java.util.HashSet;
 
 public class Pin extends Circle implements Connectible {
 
+    public static final int IN = 0x01;
+    public static final int OUT = 0x10;
+    public static final int BOTH = IN | OUT;
+
     private Component owner;
     private HashSet<Connectible> connectibles;
     private Node node;
     private LogicLevel sigFromOwner;
     private boolean canAffectOwner, canAffectNode;
 
-    public Pin(Component owner, boolean affectsOwner, boolean affectsNode, int xPosInOwner, int yPosInOwner) {
+    // initialization
+    public Pin(Component owner, int role, int xPosInOwner, int yPosInOwner) {
         this.owner = owner;
         sigFromOwner = LogicLevel.ZZZ;
-        canAffectOwner = affectsOwner;
-        canAffectNode = affectsNode;
+        canAffectOwner = (role & IN) != 0;
+        canAffectNode = (role & OUT) != 0;
 
         setCenterX(xPosInOwner);
         setCenterY(yPosInOwner);

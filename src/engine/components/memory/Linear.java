@@ -102,8 +102,8 @@ public abstract class Linear extends Component {
         HashSet<Pin> pins = new HashSet<>();
 
         // managing pins
-        control = new Pin(this, true, false, 0, 1);
-        clock = new Pin(this, true, false, 0, 2);
+        control = new Pin(this, Pin.IN, 0, 1);
+        clock = new Pin(this, Pin.IN, 0, 2);
         pins.add(control);
         pins.add(clock);
 
@@ -111,8 +111,8 @@ public abstract class Linear extends Component {
         write = new Pin[digits];
         read = new Pin[digits];
         for (int i = 0; i < digits; i++) {
-            write[i] = new Pin(this, true, false, 1 + i, 0);
-            read[i] = new Pin(this, false, true, 1 + i, 3);
+            write[i] = new Pin(this, Pin.IN, i, 0);
+            read[i] = new Pin(this, Pin.OUT, i, 3);
             pins.add(write[i]);
             pins.add(read[i]);
         }

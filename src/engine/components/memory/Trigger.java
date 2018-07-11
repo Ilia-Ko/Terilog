@@ -70,9 +70,9 @@ public class Trigger extends Component {
         return menu;
     }
     @Override protected HashSet<Pin> initPins() {
-        read = new Pin(this, false, true, 0, 2);
-        write = new Pin(this, true, false, 4, 2);
-        control = new Pin(this, true, false, 2, 0);
+        read = new Pin(this, Pin.OUT, 0, 2);
+        write = new Pin(this, Pin.IN, 4, 2);
+        control = new Pin(this, Pin.IN, 2, 0);
 
         HashSet<Pin> pins = new HashSet<>();
         pins.add(read);

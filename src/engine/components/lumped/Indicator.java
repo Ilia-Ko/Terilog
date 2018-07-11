@@ -57,7 +57,7 @@ public class Indicator extends Component {
         readXML(data);
     }
     @Override protected HashSet<Pin> initPins() {
-        source = new Pin(this, true, false, 0, 1);
+        source = new Pin(this, Pin.IN, 0, 1);
         HashSet<Pin> pins = new HashSet<>();
         pins.add(source);
         return pins;

@@ -31,9 +31,9 @@ abstract class MOSFET extends Component {
         }
     }
     @Override protected HashSet<Pin> initPins() {
-        source = new Pin(this, true, false, 0, 2);
-        gate = new Pin(this, true, false, 2, 0);
-        drain = new Pin(this, false, true, 4, 2);
+        source = new Pin(this, Pin.IN, 0, 2);
+        gate = new Pin(this, Pin.IN, 2, 0);
+        drain = new Pin(this, Pin.OUT, 4, 2);
         HashSet<Pin> pins = new HashSet<>();
         pins.add(source);
         pins.add(gate);
