@@ -8,6 +8,8 @@ import org.w3c.dom.Element;
 
 import java.util.HashSet;
 
+import static engine.LogicLevel.ZZZ;
+
 public class OKEY extends Gate2to1 {
 
     // initialization
@@ -18,9 +20,9 @@ public class OKEY extends Gate2to1 {
         super(control, data);
     }
     @Override protected HashSet<Pin> initPins() {
-        inA = new Pin(this, Pin.IN, 0, 1);
-        inB = new Pin(this, Pin.IN, 2, 2);
-        out = new Pin(this, Pin.OUT, 4, 1);
+        inA = new Pin(this, true, 0, 1);
+        inB = new Pin(this, true, 2, 2);
+        out = new Pin(this, true, 4, 1);
         HashSet<Pin> pins = new HashSet<>();
         pins.add(inA);
         pins.add(inB);
@@ -28,15 +30,14 @@ public class OKEY extends Gate2to1 {
         return pins;
     }
 
+    // simulation
+    @Override LogicLevel function(LogicLevel a, LogicLevel b) {
+        if (a == b) return ZZZ;
+        else return a;
+    }
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
         summary.addMOSFET(Circuit.Summary.SOFT, Circuit.Summary.N_CH, 1);
         summary.addMOSFET(Circuit.Summary.SOFT, Circuit.Summary.P_CH, 1);
-    }
-
-    // simulation
-    @Override LogicLevel function(LogicLevel a, LogicLevel b) {
-        if (a == b) return LogicLevel.ZZZ;
-        else return a;
     }
 
 }

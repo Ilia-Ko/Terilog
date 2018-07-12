@@ -1,11 +1,10 @@
 package engine.components.mosfets;
 
 import engine.LogicLevel;
-import engine.connectivity.Node;
 import gui.control.ControlMain;
 import org.w3c.dom.Element;
 
-import java.util.HashSet;
+import static engine.LogicLevel.*;
 
 abstract class PChannel extends MOSFET {
 
@@ -20,27 +19,27 @@ abstract class PChannel extends MOSFET {
         this.vgsth = vgsth;
     }
 
-    @Override public HashSet<Node> simulate() {
-        HashSet<Node> affected = new HashSet<>();
-        boolean changed;
-        LogicLevel g = gate.querySigFromNode();
-        LogicLevel s = source.querySigFromNode();
+    @Override public void simulate() {
+        LogicLevel g = gate.get();
+        LogicLevel s = source.get();
+        LogicLevel d = drain.get();
+        boolean opened = s.volts() - g.volts() >= vgsth;
 
-        // simulate
-        if (s == LogicLevel.ZZZ)
-            changed = drain.update(LogicLevel.ZZZ);
-        else if (s == LogicLevel.ERR || g.isUnstable())
-            changed = drain.update(LogicLevel.ERR);
-        else if (s == LogicLevel.NEG)
-            changed = drain.update(LogicLevel.NEG);
-        else if (g.volts() - s.volts() <= -vgsth)
-            changed = drain.update(s);
-        else
-            changed = drain.update(LogicLevel.ZZZ);
-
-        // report about affected nodes
-        if (changed) affected.add(drain.getNode());
-        return affected;
+        if (s == ZZZ && d == ZZZ) {
+            // do nothing
+        } else if (g == ERR || (g == ZZZ && (s.isStable() || d.isStable()))) {
+            source.put(ERR);
+            drain.put(ERR);
+        } else if (s.isStable() && (opened || s.volts() < NIL.volts())) {
+            drain.put(s);
+        } else if (d.isStable() && s.isUnstable() && d.volts() > NIL.volts()) {
+            source.put(d);
+        } else if (opened && s != d) {
+            source.put(ERR);
+            drain.put(ERR);
+        } else if (!opened) {
+            drain.put(ZZZ);
+        }
     }
 
 }

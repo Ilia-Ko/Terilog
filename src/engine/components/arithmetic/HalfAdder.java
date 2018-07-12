@@ -4,7 +4,6 @@ import engine.Circuit;
 import engine.LogicLevel;
 import engine.components.Component;
 import engine.components.Pin;
-import engine.connectivity.Node;
 import gui.Main;
 import gui.control.ControlMain;
 import javafx.beans.property.DoubleProperty;
@@ -16,6 +15,9 @@ import org.w3c.dom.Element;
 
 import java.io.IOException;
 import java.util.HashSet;
+
+import static engine.LogicLevel.ERR;
+import static engine.LogicLevel.parseValue;
 
 public class HalfAdder extends Component {
 
@@ -50,10 +52,10 @@ public class HalfAdder extends Component {
         }
     }
     @Override protected HashSet<Pin> initPins() {
-        inA = new Pin(this, Pin.IN, 0, 1);
-        inB = new Pin(this, Pin.IN, 0, 3);
-        outS = new Pin(this, Pin.OUT, 8, 1);
-        outC = new Pin(this, Pin.OUT, 8, 3);
+        inA = new Pin(this, true, 0, 1);
+        inB = new Pin(this, true, 0, 3);
+        outS = new Pin(this, false, 8, 1);
+        outC = new Pin(this, false, 8, 3);
         HashSet<Pin> pins = new HashSet<>();
         pins.add(inA);
         pins.add(inB);
@@ -63,15 +65,18 @@ public class HalfAdder extends Component {
     }
 
     // simulation
-    @Override public HashSet<Node> simulate() {
-        boolean changedS, changedC;
-        LogicLevel a = inA.querySigFromNode();
-        LogicLevel b = inB.querySigFromNode();
+    @Override public void simulate() {
+        LogicLevel a = inA.get();
+        LogicLevel b = inB.get();
 
-        // simulate
         if (a.isUnstable() || b.isUnstable()) {
-            changedS = outS.update(LogicLevel.ERR);
-            changedC = outC.update(LogicLevel.ERR);
+            if (a == b) {
+                outS.put(a);
+                outC.put(b);
+            } else {
+                outS.put(ERR);
+                outC.put(ERR);
+            }
         } else {
             int s = (a.volts() + b.volts());
             if (s == -2) s = +1;
@@ -79,15 +84,9 @@ public class HalfAdder extends Component {
             s *= -1;
             int c = (a == b ? a.volts() : 0);
             c *= -1;
-            changedS = outS.update(LogicLevel.parseValue(s));
-            changedC = outC.update(LogicLevel.parseValue(c));
+            outS.put(parseValue(s));
+            outC.put(parseValue(c));
         }
-
-        // report about affected nodes
-        HashSet<Node> affected = new HashSet<>();
-        if (changedS) affected.add(outS.getNode());
-        if (changedC) affected.add(outC.getNode());
-        return affected;
     }
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
         summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.P_CH, 5);

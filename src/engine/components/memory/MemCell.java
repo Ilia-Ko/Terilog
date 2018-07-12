@@ -2,10 +2,11 @@ package engine.components.memory;
 
 import engine.LogicLevel;
 import engine.components.Pin;
-import engine.connectivity.Node;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.Label;
+
+import static engine.LogicLevel.*;
 
 public class MemCell {
 
@@ -15,8 +16,8 @@ public class MemCell {
     MemCell(Linear owner, int pos) {
         // init pins
         int pinPos = pos / 3 + pos + 1;
-        write = new Pin(owner, Pin.IN, pinPos, 0);
-        read = new Pin(owner, Pin.OUT, pinPos, 3);
+        write = new Pin(owner, true, pinPos, 0);
+        read = new Pin(owner, false, pinPos, 3);
         owner.getPins().add(write);
         owner.getPins().add(read);
 
@@ -27,24 +28,15 @@ public class MemCell {
             lbl.setTextFill(newValue.colour());
             lbl.setText(String.valueOf(newValue.getDigitCharacter()));
         });
-        mem.setValue(LogicLevel.ZZZ);
+        mem.setValue(ZZZ);
     }
 
-    Node simulate(LogicLevel ctrl, LogicLevel clck) {
-        boolean changed;
-
-        // simulate
-        if (ctrl.isUnstable() || clck.isUnstable())
-            changed = read.update(LogicLevel.ERR);
-        else if (ctrl == LogicLevel.NEG)
-            changed = read.update(mem.get());
-        else {
-            if (ctrl == LogicLevel.POS && clck == LogicLevel.POS)
-                mem.setValue(write.querySigFromNode());
-            changed = read.update(LogicLevel.ZZZ);
-        }
-
-        return changed ? read.getNode() : null;
+    void simulate(LogicLevel ctrl, LogicLevel clck) {
+        if (ctrl == ERR || clck == ERR)
+            read.put(ERR);
+        else if (ctrl == NEG)
+            read.put(mem.get());
+        else if (ctrl == POS && clck == POS) mem.setValue(write.get());
     }
     public ObjectProperty<LogicLevel> memProperty() {
         return mem;

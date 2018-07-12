@@ -85,8 +85,8 @@
             </Menu>
             <Menu text="Circuit">
 
-                <MenuItem text="Reset" accelerator="F5" onAction="#menuReset" fx:id="menuReset"/>
-                <MenuItem text="Parse" accelerator="F6" onAction="#menuParse" fx:id="menuParse"/>
+                <MenuItem text="Parse" accelerator="F5" onAction="#menuParse" fx:id="menuParse"/>
+                <MenuItem text="Clear" accelerator="F6" onAction="#menuClear" fx:id="menuClear"/>
                 <MenuItem text="Step into" accelerator="F7" onAction="#menuStepInto" fx:id="menuStepInto"/>
                 <MenuItem text="Step over" accelerator="F8" onAction="#menuStepOver" fx:id="menuStepOver"/>
                 <SeparatorMenuItem/>

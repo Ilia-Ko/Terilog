@@ -63,7 +63,7 @@ public class ControlMain {
     @FXML private StackPane stack;
     @FXML private Canvas field; // background
     @FXML private Pane parent; // container for everything
-    @FXML private MenuItem menuReset, menuParse, menuStepInto, menuStepOver, menuRun, menuStop, menuSettings;
+    @FXML private MenuItem menuParse, menuClear, menuStepInto, menuStepOver, menuRun, menuStop, menuSettings;
     @FXML private MenuItem menuZoomIn, menuZoomOut;
     @FXML private MenuItem menuUndo, menuRedo;
     @FXML private Label lblPoint; // display snapped mouse position
@@ -188,8 +188,8 @@ public class ControlMain {
         histRedo = new Stack<>();
 
         // bind menus
-        menuReset.disableProperty().bind(menuRun.disableProperty());
         menuParse.disableProperty().bind(menuRun.disableProperty());
+        menuClear.disableProperty().bind(menuRun.disableProperty());
         menuStepInto.disableProperty().bind(menuRun.disableProperty());
         menuStepOver.disableProperty().bind(menuRun.disableProperty());
         menuSettings.disableProperty().bind(menuRun.disableProperty());
@@ -242,13 +242,13 @@ public class ControlMain {
 
     // some actions
     private void onGlobalMouseMoved(MouseEvent mouse) {
-        // update coordinates
+        // isStable coordinates
         int mx = (int) Math.round(mouse.getX() / p.get());
         int my = (int) Math.round(mouse.getY() / p.get());
         mouseX.setValue(mx);
         mouseY.setValue(my);
 
-        // update mouse position label
+        // isStable mouse position label
         lblPoint.setText(String.format("%3d : %3d ", mx, my));
     }
     private void onGlobalMouseClicked(MouseEvent mouse) {
@@ -544,26 +544,6 @@ public class ControlMain {
     }
 
     // menu.circuit
-    @FXML private void menuReset() {
-        boolean doReset = true;
-
-        // ask confirmation
-        if (circuit.isReallyBig()) {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.getDialogPane().setStyle(defFont);
-            alert.setResizable(true);
-            alert.setTitle(Main.TITLE);
-            alert.setHeaderText("Reset");
-            alert.setContentText("Are you sure to reset the circuit? After reset action circuit requires reparsing which may take some time.");
-
-            // reset if OK
-            Optional<ButtonType> res = alert.showAndWait();
-            doReset = res.isPresent() && res.get() == ButtonType.OK;
-        }
-
-        // reset
-        if (doReset) circuit.doReset();
-    }
     @FXML private void menuParse() {
         boolean doParsing = true;
 
@@ -581,6 +561,9 @@ public class ControlMain {
 
         // (re)parse
         if (doParsing) circuit.doParse();
+    }
+    @FXML private void menuClear() {
+        circuit.doClear();
     }
     @FXML private void menuStepInto() {
         circuit.doStepInto();
@@ -600,7 +583,16 @@ public class ControlMain {
         }
     }
     @FXML private void menuRun() {
-        circuit.doRun();
+        circuit.doRun(() -> {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.getDialogPane().setStyle(defFont);
+            alert.setResizable(true);
+            alert.setTitle(Main.TITLE);
+            alert.setHeaderText("Simulation Run");
+            alert.setContentText("Simulation failed to catch up with the clock. Try to decrease the simulation frequency" +
+                    "and check that the circuit can be theoretically stabilized (do Step Over).");
+            alert.showAndWait();
+        });
         menuRun.setDisable(true);
         menuStop.setDisable(false);
     }

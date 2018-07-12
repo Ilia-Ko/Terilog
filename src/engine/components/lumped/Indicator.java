@@ -4,7 +4,6 @@ import engine.Circuit;
 import engine.LogicLevel;
 import engine.components.Component;
 import engine.components.Pin;
-import engine.connectivity.Node;
 import gui.control.ControlMain;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
@@ -58,7 +57,7 @@ public class Indicator extends Component {
         readXML(data);
     }
     @Override protected HashSet<Pin> initPins() {
-        source = new Pin(this, Pin.IN, 0, 1);
+        source = new Pin(this, true, 0, 1);
         HashSet<Pin> pins = new HashSet<>();
         pins.add(source);
         return pins;
@@ -69,9 +68,8 @@ public class Indicator extends Component {
         super.reset(denodify);
         signal.setValue(LogicLevel.ZZZ);
     }
-    @Override public HashSet<Node> simulate() {
-        signal.setValue(source.querySigFromNode());
-        return new HashSet<>();
+    @Override public void simulate() {
+        signal.setValue(source.get());
     }
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
         summary.addOutput();

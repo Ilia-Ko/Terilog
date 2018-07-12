@@ -3,7 +3,6 @@ package engine.components.logic.two_arg;
 import engine.LogicLevel;
 import engine.components.Component;
 import engine.components.Pin;
-import engine.connectivity.Node;
 import gui.Main;
 import gui.control.ControlMain;
 import javafx.fxml.FXMLLoader;
@@ -12,6 +11,8 @@ import org.w3c.dom.Element;
 
 import java.io.IOException;
 import java.util.HashSet;
+
+import static engine.LogicLevel.ERR;
 
 abstract class Gate2to1 extends Component {
 
@@ -33,9 +34,9 @@ abstract class Gate2to1 extends Component {
         }
     }
     @Override protected HashSet<Pin> initPins() {
-        inA = new Pin(this, Pin.IN, 0, 1);
-        inB = new Pin(this, Pin.IN, 0, 3);
-        out = new Pin(this, Pin.OUT, 8, 2);
+        inA = new Pin(this, true, 0, 1);
+        inB = new Pin(this, true, 0, 3);
+        out = new Pin(this, false, 8, 2);
         HashSet<Pin> pins = new HashSet<>();
         pins.add(inA);
         pins.add(inB);
@@ -44,19 +45,14 @@ abstract class Gate2to1 extends Component {
     }
 
     // simulation
-    @Override public HashSet<Node> simulate() {
-        boolean changed;
-        LogicLevel a = inA.querySigFromNode();
-        LogicLevel b = inB.querySigFromNode();
+    @Override public void simulate() {
+        LogicLevel a = inA.get();
+        LogicLevel b = inB.get();
 
-        // simulate
-        if (a.isUnstable() || b.isUnstable()) changed = out.update(LogicLevel.ERR);
-        else changed = out.update(function(a, b));
-
-        // report about affected nodes
-        HashSet<Node> affected = new HashSet<>();
-        if (changed) affected.add(out.getNode());
-        return affected;
+        if (a.isUnstable() || b.isUnstable()) {
+            if (a == b) out.put(a);
+            else out.put(ERR);
+        } else out.put(function(a, b));
     }
     abstract LogicLevel function(LogicLevel a, LogicLevel b);
 

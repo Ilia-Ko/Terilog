@@ -4,7 +4,6 @@ import engine.Circuit;
 import engine.LogicLevel;
 import engine.components.Component;
 import engine.components.Pin;
-import engine.connectivity.Node;
 import gui.control.ControlMain;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
@@ -42,8 +41,7 @@ public class Voltage extends Component {
         signal.addListener((observable, oldSignal, newSignal) -> {
             body.setFill(newSignal.colour());
             value.setText(String.valueOf(newSignal.getDigitCharacter()));
-            control.getCircuit().addUnstable(drain.getNode());
-            drain.update(newSignal);
+            drain.put(newSignal);
         });
         signal.setValue(LogicLevel.ZZZ);
     }
@@ -53,7 +51,7 @@ public class Voltage extends Component {
         readXML(data);
     }
     @Override protected HashSet<Pin> initPins() {
-        drain = new Pin(this, Pin.OUT, 1, 2);
+        drain = new Pin(this, false, 1, 2);
         HashSet<Pin> pins = new HashSet<>();
         pins.add(drain);
         return pins;
@@ -79,13 +77,8 @@ public class Voltage extends Component {
     }
 
     // simulation
-    @Override public boolean isEntryPoint() {
-        return true;
-    }
-    @Override public HashSet<Node> simulate() {
-        HashSet<Node> affected = new HashSet<>();
-        if (drain.update(signal.get())) affected.add(drain.getNode());
-        return affected;
+    @Override public void simulate() {
+        drain.put(signal.get());
     }
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
         summary.addInput(signal.get(), 1);

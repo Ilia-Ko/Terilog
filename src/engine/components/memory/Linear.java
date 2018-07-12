@@ -4,7 +4,6 @@ import engine.Circuit;
 import engine.LogicLevel;
 import engine.components.Component;
 import engine.components.Pin;
-import engine.connectivity.Node;
 import gui.Main;
 import gui.control.ControlMain;
 import gui.control.ControlMemSet;
@@ -49,8 +48,8 @@ public abstract class Linear extends Component {
         HashSet<Pin> pins = new HashSet<>();
 
         // managing pins
-        control = new Pin(this, Pin.IN, 0, 1);
-        clock = new Pin(this, Pin.IN, 0, 2);
+        control = new Pin(this, true, 0, 1);
+        clock = new Pin(this, true, 0, 2);
         pins.add(control);
         pins.add(clock);
 
@@ -76,17 +75,11 @@ public abstract class Linear extends Component {
     }
 
     // simulate
-    @Override public HashSet<Node> simulate() {
-        HashSet<Node> affected = new HashSet<>();
-        LogicLevel ctrl = control.querySigFromNode();
-        LogicLevel clck = clock.querySigFromNode();
+    @Override public void simulate() {
+        LogicLevel ctrl = control.get();
+        LogicLevel clck = clock.get();
 
-        // simulate
-        for (MemCell cell : cells) {
-            Node node = cell.simulate(ctrl, clck);
-            if (node != null) affected.add(node);
-        }
-        return affected;
+        for (MemCell cell : cells) cell.simulate(ctrl, clck);
     }
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
         summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.P_CH, 5 * digits);

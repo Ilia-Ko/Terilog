@@ -1,7 +1,6 @@
 package engine.components;
 
 import engine.Circuit;
-import engine.connectivity.Node;
 import engine.connectivity.Selectable;
 import gui.Main;
 import gui.control.ControlMain;
@@ -30,6 +29,7 @@ public abstract class Component implements Selectable {
     private HashSet<Pin> pins;
     private BooleanProperty isSelected;
     private HistoricalEvent toBeOrNotToBe;
+    protected ContextMenu menu;
 
     // initialization
     private Component(ControlMain control, boolean isLayoutMode) {
@@ -40,7 +40,7 @@ public abstract class Component implements Selectable {
         isSelected = new SimpleBooleanProperty(false);
 
         // attach context menu
-        ContextMenu menu = buildContextMenu();
+        menu = buildContextMenu();
         root.setOnContextMenuRequested(mouse -> {
             if (isSelected.not().get())
                 menu.show(root, mouse.getScreenX(), mouse.getScreenY());
@@ -188,13 +188,10 @@ public abstract class Component implements Selectable {
     }
 
     // simulation
-    public boolean isEntryPoint() {
-        return false;
-    }
     public void reset(boolean denodify) {
-        for (Pin pin : pins) pin.reset(denodify);
+        pins.forEach(pin -> pin.reset(denodify));
     }
-    public abstract HashSet<Node> simulate(); // should return list of affected nodes
+    public abstract void simulate();
     public abstract void itIsAFinalCountdown(Circuit.Summary summary);
 
     // xml info

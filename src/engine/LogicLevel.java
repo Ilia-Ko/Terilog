@@ -28,7 +28,7 @@ public enum LogicLevel {
             return signal == ZZZ;
         }
     },
-    ZZZ("Z",    '?',       2, false, Color.BLACK) {
+    ZZZ("Z",    '?',       0, false, Color.BLACK) {
         @Override public boolean conflicts(LogicLevel signal) {
             return false;
         }
@@ -38,7 +38,7 @@ public enum LogicLevel {
     }, // undefined, non-critical, like QNaN in FPU
     ERR("E",    '!',      22, false, Color.LIGHTGOLDENRODYELLOW) {
         @Override public boolean conflicts(LogicLevel signal) {
-            return !signal.isUnstable();
+            return signal.isStable();
         }
         @Override public boolean suppresses(LogicLevel signal) {
             return signal != ERR;
@@ -97,6 +97,9 @@ public enum LogicLevel {
     }
     public boolean isUnstable() {
         return unstable;
+    }
+    public boolean isStable() {
+        return !unstable;
     }
 
     // signal interaction

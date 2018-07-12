@@ -4,7 +4,6 @@ import engine.Circuit;
 import engine.LogicLevel;
 import engine.components.Component;
 import engine.components.Pin;
-import engine.connectivity.Node;
 import gui.control.ControlMain;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -29,8 +28,7 @@ public class Reconciliator extends Component {
         pull = new SimpleObjectProperty<>();
         pull.addListener((observable, oldPull, newPull) -> {
             body.setFill(newPull.colour());
-            control.getCircuit().addUnstable(drain.getNode());
-            drain.update(newPull);
+            drain.put(newPull);
         });
         pull.setValue(LogicLevel.NIL);
     }
@@ -40,8 +38,8 @@ public class Reconciliator extends Component {
         readXML(data);
     }
     @Override protected HashSet<Pin> initPins() {
-        source = new Pin(this, Pin.IN, 0, 1);
-        drain = new Pin(this, Pin.OUT, 2, 1);
+        source = new Pin(this, true, 0, 1);
+        drain = new Pin(this, false, 2, 1);
         HashSet<Pin> pins = new HashSet<>();
         pins.add(source);
         pins.add(drain);
@@ -70,21 +68,11 @@ public class Reconciliator extends Component {
     }
 
     // simulation
-    @Override public boolean isEntryPoint() {
-        return true;
-    }
-    @Override public HashSet<Node> simulate() {
-        boolean changed;
-        LogicLevel s = source.querySigFromNode();
+    @Override public void simulate() {
+        LogicLevel s = source.get();
 
-        // simulate
-        if (s.isUnstable()) changed = drain.update(pull.get());
-        else changed = drain.update(s);
-
-        // report about affected nodes
-        HashSet<Node> affected = new HashSet<>();
-        if (changed) affected.add(drain.getNode());
-        return affected;
+        if (s.isUnstable()) drain.put(pull.get());
+        else drain.put(s);
     }
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
         summary.addResistor(1);

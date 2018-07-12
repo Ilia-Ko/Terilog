@@ -4,7 +4,6 @@ import engine.Circuit;
 import engine.LogicLevel;
 import engine.components.Component;
 import engine.components.Pin;
-import engine.connectivity.Node;
 import gui.Main;
 import gui.control.ControlMain;
 import javafx.beans.property.DoubleProperty;
@@ -16,6 +15,9 @@ import org.w3c.dom.Element;
 
 import java.io.IOException;
 import java.util.HashSet;
+
+import static engine.LogicLevel.ERR;
+import static engine.LogicLevel.parseValue;
 
 public class FullAdder extends Component {
 
@@ -51,11 +53,11 @@ public class FullAdder extends Component {
         }
     }
     @Override protected HashSet<Pin> initPins() {
-        inA = new Pin(this, Pin.IN, 0, 1);
-        inB = new Pin(this, Pin.IN, 0, 3);
-        inC = new Pin(this, Pin.IN, 0, 5);
-        outS = new Pin(this, Pin.OUT, 6, 2);
-        outC = new Pin(this, Pin.OUT, 6, 4);
+        inA = new Pin(this, true, 0, 1);
+        inB = new Pin(this, true, 0, 3);
+        inC = new Pin(this, true, 0, 5);
+        outS = new Pin(this, false, 6, 2);
+        outC = new Pin(this, false, 6, 4);
         HashSet<Pin> pins = new HashSet<>();
         pins.add(inA);
         pins.add(inB);
@@ -66,16 +68,19 @@ public class FullAdder extends Component {
     }
 
     // simulation
-    @Override public HashSet<Node> simulate() {
-        boolean changedS, changedC;
-        LogicLevel a = inA.querySigFromNode();
-        LogicLevel b = inB.querySigFromNode();
-        LogicLevel c = inC.querySigFromNode();
+    @Override public void simulate() {
+        LogicLevel a = inA.get();
+        LogicLevel b = inB.get();
+        LogicLevel c = inC.get();
 
-        // simulate
         if (a.isUnstable() || b.isUnstable() || c.isUnstable()) {
-            changedS = outS.update(LogicLevel.ERR);
-            changedC = outC.update(LogicLevel.ERR);
+            if (a == b && a == c) {
+                outS.put(b);
+                outC.put(c);
+            } else {
+                outS.put(ERR);
+                outC.put(ERR);
+            }
         } else {
             int sum, carry;
             sum = a.volts() + b.volts() - c.volts(); // note that Cin is inverted
@@ -89,15 +94,9 @@ public class FullAdder extends Component {
                 carry = sum / 3;
                 sum %= 3;
             }
-            changedS = outS.update(LogicLevel.parseValue(sum));
-            changedC = outC.update(LogicLevel.parseValue(-carry)); // note that Cout is inverted too
+            outS.put(parseValue(sum));
+            outC.put(parseValue(-carry)); // note that Cout is inverted too
         }
-
-        // report about affected nodes
-        HashSet<Node> affected = new HashSet<>();
-        if (changedS) affected.add(outS.getNode());
-        if (changedC) affected.add(outC.getNode());
-        return affected;
     }
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
         summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.P_CH, 13);

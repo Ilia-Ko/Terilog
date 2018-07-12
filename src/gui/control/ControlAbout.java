@@ -39,13 +39,13 @@ public class ControlAbout {
 
         // about: menu.circuit
         TreeItem<Label> menuCir = newItem("Circuit", "menu/cir/circuit.html");
-        TreeItem<Label> menuCirReset = newItem("Reset", "menu/cir/reset.html");
         TreeItem<Label> menuCirParse = newItem("Parse", "menu/cir/parse.html");
+        TreeItem<Label> menuCirClear = newItem("Clear", "menu/cir/clear.html");
         TreeItem<Label> menuCirStepInto = newItem("Step into", "menu/cir/step-into.html");
         TreeItem<Label> menuCirStepOver = newItem("Step over", "menu/cir/step-over.html");
         TreeItem<Label> menuCirRun = newItem("Run", "menu/cir/run.html");
         TreeItem<Label> menuCirSettings = newItem("Settings", "menu/cir/settings.html");
-        menuCir.getChildren().addAll(menuCirReset, menuCirParse, menuCirStepInto, menuCirStepOver, menuCirRun, menuCirSettings);
+        menuCir.getChildren().addAll(menuCirParse, menuCirClear, menuCirStepInto, menuCirStepOver, menuCirRun, menuCirSettings);
         rootMenu.getChildren().add(menuCir);
 
         // about: menu.grid

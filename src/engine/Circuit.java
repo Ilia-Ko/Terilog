@@ -53,27 +53,25 @@ public class Circuit {
     // two objects is located (geometrically), their nodes
     // are joined. Finally, we get a complete circuit graph -
     // the minimal and quite efficient system of nodes.
-    // After that, we can begin simulation. The components,
-    // whose outputs does not depend on inputs become entry
-    // points of the simulation. They update their output
-    // signals at their output nodes and these nodes invoke
-    // those components, whose inputs are connected to them.
+    // After that, we can begin simulation. Simulation is
+    // a controllable sequence of step() calls. Every step
+    // makes components to compute their outputs and nodes
+    // to transfer these outputs forward.
 
     private static final String DEF_NAME = "Untitled";
     private static final int DEF_SIM_DEPTH = 60;
 
     // construction
     private StringProperty name;
-    private ArrayList<Component> components, entries;
+    private HashSet<Component> components;
     private ArrayList<Wire> wires;
-    private ArrayList<Pin> pins;
-    private ArrayList<Selectable> selected;
+    private HashSet<Pin> pins;
+    private HashSet<Selectable> selected;
     private boolean hasSelected, isSelMoving;
     // simulation
-    private HashSet<Node> unstable;
+    private HashSet<Node> nodes;
     private boolean needsParsing;
-    private boolean needsEntry;
-    private boolean isStepFinished;
+    private boolean isStableStateFound;
     private boolean isSimRunning;
     private IntegerProperty maxSimDepth;
     private DoubleProperty simFrequency;
@@ -85,16 +83,16 @@ public class Circuit {
 
         // flags
         needsParsing = true;
-        needsEntry = true;
+        isStableStateFound = false;
         hasSelected = false;
         isSelMoving = false;
         isSimRunning = false;
 
         // arrays
-        components = new ArrayList<>();
-        entries = new ArrayList<>();
+        components = new HashSet<>();
         wires = new ArrayList<>();
-        pins = new ArrayList<>();
+        pins = new HashSet<>();
+        nodes = new HashSet<>();
     }
     public Circuit(ControlMain control, Element c) {
         this();
@@ -216,13 +214,11 @@ public class Circuit {
     }
     public void add(Component comp) {
         components.add(comp);
-        if (comp.isEntryPoint()) entries.add(comp);
         pins.addAll(comp.getPins());
         needsParsing = true;
     }
     public void del(Component comp) {
         components.remove(comp);
-        if (comp.isEntryPoint()) entries.remove(comp);
         needsParsing = true;
     }
     void destroy() {
@@ -235,7 +231,7 @@ public class Circuit {
 
     // selection
     public void sel(Rectangle sel) {
-        selected = new ArrayList<>();
+        selected = new HashSet<>();
         components.forEach(comp -> {
             if (comp.checkSelection(sel))
                 selected.add(comp);
@@ -278,23 +274,15 @@ public class Circuit {
     }
 
     // simulation and connectivity
-    private void reset() {
-        // reset nodes
-
-        // reset wires
-        wires.forEach(wire -> wire.reset(true));
-
-        // reset components
-        components.forEach(comp -> comp.reset(true));
-
-        // if nodes were eliminated, parsing is needed
-        needsParsing = true;
-        needsEntry = true;
-        unstable = new HashSet<>();
-    }
     private void parse() {
-        // reset
-        reset();
+        // reset nodes
+        nodes = new HashSet<>();
+        needsParsing = true; // if nodes were eliminated, parsing is needed
+        isStableStateFound = false;
+
+        // reset wires & comps
+        wires.forEach(wire -> wire.reset(true));
+        components.forEach(comp -> comp.reset(true));
 
         // parsing.stage1.a: searching for connections between wires - O(1/2 * n^2)
         int len = wires.size();
@@ -309,27 +297,31 @@ public class Circuit {
 
         // parsing.stage2.a: nodify wires - O(n)
         for (Wire wire : wires)
-            if (wire.isNodeFree())
-                wire.nodify(new Node());
+            if (wire.isNodeFree()) {
+                Node node = new Node();
+                nodes.add(node);
+                wire.nodify(node);
+            }
 
         // parsing.stage2.b: nodify pins - O(m)
         for (Pin pin : pins)
-            if (pin.isNodeFree())
-                pin.nodify(new Node());
+            if (pin.isNodeFree()) {
+                Node node = new Node();
+                nodes.add(node);
+                pin.nodify(node);
+            }
 
         // Nice system of nodes is ready to simulation!
         needsParsing = false;
-        unstable = new HashSet<>();
-        needsEntry = true;
     }
-    private void begin() {
-        for (Component entry : entries) unstable.addAll(entry.simulate());
-        needsEntry = false;
+    private void clear() {
+        // reset nodes
+        nodes.forEach(Node::reset);
     }
     private void step() {
-        HashSet<Node> tmp = new HashSet<>(unstable);
-        unstable.clear();
-        for (Node node : tmp) unstable.addAll(node.simulate());
+        isStableStateFound = true;
+        components.forEach(Component::simulate);
+        nodes.forEach(node -> isStableStateFound &= node.isStable());
     }
 
     // flags
@@ -340,56 +332,62 @@ public class Circuit {
         return needsParsing;
     }
     public boolean wasFinished() {
-        return isStepFinished;
+        return isStableStateFound;
     }
 
     // interaction
-    public void addUnstable(Node node) {
-        if (unstable != null) unstable.add(node);
-    }
-    public void doReset() {
-        reset();
-    }
     public void doParse() {
         parse();
     }
+    public void doClear() {
+        clear();
+    }
     public void doStepInto() {
         if (needsParsing) parse();
-        if (needsEntry) begin();
-        else step();
+        step();
     }
     public void doStepOver() {
-        // prepare
         if (needsParsing) parse();
-        if (needsEntry) begin();
 
         // simulate
         int attempts = 0;
-        while (attempts++ <= maxSimDepth.get() && unstable.size() > 0)
+        while (attempts++ <= maxSimDepth.get() && !isStableStateFound)
             step();
-
-        // analyze state
-        isStepFinished = unstable.size() == 0;
     }
-    public void doRun() {
-        // prepare
+    public void doRun(Runnable ifNotCatchingUp) {
         if (needsParsing) parse();
-        if (needsEntry) begin();
 
-        // run
         new Thread(() -> {
             isSimRunning = true;
-            isStepFinished = true;
-            long period = Math.round(1000.0 / simFrequency.get()); // period in millis
+            isStableStateFound = true;
+            // Wait time is computed in millis.
+            // It is 4 times shorter than a period, because Clock must change its signal four times a period.
+            // Finally, 2 millis are spared for 'catching up check'
+            long wait = Math.round(1000.0 / simFrequency.get() / 4.0) - 2L;
 
-            while (isSimRunning && isStepFinished) {
-                try { Thread.sleep(period); } catch (InterruptedException ignored) {}
+            while (isSimRunning && isStableStateFound) { // simulation stops too if circuit cannot be stabilized
+                // measure time spent to stabilization
+                long time = System.currentTimeMillis();
+                final BooleanProperty isReady = new SimpleBooleanProperty(); // stabilization flag
+
+                // simulate (try to stabilize the circuit)
                 Platform.runLater(() -> {
-                    begin();
+                    isReady.setValue(false);
+                    isStableStateFound = false;
                     int attempts = 0;
-                    while (isSimRunning && attempts++ < maxSimDepth.get() && unstable.size() > 0) step();
-                    isStepFinished = unstable.size() == 0;
+                    while (isSimRunning && attempts++ < maxSimDepth.get() && !isStableStateFound) step();
+                    isReady.setValue(true); // mark stabilization finished
                 });
+
+                // wait till the next oscillation
+                while (System.currentTimeMillis() - time < wait);
+
+                // check whether stabilization process is catching up with clock
+                if (!isReady.get()) {
+                    while (!isReady.get()); // if it isn't - stop the simulation
+                    isStableStateFound = false;
+                    Platform.runLater(ifNotCatchingUp);
+                }
             }
         }).start();
     }

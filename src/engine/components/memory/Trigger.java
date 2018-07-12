@@ -4,7 +4,6 @@ import engine.Circuit;
 import engine.LogicLevel;
 import engine.components.Component;
 import engine.components.Pin;
-import engine.connectivity.Node;
 import gui.Main;
 import gui.control.ControlMain;
 import javafx.beans.property.ObjectProperty;
@@ -18,6 +17,8 @@ import org.w3c.dom.Element;
 
 import java.io.IOException;
 import java.util.HashSet;
+
+import static engine.LogicLevel.*;
 
 public class Trigger extends Component {
 
@@ -71,9 +72,9 @@ public class Trigger extends Component {
         return menu;
     }
     @Override protected HashSet<Pin> initPins() {
-        read = new Pin(this, Pin.OUT, 0, 2);
-        write = new Pin(this, Pin.IN, 4, 2);
-        control = new Pin(this, Pin.IN, 2, 0);
+        read = new Pin(this, false, 0, 2);
+        write = new Pin(this, true, 4, 2);
+        control = new Pin(this, true, 2, 0);
 
         HashSet<Pin> pins = new HashSet<>();
         pins.add(read);
@@ -83,26 +84,16 @@ public class Trigger extends Component {
     }
 
     // simulation
-    @Override public HashSet<Node> simulate() {
-        boolean changed;
-        LogicLevel c = control.querySigFromNode();
+    @Override public void simulate() {
+        LogicLevel c = control.get();
 
-        // simulate
-        if (c.isUnstable()) {
-            setMemory(LogicLevel.ERR);
-            changed = read.update(LogicLevel.ERR);
+        if (c == ERR) {
+            setMemory(ERR);
+            read.put(ERR);
         } else {
-            if (c == LogicLevel.NEG) changed = read.update(trit.get());
-            else {
-                if (c == LogicLevel.POS) trit.setValue(write.querySigFromNode());
-                changed = read.update(LogicLevel.ZZZ);
-            }
+            if (c == NEG) read.put(trit.get());
+            else if (c == POS) trit.setValue(write.get());
         }
-
-        // report about affected nodes
-        HashSet<Node> affected = new HashSet<>();
-        if (changed) affected.add(read.getNode());
-        return affected;
     }
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
         summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.P_CH, 5);

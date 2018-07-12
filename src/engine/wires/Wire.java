@@ -94,8 +94,10 @@ public class Wire extends Line implements Connectible, Selectable {
         double a = 1.0 / 6.0, b = a * 2.0;
         r1 = new Rectangle(getStartX() - a, getStartY() - a, b, b);
         r1.fillProperty().bind(strokeProperty());
+        r1.setOnContextMenuRequested(mouse -> menu.show(this, mouse.getScreenX(), mouse.getScreenY()));
         r2 = new Rectangle(getEndX() - a, getEndY() - a, b, b);
         r2.fillProperty().bind(strokeProperty());
+        r2.setOnContextMenuRequested(mouse -> menu.show(this, mouse.getScreenX(), mouse.getScreenY()));
         control.getParent().getChildren().addAll(r1, r2);
 
         // history
@@ -155,7 +157,13 @@ public class Wire extends Line implements Connectible, Selectable {
             node = null;
             connectibles = new HashSet<>();
         }
-        setStroke(LogicLevel.ZZZ.colour());
+        put(LogicLevel.ZZZ);
+    }
+    @Override public void put(LogicLevel signal) {
+        setStroke(signal.colour());
+    }
+    @Override public LogicLevel get() {
+        return null;
     }
     // parsing.stage1
     @Override public void inspect(Wire wire) {

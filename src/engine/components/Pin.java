@@ -9,54 +9,28 @@ import javafx.scene.shape.Circle;
 
 import java.util.HashSet;
 
-public class Pin extends Circle implements Connectible {
+import static engine.LogicLevel.ZZZ;
 
-    public static final int IN = 0x01;
-    public static final int OUT = 0x10;
-    public static final int BOTH = IN | OUT;
+public class Pin extends Circle implements Connectible {
 
     private Component owner;
     private HashSet<Connectible> connectibles;
     private Node node;
-    private LogicLevel sigFromOwner;
-    private boolean canAffectOwner, canAffectNode;
+    private LogicLevel signal;
+    private boolean highImpedance;
 
     // initialization
-    public Pin(Component owner, int role, int xPosInOwner, int yPosInOwner) {
+    public Pin(Component owner, boolean highImpedance, int xPosInOwner, int yPosInOwner) {
         this.owner = owner;
+        this.highImpedance = highImpedance;
         connectibles = new HashSet<>();
-        sigFromOwner = LogicLevel.ZZZ;
-        canAffectOwner = (role & IN) != 0;
-        canAffectNode = (role & OUT) != 0;
+        signal = ZZZ;
 
         setCenterX(xPosInOwner);
         setCenterY(yPosInOwner);
         setRadius(0.3);
-        setFill(LogicLevel.ZZZ.colour());
+        setFill(ZZZ.colour());
         owner.getRoot().getChildren().add(this);
-    }
-
-    // simulation
-    public boolean update(LogicLevel signal) { // called by owner only
-        sigFromOwner = signal;
-        setFill(signal.colour());
-        return node != null && canAffectNode && node.update();
-    }
-    public LogicLevel querySigFromNode() {
-        if (node != null) return node.query();
-        else return LogicLevel.ZZZ;
-    }
-    public LogicLevel querySigFromOwner() {
-        if (canAffectNode) return sigFromOwner;
-        else return LogicLevel.ZZZ;
-    }
-    public HashSet<Node> simulate() { // called by nodes only
-        if (node != null) setFill(node.query().colour());
-        if (canAffectOwner) return owner.simulate();
-        else return new HashSet<>();
-    }
-    public Node getNode() {
-        return node;
     }
 
     // connectivity
@@ -65,7 +39,17 @@ public class Pin extends Circle implements Connectible {
             node = null;
             connectibles = new HashSet<>();
         }
-        setFill(LogicLevel.ZZZ.colour());
+        put(ZZZ);
+    }
+    @Override public void put(LogicLevel signal) { // called by owner only
+        this.signal = signal;
+        setFill(signal.colour());
+    }
+    @Override public LogicLevel get() {
+        return signal;
+    }
+    public boolean hasLowImpedance() {
+        return !highImpedance;
     }
     // parsing.stage1
     @Override public void inspect(Wire wire) {

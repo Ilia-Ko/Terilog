@@ -3,7 +3,6 @@ package engine.components.logic.one_arg;
 import engine.LogicLevel;
 import engine.components.Component;
 import engine.components.Pin;
-import engine.connectivity.Node;
 import gui.Main;
 import gui.control.ControlMain;
 import javafx.fxml.FXMLLoader;
@@ -33,8 +32,8 @@ abstract class Gate1to1 extends Component {
         }
     }
     @Override protected HashSet<Pin> initPins() {
-        in = new Pin(this, Pin.IN, 0, 1);
-        out = new Pin(this, Pin.OUT, 4, 1);
+        in = new Pin(this, true, 0, 1);
+        out = new Pin(this, false, 4, 1);
         HashSet<Pin> pins = new HashSet<>();
         pins.add(in);
         pins.add(out);
@@ -42,18 +41,11 @@ abstract class Gate1to1 extends Component {
     }
 
     // simulation
-    @Override public HashSet<Node> simulate() {
-        boolean changed;
-        LogicLevel i = in.querySigFromNode();
+    @Override public void simulate() {
+        LogicLevel i = in.get();
 
-        // simulate
-        if (i.isUnstable()) changed = out.update(LogicLevel.ERR);
-        else changed = out.update(function(i));
-
-        // report about affected nodes
-        HashSet<Node> affected = new HashSet<>();
-        if (changed) affected.add(out.getNode());
-        return affected;
+        if (i.isUnstable()) out.put(i);
+        else out.put(function(i));
     }
     abstract LogicLevel function(LogicLevel a);
 

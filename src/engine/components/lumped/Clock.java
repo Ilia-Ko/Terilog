@@ -4,7 +4,6 @@ import engine.Circuit;
 import engine.LogicLevel;
 import engine.components.Component;
 import engine.components.Pin;
-import engine.connectivity.Node;
 import gui.control.ControlMain;
 import org.w3c.dom.Element;
 
@@ -14,20 +13,21 @@ public class Clock extends Component {
 
     public static final double DEF_FREQUENCY = 2; // Hz
 
-    private int phase;
+    private int phase, dir;
     private Pin drain;
 
     // initialization
     public Clock(ControlMain control) {
         super(control);
         phase = 0;
+        dir = 1;
     }
     public Clock(ControlMain control, Element data) {
         super(control, data);
         phase = 0;
     }
     @Override protected HashSet<Pin> initPins() {
-        drain = new Pin(this, Pin.OUT, 4, 2);
+        drain = new Pin(this, false, 4, 2);
 
         HashSet<Pin> pins = new HashSet<>();
         pins.add(drain);
@@ -35,18 +35,11 @@ public class Clock extends Component {
     }
 
     // simulation
-    @Override public boolean isEntryPoint() {
-        return true;
-    }
-    @Override public HashSet<Node> simulate() {
+    @Override public void simulate() {
         // compute next impulse
-        phase++;
-        if (phase == 2) phase = -1;
-        LogicLevel impulse = LogicLevel.parseValue(phase);
-
-        HashSet<Node> affected = new HashSet<>();
-        if (drain.update(impulse)) affected.add(drain.getNode());
-        return affected;
+        if (Math.abs(phase) == 1) dir *= -1;
+        phase += dir;
+        drain.put(LogicLevel.parseValue(phase));
     }
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
         summary.takeClockIntoAccount();
