@@ -25,6 +25,7 @@ public class Clock extends Component {
     public Clock(ControlMain control, Element data) {
         super(control, data);
         phase = 0;
+        dir = 1;
     }
     @Override protected HashSet<Pin> initPins() {
         drain = new Pin(this, false, 4, 2);

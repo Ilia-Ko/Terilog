@@ -32,11 +32,13 @@ public class MemCell {
     }
 
     void simulate(LogicLevel ctrl, LogicLevel clck) {
+        read.put(ZZZ);
         if (ctrl == ERR || clck == ERR)
             read.put(ERR);
-        else if (ctrl == NEG)
-            read.put(mem.get());
-        else if (ctrl == POS && clck == POS) mem.setValue(write.get());
+        else if (clck == POS) {
+            if (ctrl == POS) mem.setValue(write.get());
+            else if (ctrl == NEG) read.put(mem.get());
+        }
     }
     public ObjectProperty<LogicLevel> memProperty() {
         return mem;

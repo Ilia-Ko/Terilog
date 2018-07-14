@@ -11,7 +11,11 @@
 
             <Menu text="File">
 
+                <MenuItem text="New" accelerator="Ctrl+N" onAction="#menuNew"/>
+                <SeparatorMenuItem/>
                 <MenuItem text="Open" accelerator="Ctrl+O" onAction="#menuOpen"/>
+                <MenuItem text="Reload" accelerator="Ctrl+R" onAction="#menuReload"/>
+                <SeparatorMenuItem/>
                 <MenuItem text="Save" accelerator="Ctrl+S" onAction="#menuSave"/>
                 <MenuItem text="Save as ..." accelerator="Shift+S" onAction="#menuSaveAs"/>
                 <SeparatorMenuItem/>

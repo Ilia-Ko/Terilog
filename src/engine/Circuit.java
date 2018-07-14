@@ -221,7 +221,7 @@ public class Circuit {
         components.remove(comp);
         needsParsing = true;
     }
-    void destroy() {
+    public void destroy() {
         name.setValue(DEF_NAME);
         wires.forEach(wire -> wire.delete(false));
         wires.clear();

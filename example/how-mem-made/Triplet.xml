@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<circuit depth="60" name="Triplet">
+    <comp class="voltage" mx="1" my="1" rot="-90" sig="MID" x="4" y="21"/>
+    <comp class="voltage" mx="1" my="1" rot="-90" sig="MID" x="4" y="27"/>
+    <comp class="voltage" mx="1" my="1" rot="0" sig="MID" x="20" y="2"/>
+    <comp class="trigger" mem="HIGH" mx="1" my="1" rot="0" x="19" y="12"/>
+    <comp class="indicator" mx="1" my="1" rot="0" x="51" y="25"/>
+    <comp class="ckey" mx="1" my="1" rot="-270" x="22" y="6"/>
+    <comp class="indicator" mx="1" my="1" rot="0" x="51" y="19"/>
+    <comp class="trigger" mem="LOW" mx="1" my="1" rot="0" x="25" y="18"/>
+    <comp class="indicator" mx="1" my="1" rot="0" x="51" y="13"/>
+    <comp class="clock" mx="1" my="1" rot="0" x="13" y="6"/>
+    <comp class="trigger" mem="MID" mx="1" my="1" rot="0" x="31" y="24"/>
+    <comp class="voltage" mx="1" my="1" rot="-90" sig="MID" x="4" y="15"/>
+    <wire x0="6" x1="31" y0="26" y1="26"/>
+    <wire x0="25" x1="6" y0="20" y1="20"/>
+    <wire x0="6" x1="19" y0="14" y1="14"/>
+    <wire x0="51" x1="23" y0="14" y1="14"/>
+    <wire x0="29" x1="51" y0="20" y1="20"/>
+    <wire x0="51" x1="35" y0="26" y1="26"/>
+    <wire x0="17" x1="20" y0="8" y1="8"/>
+    <wire x0="21" x1="21" y0="10" y1="12"/>
+    <wire x0="21" x1="21" y0="6" y1="4"/>
+    <wire x0="21" x1="33" y0="11" y1="11"/>
+    <wire x0="33" x1="33" y0="11" y1="24"/>
+    <wire x0="27" x1="27" y0="18" y1="11"/>
+    <grid h="56" w="100"/>
+</circuit>

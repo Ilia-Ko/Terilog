@@ -23,7 +23,7 @@ public class CKEY extends Gate2to1 {
     @Override protected HashSet<Pin> initPins() {
         inA = new Pin(this, true, 0, 1);
         inB = new Pin(this, true, 2, 2);
-        out = new Pin(this, true, 4, 1);
+        out = new Pin(this, false, 4, 1);
         HashSet<Pin> pins = new HashSet<>();
         pins.add(inA);
         pins.add(inB);

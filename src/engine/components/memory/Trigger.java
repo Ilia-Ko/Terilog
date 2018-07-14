@@ -39,7 +39,7 @@ public class Trigger extends Component {
         trit.setValue(LogicLevel.ZZZ);
     }
     public Trigger(ControlMain control, Element data) {
-        super(control);
+        this(control);
         confirm();
         readXML(data);
     }
@@ -72,8 +72,8 @@ public class Trigger extends Component {
         return menu;
     }
     @Override protected HashSet<Pin> initPins() {
-        read = new Pin(this, false, 0, 2);
-        write = new Pin(this, true, 4, 2);
+        write = new Pin(this, true, 0, 2);
+        read = new Pin(this, false, 4, 2);
         control = new Pin(this, true, 2, 0);
 
         HashSet<Pin> pins = new HashSet<>();
@@ -91,6 +91,7 @@ public class Trigger extends Component {
             setMemory(ERR);
             read.put(ERR);
         } else {
+            read.put(ZZZ);
             if (c == NEG) read.put(trit.get());
             else if (c == POS) trit.setValue(write.get());
         }

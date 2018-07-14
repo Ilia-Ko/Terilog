@@ -206,8 +206,10 @@ public class ControlMain {
 
         // debug only:
         if (ioSystem != null) {
+            circuit.destroy();
             try {
-                ioSystem.loadTLG(new File("/home/ilia/Java/Terilog/example/how-mem-made/Trigger.xml"));
+                lastSave = new File("/home/ilia/Java/Terilog/example/how-mem-made/Triplet.xml");
+                ioSystem.loadTLG(lastSave);
             } catch (SAXException | IOException e) {
                 e.printStackTrace();
             }
@@ -312,6 +314,11 @@ public class ControlMain {
     }
 
     // menu.file
+    @FXML private void menuNew() {
+        circuit.destroy();
+        setCircuit(new Circuit());
+        lastSave = null;
+    }
     @FXML private void menuOpen() {
         if (ioSystem == null) return;
 
@@ -331,33 +338,25 @@ public class ControlMain {
             ioSystem.loadTLG(tlg);
         } catch (IOException e) {
             e.printStackTrace();
-            // show IO alert
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.getDialogPane().setStyle(defFont);
-            alert.setResizable(true);
-            alert.setTitle(Main.TITLE);
-            alert.setHeaderText("IO Error:");
-            alert.setContentText("Failed to open " + tlg.getAbsolutePath());
-            alert.showAndWait();
+            makeAlert(Alert.AlertType.ERROR, "IO Error:", "Failed to open " + tlg.getAbsolutePath()).showAndWait();
         } catch (SAXException e) {
             e.printStackTrace();
-            // show XML alert
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.getDialogPane().setStyle(defFont);
-            alert.setResizable(true);
-            alert.setTitle(Main.TITLE);
-            alert.setHeaderText("XML error:");
-            alert.setContentText("Failed to parse " + tlg.getAbsolutePath());
-            alert.showAndWait();
+            makeAlert(Alert.AlertType.ERROR, "XML Error:", "Failed to parse " + tlg.getAbsolutePath()).showAndWait();
         }
+    }
+    @FXML private void menuReload() {
+        if (ioSystem == null) return;
+
+        if (lastSave != null) loadSavedFile();
+        else makeAlert(Alert.AlertType.INFORMATION,
+                "Reload:",
+                "There is nothing to reload yet (you ought to open something first).").showAndWait();
     }
     @FXML private void menuSave() {
         if (ioSystem == null) return;
 
-        if (lastSave == null)
-            menuSaveAs();
-        else
-            updateSavedFile();
+        if (lastSave == null) menuSaveAs();
+        else updateSavedFile();
     }
     @FXML private void menuSaveAs() {
         if (ioSystem == null) return;
@@ -736,21 +735,6 @@ public class ControlMain {
     }
 
     // xml info
-    private void updateSavedFile() {
-        try {
-            ioSystem.saveTLG(lastSave);
-        } catch (TransformerException e) {
-            e.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.getDialogPane().setStyle(defFont);
-            alert.setResizable(true);
-            alert.setTitle(Main.TITLE);
-            alert.setHeaderText("IO error:");
-            alert.setContentText("Failed to save " + lastSave.getAbsolutePath());
-            alert.showAndWait();
-            lastSave = null;
-        }
-    }
     public Element writeGridToXML(Document doc) {
         Element g = doc.createElement("grid");
         g.setAttribute("w", Integer.toString(w.intValue()));
@@ -766,6 +750,37 @@ public class ControlMain {
         Element g = (Element) list.item(0);
         w.setValue(Integer.parseInt(g.getAttribute("w")));
         h.setValue(Integer.parseInt(g.getAttribute("h")));
+    }
+
+    // utils
+    private void updateSavedFile() {
+        try {
+            ioSystem.saveTLG(lastSave);
+        } catch (TransformerException e) {
+            e.printStackTrace();
+            makeAlert(Alert.AlertType.ERROR, "IO Error:", "Failed to save " + lastSave.getAbsolutePath()).showAndWait();
+            lastSave = null;
+        }
+    }
+    private void loadSavedFile() {
+        try {
+            ioSystem.loadTLG(lastSave);
+        } catch (IOException e) {
+            e.printStackTrace();
+            makeAlert(Alert.AlertType.ERROR, "IO Error:", "Failed to open " + lastSave.getAbsolutePath()).showAndWait();
+        } catch (SAXException e) {
+            e.printStackTrace();
+            makeAlert(Alert.AlertType.ERROR, "XML Error:", "Failed to parse " + lastSave.getAbsolutePath()).showAndWait();
+        }
+    }
+    private Alert makeAlert(Alert.AlertType type, String header, String content) {
+        Alert alert = new Alert(type);
+        alert.getDialogPane().setStyle(defFont);
+        alert.setResizable(true);
+        alert.setTitle(Main.TITLE);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        return alert;
     }
 
 }
