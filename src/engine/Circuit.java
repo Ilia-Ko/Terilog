@@ -452,8 +452,8 @@ public class Circuit {
                 else if (channel == N_CH) numSoftN += qty;
             }
         }
-        public void addDiode() {
-            numDiodes++;
+        public void addDiode(int qty) {
+            numDiodes += qty;
         }
         public void addResistor(int qty) {
             numRes += qty;

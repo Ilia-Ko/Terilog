@@ -82,14 +82,20 @@ public abstract class Linear extends Component {
         for (MemCell cell : cells) cell.simulate(ctrl, clck);
     }
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
-        summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.P_CH, 5 * digits);
-        summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.N_CH, 5 * digits);
-        summary.addMOSFET(Circuit.Summary.SOFT, Circuit.Summary.P_CH, 3 * digits);
-        summary.addMOSFET(Circuit.Summary.SOFT, Circuit.Summary.N_CH, 2 * digits);
-        summary.addResistor(5 * digits);
-        summary.addInput(LogicLevel.POS, 2 * digits);
-        summary.addInput(LogicLevel.NIL, digits);
-        summary.addInput(LogicLevel.NEG, digits);
+        // triggers' surrounding
+        summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.N_CH, 2);
+        summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.P_CH, 2);
+
+        // triggers themselves (everything x3)
+        summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.N_CH, digits * 3 * 5);
+        summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.P_CH, digits * 3 * 5);
+        summary.addMOSFET(Circuit.Summary.SOFT, Circuit.Summary.N_CH, digits * 3 * 3);
+        summary.addMOSFET(Circuit.Summary.SOFT, Circuit.Summary.P_CH, digits * 3 * 2);
+        summary.addResistor(digits * 3 * 3);
+        summary.addDiode(digits * 3);
+        summary.addInput(LogicLevel.POS, digits * 3);
+        summary.addInput(LogicLevel.NIL, digits * 3);
+        summary.addInput(LogicLevel.NEG, digits * 3);
     }
 
     // xml info

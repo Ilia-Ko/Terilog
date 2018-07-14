@@ -53,7 +53,7 @@ public class Diode extends Component {
         }
     }
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
-        summary.addDiode();
+        summary.addDiode(1);
     }
 
 }
