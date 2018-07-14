@@ -203,6 +203,15 @@ public class ControlMain {
             ioSystem = null;
         }
         lastSave = null;
+
+        // debug only:
+        if (ioSystem != null) {
+            try {
+                ioSystem.loadTLG(new File("/home/ilia/Java/Terilog/example/how-mem-made/Trigger.xml"));
+            } catch (SAXException | IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
     private void renderField() {
         // configure gc
@@ -304,6 +313,8 @@ public class ControlMain {
 
     // menu.file
     @FXML private void menuOpen() {
+        if (ioSystem == null) return;
+
         // configure file chooser
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Open TLG file");
@@ -341,12 +352,16 @@ public class ControlMain {
         }
     }
     @FXML private void menuSave() {
+        if (ioSystem == null) return;
+
         if (lastSave == null)
             menuSaveAs();
         else
             updateSavedFile();
     }
     @FXML private void menuSaveAs() {
+        if (ioSystem == null) return;
+
         // configure file chooser
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Save TLG file");

@@ -87,6 +87,9 @@ public enum LogicLevel {
                 return signal;
         return null;
     }
+    @Override public String toString() {
+        return getStandardName();
+    }
 
     // useful info
     public int volts() {
@@ -105,5 +108,6 @@ public enum LogicLevel {
     // signal interaction
     public abstract boolean conflicts(LogicLevel signal);
     public abstract boolean suppresses(LogicLevel signal);
+
 
 }

@@ -36,14 +36,15 @@ public class Diode extends Component {
         LogicLevel a = anode.get();
         LogicLevel c = cathode.get();
 
-        if (a == ERR || c == ERR) {
-            anode.put(ERR);
-            cathode.put(ERR);
-        } else if (a == ZZZ && c == NEG)
+        if (a == ZZZ && c == ZZZ || a == ERR || c == ERR) {
+            // do nothing
+        } else if ((a == ZZZ || a == NEG) && c == NEG) {
             anode.put(NEG);
-        else if (a == POS && c == ZZZ)
+            cathode.put(ZZZ);
+        } else if (a == POS && (c == ZZZ || c == POS)) {
+            anode.put(ZZZ);
             cathode.put(POS);
-        else if (a.volts() > c.volts()) {
+        } else if (a.volts() > c.volts()) {
             anode.put(ERR);
             cathode.put(ERR);
         } else {
