@@ -1,8 +1,8 @@
 package gui.control;
 
 import engine.LogicLevel;
-import engine.components.memory.Linear;
-import engine.components.memory.MemCell;
+import engine.components.memory.linear.Linear;
+import engine.components.memory.linear.MemCell;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;

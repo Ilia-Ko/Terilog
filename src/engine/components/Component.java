@@ -23,12 +23,12 @@ import java.util.HashSet;
 public abstract class Component implements Selectable {
 
     private Pane root;
-    private ControlMain control;
     private Rotate rotate;
     private Scale scale;
     private HashSet<Pin> pins;
     private BooleanProperty isSelected;
     private HistoricalEvent toBeOrNotToBe;
+    private ControlMain control;
     protected ContextMenu menu;
 
     // initialization
@@ -74,6 +74,9 @@ public abstract class Component implements Selectable {
             return new Pane();
         }
     }
+    protected HashSet<Pin> initPins() {
+        return new HashSet<>();
+    }
     protected ContextMenu buildContextMenu() {
         // move
         MenuItem itemMove = new MenuItem("Move");
@@ -109,9 +112,6 @@ public abstract class Component implements Selectable {
         itemMirrorY.setOnAction(event -> mirrorY());
 
         return new ContextMenu(itemMove, itemDelete, itemRotCW, itemRotCCW, itemMirrorX, itemMirrorY);
-    }
-    protected HashSet<Pin> initPins() {
-        return new HashSet<>();
     }
 
     // layout mode

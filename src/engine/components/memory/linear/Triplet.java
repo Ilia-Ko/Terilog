@@ -1,4 +1,4 @@
-package engine.components.memory;
+package engine.components.memory.linear;
 
 import gui.control.ControlMain;
 import org.w3c.dom.Element;

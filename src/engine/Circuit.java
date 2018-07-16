@@ -9,7 +9,12 @@ import engine.components.logic.one_arg.PTI;
 import engine.components.logic.one_arg.STI;
 import engine.components.logic.two_arg.*;
 import engine.components.lumped.*;
-import engine.components.memory.*;
+import engine.components.memory.Trigger;
+import engine.components.memory.flat.RAM_6_6;
+import engine.components.memory.linear.Dword;
+import engine.components.memory.linear.Triplet;
+import engine.components.memory.linear.Tryte;
+import engine.components.memory.linear.Word;
 import engine.components.mosfets.HardN;
 import engine.components.mosfets.HardP;
 import engine.components.mosfets.SoftN;
@@ -179,6 +184,7 @@ public class Circuit {
                     case "trigger":
                         add(new Trigger(control, comp));
                         break;
+                    // memory.linear
                     case "triplet":
                         add(new Triplet(control, comp));
                         break;
@@ -190,6 +196,10 @@ public class Circuit {
                         break;
                     case "dword":
                         add(new Dword(control, comp));
+                        break;
+                    // memory.flat
+                    case "ram_6_6":
+                        add(new RAM_6_6(control, comp));
                         break;
                     default:
                         System.out.printf("WARNING: unknown component of class %s.\n", attrClass);

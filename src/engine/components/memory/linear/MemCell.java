@@ -1,4 +1,4 @@
-package engine.components.memory;
+package engine.components.memory.linear;
 
 import engine.LogicLevel;
 import engine.components.Pin;

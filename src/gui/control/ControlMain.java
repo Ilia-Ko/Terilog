@@ -10,7 +10,12 @@ import engine.components.logic.one_arg.PTI;
 import engine.components.logic.one_arg.STI;
 import engine.components.logic.two_arg.*;
 import engine.components.lumped.*;
-import engine.components.memory.*;
+import engine.components.memory.Trigger;
+import engine.components.memory.flat.RAM_6_6;
+import engine.components.memory.linear.Dword;
+import engine.components.memory.linear.Triplet;
+import engine.components.memory.linear.Tryte;
+import engine.components.memory.linear.Word;
 import engine.components.mosfets.HardN;
 import engine.components.mosfets.HardP;
 import engine.components.mosfets.SoftN;
@@ -324,7 +329,7 @@ public class ControlMain {
 
         // configure file chooser
         FileChooser chooser = new FileChooser();
-        chooser.setTitle("Open TLG file");
+        chooser.setTitle("Open Terilog Circuit XML file");
         chooser.setInitialDirectory(new File(System.getProperty("user.home")));
         chooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("XML files", "*.xml"));
 
@@ -530,6 +535,7 @@ public class ControlMain {
         flyComp = new Trigger(this);
         holdingComp = true;
     }
+    // menu.add.memory.linear
     @FXML private void menuTriplet() {
         breakInsertion();
         flyComp = new Triplet(this);
@@ -548,6 +554,12 @@ public class ControlMain {
     @FXML private void menuDword() {
         breakInsertion();
         flyComp = new Dword(this);
+        holdingComp = true;
+    }
+    // menu.add.memory.flat
+    @FXML private void menuRAM6_6() {
+        breakInsertion();
+        flyComp = new RAM_6_6(this);
         holdingComp = true;
     }
     // menu.add.wire
@@ -717,6 +729,9 @@ public class ControlMain {
     public Pane getParent() {
         return parent;
     }
+    public Stage getStage() {
+        return stage;
+    }
     public IntegerProperty getMouseX() {
         return mouseX;
     }
@@ -773,7 +788,7 @@ public class ControlMain {
             makeAlert(Alert.AlertType.ERROR, "XML Error:", "Failed to parse " + lastSave.getAbsolutePath()).showAndWait();
         }
     }
-    private Alert makeAlert(Alert.AlertType type, String header, String content) {
+    public Alert makeAlert(Alert.AlertType type, String header, String content) {
         Alert alert = new Alert(type);
         alert.getDialogPane().setStyle(defFont);
         alert.setResizable(true);

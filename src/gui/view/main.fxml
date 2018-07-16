@@ -78,10 +78,16 @@
                 <Menu text="Memory">
 
                     <MenuItem text="Trigger" accelerator="T" onAction="#menuTrigger"/>
-                    <MenuItem text="Triplet" onAction="#menuTriplet"/>
-                    <MenuItem text="Tryte" onAction="#menuTryte"/>
-                    <MenuItem text="Word" onAction="#menuWord"/>
-                    <MenuItem text="Dword" onAction="#menuDword"/>
+                    <Menu text="Linear">
+                        <MenuItem text="Triplet" onAction="#menuTriplet"/>
+                        <MenuItem text="Tryte" onAction="#menuTryte"/>
+                        <MenuItem text="Word" onAction="#menuWord"/>
+                        <MenuItem text="Dword" onAction="#menuDword"/>
+                    </Menu>
+                    <Menu text="Flat">
+                        <MenuItem text="RAM 6x6" onAction="#menuRAM6_6"/>
+                    </Menu>
+
 
                 </Menu>
                 <MenuItem text="Wire" accelerator="W" onAction="#menuWire"/>

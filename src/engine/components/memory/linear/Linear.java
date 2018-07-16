@@ -1,4 +1,4 @@
-package engine.components.memory;
+package engine.components.memory.linear;
 
 import engine.Circuit;
 import engine.LogicLevel;
@@ -23,10 +23,12 @@ public abstract class Linear extends Component {
     private int digits;
     private Pin control, clock;
     private MemCell[] cells;
+
     // initialization
     Linear(ControlMain control, int digits) {
         super(control);
         this.digits = digits;
+
         cells = new MemCell[digits];
         for (int i = 0; i < digits; i++) cells[i] = new MemCell(this, i);
     }
@@ -37,7 +39,7 @@ public abstract class Linear extends Component {
     }
     @Override protected Pane loadContent() {
         try {
-            String location = "view/components/memory/" + getClass().getSimpleName().toLowerCase() + ".fxml";
+            String location = "view/components/memory/linear/" + getClass().getSimpleName().toLowerCase() + ".fxml";
             return FXMLLoader.load(Main.class.getResource(location));
         } catch (IOException e) {
             e.printStackTrace();
@@ -74,7 +76,7 @@ public abstract class Linear extends Component {
         return menu;
     }
 
-    // simulate
+    // simulation
     @Override public void simulate() {
         LogicLevel ctrl = control.get();
         LogicLevel clck = clock.get();

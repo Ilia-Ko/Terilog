@@ -109,5 +109,4 @@ public enum LogicLevel {
     public abstract boolean conflicts(LogicLevel signal);
     public abstract boolean suppresses(LogicLevel signal);
 
-
 }

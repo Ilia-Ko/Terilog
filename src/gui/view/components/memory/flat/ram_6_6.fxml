@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--suppress ALL -->
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.*?>
+<?import java.lang.*?>
+<Pane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" prefWidth="7" prefHeight="7">
+
+    <Rectangle strokeWidth="0.1" stroke="black" fill="lightgray" x="0" y="0" width="7" height="7"/>
+    <Rectangle stroke="transparent" fill="white" x="6" y="5" width="1" height="2"/>
+
+    <!-- R -->
+    <Polygon stroke="transparent" fill="black">
+        <points>
+            <Double fx:value="0.241"/><Double fx:value="2.776"/>
+            <Double fx:value="1.690"/><Double fx:value="2.776"/>
+            <Double fx:value="1.690"/><Double fx:value="3.500"/>
+            <Double fx:value="1.931"/><Double fx:value="4.224"/>
+            <Double fx:value="1.207"/><Double fx:value="4.224"/>
+            <Double fx:value="0.966"/><Double fx:value="3.500"/>
+            <Double fx:value="0.966"/><Double fx:value="4.224"/>
+            <Double fx:value="0.241"/><Double fx:value="4.224"/>
+            <Double fx:value="0.241"/><Double fx:value="2.776"/>
+        </points>
+    </Polygon>
+
+    <!-- A -->
+    <Polygon stroke="transparent" fill="black">
+        <points>
+            <Double fx:value="2.172"/><Double fx:value="2.776"/>
+            <Double fx:value="3.379"/><Double fx:value="2.776"/>
+            <Double fx:value="3.862"/><Double fx:value="4.224"/>
+            <Double fx:value="3.138"/><Double fx:value="4.224"/>
+            <Double fx:value="2.897"/><Double fx:value="3.500"/>
+            <Double fx:value="2.897"/><Double fx:value="4.224"/>
+            <Double fx:value="2.172"/><Double fx:value="4.224"/>
+            <Double fx:value="2.172"/><Double fx:value="2.776"/>
+        </points>
+    </Polygon>
+
+    <!-- M -->
+    <Polygon stroke="transparent" fill="black">
+        <points>
+            <Double fx:value="4.103"/><Double fx:value="2.776"/>
+            <Double fx:value="5.310"/><Double fx:value="2.776"/>
+            <Double fx:value="5.672"/><Double fx:value="3.862"/>
+            <Double fx:value="6.034"/><Double fx:value="2.776"/>
+            <Double fx:value="6.759"/><Double fx:value="2.776"/>
+            <Double fx:value="6.759"/><Double fx:value="4.224"/>
+            <Double fx:value="6.034"/><Double fx:value="4.224"/>
+            <Double fx:value="6.034"/><Double fx:value="3.500"/>
+            <Double fx:value="5.793"/><Double fx:value="4.224"/>
+            <Double fx:value="5.069"/><Double fx:value="4.224"/>
+            <Double fx:value="4.828"/><Double fx:value="3.500"/>
+            <Double fx:value="4.828"/><Double fx:value="4.224"/>
+            <Double fx:value="4.103"/><Double fx:value="4.224"/>
+            <Double fx:value="4.103"/><Double fx:value="2.776"/>
+        </points>
+    </Polygon>
+
+</Pane>
