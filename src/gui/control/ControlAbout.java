@@ -103,14 +103,19 @@ public class ControlAbout {
         rootComp.getChildren().add(compArith);
 
         // about: comp.memory
-        TreeItem<Label> compMemory = newItem("Memory", "comp/memory/memory.html");
-        TreeItem<Label> compMemoryTrigger = newItem("Trigger", "comp/memory/trigger.html");
-        TreeItem<Label> compMemoryTriplet = newItem("", "comp/memory/triplet.html");
-        TreeItem<Label> compMemoryTryte = newItem("", "comp/memory/tryte.html");
-        TreeItem<Label> compMemoryWord = newItem("", "comp/memory/word.html");
-        TreeItem<Label> compMemoryDword = newItem("", "comp/memory/dword.html");
-        compMemory.getChildren().addAll(compMemoryTrigger, compMemoryTriplet, compMemoryTryte, compMemoryWord, compMemoryDword);
-        rootComp.getChildren().add(compMemory);
+        TreeItem<Label> compMem = newItem("Memory", "comp/memory/memory.html");
+        TreeItem<Label> compMemTrigger = newItem("Trigger", "comp/memory/trigger.html");
+        TreeItem<Label> compMemLin = newItem("Linear", "comp/memory/linear/linear.html");
+        TreeItem<Label> compMemLinTriplet = newItem("Triplet", "comp/memory/linear/triplet.html");
+        TreeItem<Label> compMemLinTryte = newItem("Tryte", "comp/memory/linear/tryte.html");
+        TreeItem<Label> compMemLinWord = newItem("Word", "comp/memory/linear/word.html");
+        TreeItem<Label> compMemLinDword = newItem("Dword", "comp/memory/linear/dword.html");
+        TreeItem<Label> compMemFlat = newItem("Flat", "comp/memory/flat/flat.html");
+        TreeItem<Label> compMemFlatRAM_6_6 = newItem("RAM 6x6", "comp/memory/flat/ram_6_6.html");
+        compMemLin.getChildren().addAll(compMemLinTriplet, compMemLinTryte, compMemLinWord, compMemLinDword);
+        compMemFlat.getChildren().add(compMemFlatRAM_6_6);
+        compMem.getChildren().addAll(compMemTrigger, compMemLin, compMemFlat);
+        rootComp.getChildren().add(compMem);
 
         // setup tree
         rootGlob.setExpanded(true);
