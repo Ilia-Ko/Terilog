@@ -58,7 +58,7 @@ public class TerilogIO {
         for (int i = 0; i < length; i++) {
             LogicLevel[] value = Flat.decode(data[i], unitSize);
             StringBuilder number = new StringBuilder();
-            for (int j = unitSize - 1; j >= 0; j--) number.append(value[i].getDigitCharacter());
+            for (int j = unitSize - 1; j >= 0; j--) number.append(value[j].getDigitCharacter());
             writer.write(number.toString());
             if ((i + 1) % 27 == 0) writer.newLine();
             else writer.write(' ');
