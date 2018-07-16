@@ -148,7 +148,7 @@ public abstract class Component implements Selectable {
 
     // selection
     @Override public boolean checkSelection(Rectangle sel) {
-        isSelected.setValue(sel.intersects(root.getBoundsInParent()));
+        isSelected.setValue(sel.getBoundsInParent().contains(root.getBoundsInParent()));
         return isSelected.get();
     }
     @Override public void breakSelection() {

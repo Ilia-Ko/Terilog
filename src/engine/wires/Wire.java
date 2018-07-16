@@ -121,7 +121,7 @@ public class Wire extends Line implements Connectible, Selectable {
 
     // selection
     @Override public boolean checkSelection(Rectangle sel) {
-        isSelected.setValue(sel.intersects(getBoundsInParent()));
+        isSelected.setValue(sel.getBoundsInParent().contains(getBoundsInParent()));
         return isSelected.get();
     }
     @Override public void breakSelection() {

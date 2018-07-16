@@ -205,15 +205,15 @@ public class ControlMain {
         lastSave = null;
 
         // debug only:
-        if (ioSystem != null) {
-            circuit.destroy();
-            try {
-                lastSave = new File("/home/ilia/Java/Terilog/example/how-mem-made/Triplet.xml");
-                ioSystem.loadTLG(lastSave);
-            } catch (SAXException | IOException e) {
-                e.printStackTrace();
-            }
-        }
+//        if (ioSystem != null) {
+//            circuit.destroy();
+//            try {
+//                lastSave = new File("/home/ilia/Java/Terilog/example/memory/Triplet.xml");
+//                ioSystem.loadTLG(lastSave);
+//            } catch (SAXException | IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
     }
     private void renderField() {
         // configure gc
