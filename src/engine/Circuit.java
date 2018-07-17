@@ -419,9 +419,9 @@ public class Circuit {
 
                 // check whether stabilization process is catching up with clock
                 if (!isReady.get()) {
+                    isSimRunning = false;
                     while (!isReady.get()); // if it isn't - stop the simulation
                     isStableStateFound = false;
-                    isSimRunning = false;
                     Platform.runLater(ifNotCatchingUp);
                 }
             }

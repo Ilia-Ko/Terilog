@@ -30,7 +30,7 @@ import static engine.LogicLevel.*;
 
 public class Counter extends Component {
 
-    private static final int MIN_VALUE = -364;
+    public static final int MIN_VALUE = -364;
 
     private Pin reset, clock;
     private Pin[] read;

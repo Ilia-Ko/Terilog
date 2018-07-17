@@ -5,6 +5,7 @@ import engine.LogicLevel;
 import engine.TerilogIO;
 import engine.components.Component;
 import engine.components.Pin;
+import engine.components.arithmetic.Counter;
 import engine.connectivity.Selectable;
 import gui.Main;
 import gui.control.ControlMain;
@@ -147,7 +148,7 @@ public abstract class Flat extends Component {
         LogicLevel[] in = new LogicLevel[unitLength];
 
         for (int i = 0; i < addressLen; i++) addr[i] = address[i].get();
-        int address = (int) encode(addr, addressLen);
+        int address = (int) encode(addr, addressLen) - Counter.MIN_VALUE;
 
         if (clck == POS) {
             if (ctrl == POS) {
@@ -203,9 +204,9 @@ public abstract class Flat extends Component {
         assert digits.length >= size;
 
         long res = 0L;
-        for (int i = 0; i < size; i++) {
-            res += (long) digits[i].volts();
+        for (int i = size - 1; i >= 0; i--) {
             res *= 3L;
+            res += (long) digits[i].volts();
         }
 
         return res;
