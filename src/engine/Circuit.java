@@ -2,6 +2,7 @@ package engine;
 
 import engine.components.Component;
 import engine.components.Pin;
+import engine.components.arithmetic.Counter;
 import engine.components.arithmetic.FullAdder;
 import engine.components.arithmetic.HalfAdder;
 import engine.components.logic.one_arg.NTI;
@@ -69,6 +70,7 @@ public class Circuit {
     // construction
     private StringProperty name;
     private HashSet<Component> components;
+    private HashSet<Clock> clocks;
     private ArrayList<Wire> wires;
     private HashSet<Pin> pins;
     private HashSet<Selectable> selected;
@@ -95,6 +97,7 @@ public class Circuit {
 
         // arrays
         components = new HashSet<>();
+        clocks = new HashSet<>();
         wires = new ArrayList<>();
         pins = new HashSet<>();
         nodes = new HashSet<>();
@@ -180,6 +183,9 @@ public class Circuit {
                     case "fulladder":
                         add(new FullAdder(control, comp));
                         break;
+                    case "counter":
+                        add(new Counter(control, comp));
+                        break;
                     // memory
                     case "trigger":
                         add(new Trigger(control, comp));
@@ -224,11 +230,13 @@ public class Circuit {
     }
     public void add(Component comp) {
         components.add(comp);
+        if (comp instanceof Clock) clocks.add((Clock) comp);
         pins.addAll(comp.getPins());
         needsParsing = true;
     }
     public void del(Component comp) {
         components.remove(comp);
+        if (comp instanceof Clock) clocks.remove(comp);
         needsParsing = true;
     }
     public void destroy() {
@@ -280,6 +288,18 @@ public class Circuit {
         if (hasSelected) {
             selected.forEach(Selectable::delete);
             hasSelected = false;
+        }
+    }
+    public void selCopy() {
+        if (hasSelected) {
+            HashSet<Selectable> temp = new HashSet<>();
+            selected.forEach(sel -> {
+                temp.add(sel.copy());
+                sel.breakSelection();
+            });
+            selected.clear();
+            selected = temp;
+            selMove();
         }
     }
 
@@ -359,6 +379,10 @@ public class Circuit {
     public void doStepOver() {
         if (needsParsing) parse();
 
+        // simulate clock
+        for (Clock clock : clocks) clock.nextImpulse();
+        isStableStateFound = false;
+
         // simulate
         int attempts = 0;
         while (attempts++ <= maxSimDepth.get() && !isStableStateFound)
@@ -385,6 +409,7 @@ public class Circuit {
                     isReady.setValue(false);
                     isStableStateFound = false;
                     int attempts = 0;
+                    for (Clock clock : clocks) clock.nextImpulse();
                     while (isSimRunning && attempts++ < maxSimDepth.get() && !isStableStateFound) step();
                     isReady.setValue(true); // mark stabilization finished
                 });
@@ -396,6 +421,7 @@ public class Circuit {
                 if (!isReady.get()) {
                     while (!isReady.get()); // if it isn't - stop the simulation
                     isStableStateFound = false;
+                    isSimRunning = false;
                     Platform.runLater(ifNotCatchingUp);
                 }
             }
@@ -443,6 +469,7 @@ public class Circuit {
         private int numComps, numWires;
         private int numInputs, numOutputs;
         private int numVoltPos, numVoltNil, numVoltNeg;
+        private int numRAMs;
         private boolean needsClock;
         private String info;
 
@@ -471,6 +498,9 @@ public class Circuit {
         public void takeClockIntoAccount() {
             needsClock = true;
         }
+        public void takeRAMIntoAccount() {
+            numRAMs++;
+        }
         public void addInput(LogicLevel sig, int qty) {
             numInputs += qty;
             if (sig == LogicLevel.POS) numVoltPos += qty;
@@ -495,6 +525,7 @@ public class Circuit {
             info += String.format("Inputs:\t\t\t%d\n", numInputs);
             info += String.format("Outputs:\t\t%d\n", numOutputs);
             info += needsClock ? "The circuit uses clock.\n" : "The circuit does not use clock.\n";
+            info += numRAMs > 0 ? String.format("The circuit uses %d RAM block(s).\n", numRAMs) : "The circuit does not use RAM.\n";
             // percentage
             double numVolts = numVoltNeg + numVoltNil + numVoltPos;
             double perNeg = 100.0 * numVoltNeg / numVolts;

@@ -4,6 +4,10 @@ import engine.Circuit;
 import engine.LogicLevel;
 import engine.components.Component;
 import engine.components.Pin;
+import engine.components.logic.one_arg.STI;
+import engine.components.logic.two_arg.CKEY;
+import engine.components.logic.two_arg.OKEY;
+import engine.connectivity.Selectable;
 import gui.Main;
 import gui.control.ControlMain;
 import javafx.beans.property.ObjectProperty;
@@ -23,7 +27,7 @@ import static engine.LogicLevel.*;
 public class Trigger extends Component {
 
     private ObjectProperty<LogicLevel> trit; // trigger stores the single trit of memory
-    private Pin read, write, control;
+    private Pin read, write0, write1, control;
     private ToggleGroup toggle;
 
     // initialization
@@ -36,7 +40,7 @@ public class Trigger extends Component {
         // init memory
         trit = new SimpleObjectProperty<>();
         trit.addListener((observable, prevTrit, newTrit) -> body.setFill(newTrit.colour()));
-        trit.setValue(LogicLevel.ZZZ);
+        setMemory(ZZZ);
     }
     public Trigger(ControlMain control, Element data) {
         this(control);
@@ -64,7 +68,7 @@ public class Trigger extends Component {
         toggle.getToggles().addAll(items);
         toggle.selectToggle(items[3]);
 
-        Menu menuSet = new Menu("Memorize");
+        Menu menuSet = new Menu("Set trit");
         menuSet.getItems().addAll(items);
 
         ContextMenu menu = super.buildContextMenu();
@@ -72,13 +76,15 @@ public class Trigger extends Component {
         return menu;
     }
     @Override protected HashSet<Pin> initPins() {
-        write = new Pin(this, true, 0, 2);
+        write0 = new Pin(this, true, 0, 1);
+        write1 = new Pin(this, true, 0, 3);
         read = new Pin(this, false, 4, 2);
-        control = new Pin(this, true, 2, 0);
+        control = new Pin(this, true, 2, 4);
 
         HashSet<Pin> pins = new HashSet<>();
         pins.add(read);
-        pins.add(write);
+        pins.add(write0);
+        pins.add(write1);
         pins.add(control);
         return pins;
     }
@@ -89,22 +95,31 @@ public class Trigger extends Component {
 
         if (c == ERR) {
             setMemory(ERR);
-            read.put(ERR);
         } else {
-            read.put(ZZZ);
-            if (c == NEG) read.put(trit.get());
-            else if (c == POS) trit.setValue(write.get());
+            if (c == POS) setMemory(write0.get());
+            else if (c == NEG) setMemory(write1.get());
         }
+        read.put(trit.get());
     }
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
-        summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.P_CH, 5);
-        summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.N_CH, 5);
-        summary.addMOSFET(Circuit.Summary.SOFT, Circuit.Summary.P_CH, 3);
-        summary.addMOSFET(Circuit.Summary.SOFT, Circuit.Summary.N_CH, 2);
+        countdown(summary);
+    }
+    public static void countdown(Circuit.Summary summary) {
+        STI.countdown(summary);
+        STI.countdown(summary);
+        CKEY.countdown(summary);
+        CKEY.countdown(summary);
+        OKEY.countdown(summary);
+        OKEY.countdown(summary);
         summary.addResistor(5);
-        summary.addInput(LogicLevel.POS, 2);
-        summary.addInput(LogicLevel.NIL, 1);
-        summary.addInput(LogicLevel.NEG, 1);
+        summary.addDiode(1);
+        summary.addInput(POS, 1);
+        summary.addInput(NIL, 1);
+        summary.addInput(NEG, 1);
+        summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.P_CH, 1);
+        summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.N_CH, 1);
+        summary.addMOSFET(Circuit.Summary.SOFT, Circuit.Summary.P_CH, 2);
+        summary.addMOSFET(Circuit.Summary.SOFT, Circuit.Summary.N_CH, 1);
     }
 
     private void setMemory(LogicLevel mem) {
@@ -127,6 +142,15 @@ public class Trigger extends Component {
             System.out.printf("WARNING: unknown signal name '%s'. Using default Z value.\n", memAttr);
         else
             setMemory(sig);
+    }
+
+    @Override public Selectable copy() {
+        Trigger copy = (Trigger) super.copy();
+        Circle body = (Circle) copy.getRoot().lookup("#body");
+        copy.trit = new SimpleObjectProperty<>();
+        copy.trit.addListener((observable, prevTrit, newTrit) -> body.setFill(newTrit.colour()));
+        copy.setMemory(trit.get());
+        return copy;
     }
 
 }

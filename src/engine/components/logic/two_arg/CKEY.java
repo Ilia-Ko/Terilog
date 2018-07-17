@@ -32,11 +32,17 @@ public class CKEY extends Gate2to1 {
     }
 
     // simulation
+    @Override public void simulate() {
+        out.put(function(inA.get(), inB.get()));
+    }
     @Override LogicLevel function(LogicLevel a, LogicLevel b) {
         if (b == POS) return a;
         else return ZZZ;
     }
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
+        countdown(summary);
+    }
+    public static void countdown(Circuit.Summary summary) {
         summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.P_CH, 1);
         summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.N_CH, 1);
     }

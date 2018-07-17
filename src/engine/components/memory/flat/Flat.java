@@ -5,6 +5,7 @@ import engine.LogicLevel;
 import engine.TerilogIO;
 import engine.components.Component;
 import engine.components.Pin;
+import engine.connectivity.Selectable;
 import gui.Main;
 import gui.control.ControlMain;
 import javafx.fxml.FXMLLoader;
@@ -28,7 +29,7 @@ public abstract class Flat extends Component {
     private int addressLen, unitLength, memorySize;
     private long[] data;
     // pins
-    private Pin control, clock;
+    private Pin control, fill, clock;
     private Pin[] address, read, write;
     // io
     private File dataFile;
@@ -63,8 +64,10 @@ public abstract class Flat extends Component {
         HashSet<Pin> pins = new HashSet<>();
 
         control = new Pin(this, true, unitLength + 1, 1);
+        fill = new Pin(this, true, unitLength + 1, 2);
         clock = new Pin(this, true, unitLength + 1, addressLen);
         pins.add(control);
+        pins.add(fill);
         pins.add(clock);
 
         address = new Pin[addressLen];
@@ -138,6 +141,7 @@ public abstract class Flat extends Component {
     // simulation
     @Override public void simulate() {
         LogicLevel ctrl = control.get();
+        LogicLevel fill = this.fill.get();
         LogicLevel clck = clock.get();
         LogicLevel[] addr = new LogicLevel[addressLen];
         LogicLevel[] in = new LogicLevel[unitLength];
@@ -145,22 +149,20 @@ public abstract class Flat extends Component {
         for (int i = 0; i < addressLen; i++) addr[i] = address[i].get();
         int address = (int) encode(addr, addressLen);
 
-        for (int i = 0; i < unitLength; i++) in[i] = write[i].get();
-        long input = encode(in, unitLength);
-
-        for (Pin pin : read) pin.put(ZZZ);
-        if (ctrl == ERR || clck == ERR)
-            for (Pin pin : read) pin.put(ERR);
-        else if (clck == POS) {
-            if (ctrl == POS) data[address] = input;
-            else if (ctrl == NEG) {
-                LogicLevel[] out = decode(data[address], unitLength);
-                for (int i = 0; i < unitLength; i++) read[i].put(out[i]);
+        if (clck == POS) {
+            if (ctrl == POS) {
+                for (int i = 0; i < unitLength; i++) in[i] = write[i].get();
+                data[address] = encode(in, unitLength);
+            } else if (ctrl == NEG) {
+                for (int i = 0; i < unitLength; i++) in[i] = fill;
+                data[address] = encode(in, unitLength);
             }
         }
+        LogicLevel[] out = decode(data[address], unitLength);
+        for (int i = 0; i < unitLength; i++) read[i].put(out[i]);
     }
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
-
+        summary.takeRAMIntoAccount();
     }
 
     // xml info
@@ -183,6 +185,17 @@ public abstract class Flat extends Component {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override public Selectable copy() {
+        Flat copy = (Flat) super.copy();
+        copy.addressLen = addressLen;
+        copy.unitLength = unitLength;
+        copy.memorySize = memorySize;
+        copy.data = new long[memorySize];
+        copy.dataFile = null;
+        copy.getPins().addAll(copy.makePins());
+        return copy;
     }
 
     // utils

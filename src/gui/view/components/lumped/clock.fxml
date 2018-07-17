@@ -8,7 +8,7 @@
 
     <Rectangle strokeWidth="0.1" stroke="black" fill="lightgray" width="4" height="4" arcHeight="1" arcWidth="1"/>
 
-    <Polyline strokeWidth="0.1" stroke="black">
+    <Polyline fx:id="curve" strokeWidth="0.1" stroke="black">
         <points>
             <Double fx:value="1"/><Double fx:value="3"/>
             <Double fx:value="1"/><Double fx:value="2"/>

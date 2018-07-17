@@ -2,6 +2,7 @@ package engine.components.logic.one_arg;
 
 import engine.Circuit;
 import engine.LogicLevel;
+import engine.connectivity.Selectable;
 import gui.control.ControlMain;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -62,19 +63,22 @@ public class STI extends Gate1to1 {
     }
 
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
-        summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.P_CH, 1);
-        summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.N_CH, 1);
+        countdown(summary);
         if (convertNILToZZZ.not().get()) {
             summary.addResistor(1);
             summary.addInput(LogicLevel.NIL, 1);
         }
+    }
+    public static void countdown(Circuit.Summary summary) {
+        summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.P_CH, 1);
+        summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.N_CH, 1);
     }
 
     // simulation
     @Override protected LogicLevel function(LogicLevel a) {
         int v = a.volts();
         v *= -1;
-        if (v == 0 && convertNILToZZZ.get()) v = 2;
+        if (v == 0 && convertNILToZZZ.get()) return LogicLevel.ZZZ;
         return LogicLevel.parseValue(v);
     }
 
@@ -100,6 +104,20 @@ public class STI extends Gate1to1 {
                 System.out.printf("WARNING: unknown STI mode '%s'. Using default 0 -> 0.\n", modeAttr);
                 break;
         }
+    }
+
+    @Override public Selectable copy() {
+        STI copy = (STI) super.copy();
+        Polygon body = (Polygon) copy.getRoot().lookup("#body");
+        Circle head = (Circle) copy.getRoot().lookup("#head");
+        copy.convertNILToZZZ = new SimpleBooleanProperty(false);
+        copy.convertNILToZZZ.addListener(((observable, oldValue, newValue) -> {
+            Color colour = newValue ? Color.LIGHTGRAY : Color.LIGHTGREEN;
+            body.setFill(colour);
+            head.setFill(colour);
+        }));
+        copy.convertNILToZZZ.setValue(convertNILToZZZ.getValue());
+        return copy;
     }
 
 }

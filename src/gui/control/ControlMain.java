@@ -3,6 +3,7 @@ package gui.control;
 import engine.Circuit;
 import engine.TerilogIO;
 import engine.components.Component;
+import engine.components.arithmetic.Counter;
 import engine.components.arithmetic.FullAdder;
 import engine.components.arithmetic.HalfAdder;
 import engine.components.logic.one_arg.NTI;
@@ -72,6 +73,7 @@ public class ControlMain {
     @FXML private MenuItem menuZoomIn, menuZoomOut;
     @FXML private MenuItem menuUndo, menuRedo;
     @FXML private Label lblPoint; // display snapped mouse position
+    @FXML private ProgressIndicator indicator;
 
     // dimensions
     private DoubleProperty p; // in pixels
@@ -182,7 +184,9 @@ public class ControlMain {
         itemMove.setOnAction(action -> circuit.selMove());
         MenuItem itemDel = new MenuItem("Remove");
         itemDel.setOnAction(action -> circuit.selDel());
-        selMenu = new ContextMenu(itemMove, itemDel);
+        MenuItem itemCopy = new MenuItem("Copy");
+        itemCopy.setOnAction(action -> circuit.selCopy());
+        selMenu = new ContextMenu(itemMove, itemDel, itemCopy);
         parent.setOnContextMenuRequested(mouse -> {
             if (circuit.hasSelectedItems())
                 selMenu.show(parent, mouse.getScreenX(), mouse.getScreenY());
@@ -192,12 +196,13 @@ public class ControlMain {
         histUndo = new Stack<>();
         histRedo = new Stack<>();
 
-        // bind menus
+        // some gui bindings
         menuParse.disableProperty().bind(menuRun.disableProperty());
         menuClear.disableProperty().bind(menuRun.disableProperty());
         menuStepInto.disableProperty().bind(menuRun.disableProperty());
         menuStepOver.disableProperty().bind(menuRun.disableProperty());
         menuSettings.disableProperty().bind(menuRun.disableProperty());
+        indicator.visibleProperty().bind(menuRun.disableProperty());
 
         // init circuit
         setCircuit(new Circuit());
@@ -208,17 +213,6 @@ public class ControlMain {
             ioSystem = null;
         }
         lastSave = null;
-
-        // debug only:
-//        if (ioSystem != null) {
-//            circuit.destroy();
-//            try {
-//                lastSave = new File("/home/ilia/Java/Terilog/example/memory/Triplet.xml");
-//                ioSystem.loadTLG(lastSave);
-//            } catch (SAXException | IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
     }
     private void renderField() {
         // configure gc
@@ -273,8 +267,7 @@ public class ControlMain {
                 flyWire.confirm();
                 holdingWire = false;
             } else if (holdingComp) {
-                flyComp.confirm();
-                holdingComp = false;
+                flyComp.copy();
             } else if (circuit.isSelectionMoving()) circuit.selStop();
         }
     }
@@ -529,6 +522,11 @@ public class ControlMain {
         flyComp = new FullAdder(this);
         holdingComp = true;
     }
+    @FXML private void menuCounter() {
+        breakInsertion();
+        flyComp = new Counter(this);
+        holdingComp = true;
+    }
     // menu.add.memory
     @FXML private void menuTrigger() {
         breakInsertion();
@@ -610,13 +608,14 @@ public class ControlMain {
     }
     @FXML private void menuRun() {
         circuit.doRun(() -> {
+            menuStop();
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.getDialogPane().setStyle(defFont);
             alert.setResizable(true);
             alert.setTitle(Main.TITLE);
             alert.setHeaderText("Simulation Run");
             alert.setContentText("Simulation failed to catch up with the clock. Try to decrease the simulation frequency" +
-                    "and check that the circuit can be theoretically stabilized (do Step Over).");
+                    " and check that the circuit can be theoretically stabilized (do Step Over).");
             alert.showAndWait();
         });
         menuRun.setDisable(true);

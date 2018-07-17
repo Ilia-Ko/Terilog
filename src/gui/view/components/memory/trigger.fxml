@@ -2,30 +2,32 @@
 
 <!--suppress ALL -->
 <?import javafx.scene.layout.Pane?>
-<?import javafx.scene.shape.Circle?>
-<?import javafx.scene.shape.Line?>
-<?import javafx.scene.shape.Polygon?>
+<?import javafx.scene.shape.*?>
 <?import java.lang.*?>
 <Pane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
 
     <Polygon strokeWidth="0.1" stroke="black" fill="lightgray">
         <points>
-            <Double fx:value="0.0"/><Double fx:value="0.0"/>
-            <Double fx:value="1.0"/><Double fx:value="0.0"/>
-            <Double fx:value="1.0"/><Double fx:value="0.4"/>
-            <Double fx:value="3.0"/><Double fx:value="0.4"/>
-            <Double fx:value="3.0"/><Double fx:value="0.0"/>
-            <Double fx:value="4.0"/><Double fx:value="0.0"/>
-            <Double fx:value="4.0"/><Double fx:value="4.0"/>
-            <Double fx:value="0.0"/><Double fx:value="4.0"/>
-            <Double fx:value="0.0"/><Double fx:value="3.0"/>
-            <Double fx:value="0.4"/><Double fx:value="2.0"/>
-            <Double fx:value="0.0"/><Double fx:value="1.0"/>
+            <Double fx:value="0"/><Double fx:value="0"/>
+            <Double fx:value="3"/><Double fx:value="0"/>
+            <Double fx:value="4"/><Double fx:value="1"/>
+            <Double fx:value="4"/><Double fx:value="3"/>
+            <Double fx:value="3"/><Double fx:value="4"/>
+            <Double fx:value="2.5"/><Double fx:value="4"/>
+            <Double fx:value="2.5"/><Double fx:value="3.5"/>
+            <Double fx:value="1.5"/><Double fx:value="3.5"/>
+            <Double fx:value="1.5"/><Double fx:value="4"/>
+            <Double fx:value="0"/><Double fx:value="4"/>
+            <Double fx:value="0.5"/><Double fx:value="3"/>
+            <Double fx:value="0"/><Double fx:value="2"/>
+            <Double fx:value="0.5"/><Double fx:value="1"/>
+            <Double fx:value="0"/><Double fx:value="0"/>
         </points>
     </Polygon>
 
-    <Line strokeWidth="0.1" stroke="black" startX="0" startY="2" endX="0.4" endY="2"/>
-    <Line strokeWidth="0.1" stroke="black" startX="2" startY="0" endX="2" endY="0.4"/>
+    <Line strokeWidth="0.1" stroke="black" startX="0" startY="1" endX="0.5" endY="1"/>
+    <Line strokeWidth="0.1" stroke="black" startX="0" startY="3" endX="0.5" endY="3"/>
+    <Line strokeWidth="0.1" stroke="black" startX="2" startY="3.5" endX="2" endY="4"/>
 
     <Circle fx:id="body" strokeWidth="0.1" stroke="black" centerX="2" centerY="2" radius="1.3"/>
 

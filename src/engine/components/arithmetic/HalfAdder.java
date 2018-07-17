@@ -4,6 +4,10 @@ import engine.Circuit;
 import engine.LogicLevel;
 import engine.components.Component;
 import engine.components.Pin;
+import engine.components.logic.one_arg.STI;
+import engine.components.logic.two_arg.NANY;
+import engine.components.logic.two_arg.NCON;
+import engine.components.logic.two_arg.OKEY;
 import gui.Main;
 import gui.control.ControlMain;
 import javafx.beans.property.DoubleProperty;
@@ -89,14 +93,15 @@ public class HalfAdder extends Component {
         }
     }
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
-        summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.P_CH, 5);
-        summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.N_CH, 5);
-        summary.addMOSFET(Circuit.Summary.SOFT, Circuit.Summary.P_CH, 3);
-        summary.addMOSFET(Circuit.Summary.SOFT, Circuit.Summary.N_CH, 3);
+        countdown(summary);
+    }
+    public static void countdown(Circuit.Summary summary) {
+        NANY.countdown(summary);
+        NCON.countdown(summary);
+        OKEY.countdown(summary);
+        STI.countdown(summary);
         summary.addResistor(2);
         summary.addInput(LogicLevel.NIL, 1);
-        summary.addInput(LogicLevel.POS, 2);
-        summary.addInput(LogicLevel.NEG, 2);
     }
 
 }

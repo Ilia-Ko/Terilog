@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--suppress ALL -->
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.Rectangle?>
+<Pane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+
+    <Rectangle strokeWidth="0.1" stroke="black" fill="lightgray" width="7" height="3"/>
+    <Rectangle strokeWidth="0.1" stroke="black" fill="white" x="0.0" y="1.5" width="0.3" height="1.5"/>
+
+    <Rectangle strokeWidth="0.1" stroke="black" fill="white" x="0.5" y="0.5" width="6" height="2" arcWidth="1" arcHeight="1"/>
+    <Label fx:id="t5" style="-fx-font-size: 1.5px" layoutX="0.5" textAlignment="CENTER"/>
+    <Label fx:id="t4" style="-fx-font-size: 1.5px" layoutX="1.5" textAlignment="CENTER"/>
+    <Label fx:id="t3" style="-fx-font-size: 1.5px" layoutX="2.5" textAlignment="CENTER"/>
+    <Label fx:id="t2" style="-fx-font-size: 1.5px" layoutX="3.5" textAlignment="CENTER"/>
+    <Label fx:id="t1" style="-fx-font-size: 1.5px" layoutX="4.5" textAlignment="CENTER"/>
+    <Label fx:id="t0" style="-fx-font-size: 1.5px" layoutX="5.5" textAlignment="CENTER"/>
+
+</Pane>

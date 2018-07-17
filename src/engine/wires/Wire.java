@@ -146,6 +146,16 @@ public class Wire extends Line implements Connectible, Selectable {
         endXProperty().bind(control.getMouseX().add(dEndX));
         endYProperty().bind(control.getMouseY().add(dEndY));
     }
+    @Override public Selectable copy() {
+        IntegerProperty x0 = new SimpleIntegerProperty(startXProperty().intValue());
+        IntegerProperty y0 = new SimpleIntegerProperty(startYProperty().intValue());
+        IntegerProperty x1 = new SimpleIntegerProperty(endXProperty().intValue());
+        IntegerProperty y1 = new SimpleIntegerProperty(endYProperty().intValue());
+
+        Wire copy = new Wire(control, x0, y0, x1, y1);
+        copy.stop();
+        return copy;
+    }
     @Override public void stop() {
         confirm();
         isSelected.setValue(false);

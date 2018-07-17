@@ -4,6 +4,8 @@ import engine.Circuit;
 import engine.LogicLevel;
 import engine.components.Component;
 import engine.components.Pin;
+import engine.components.logic.one_arg.STI;
+import engine.components.logic.two_arg.NANY;
 import gui.Main;
 import gui.control.ControlMain;
 import javafx.beans.property.DoubleProperty;
@@ -107,6 +109,13 @@ public class FullAdder extends Component {
         summary.addInput(LogicLevel.NIL, 1);
         summary.addInput(LogicLevel.POS, 5);
         summary.addInput(LogicLevel.NEG, 5);
+    }
+    public static void countdown(Circuit.Summary summary) {
+        HalfAdder.countdown(summary);
+        HalfAdder.countdown(summary);
+        NANY.countdown(summary);
+        STI.countdown(summary);
+        summary.addResistor(1);
     }
 
 }

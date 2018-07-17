@@ -4,6 +4,7 @@ import engine.Circuit;
 import engine.LogicLevel;
 import engine.components.Component;
 import engine.components.Pin;
+import engine.connectivity.Selectable;
 import gui.control.ControlMain;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
@@ -104,6 +105,26 @@ public class Voltage extends Component {
             System.out.printf("WARNING: unknown signal name '%s'. Using default Z value.\n", sigAttr);
         else
             setSignal(sig);
+    }
+
+    @Override public Selectable copy() {
+        Voltage copy = (Voltage) super.copy();
+        Rectangle body = (Rectangle) copy.getRoot().lookup("#body");
+        Label value = (Label) copy.getRoot().lookup("#value");
+        DoubleProperty size = new SimpleDoubleProperty(2.0);
+        value.layoutXProperty().bind(size.subtract(value.widthProperty()).divide(2.0));
+        value.layoutYProperty().bind(size.subtract(value.heightProperty()).divide(2.0));
+        value.rotateProperty().bind(getRotation().angleProperty().negate());
+        value.scaleXProperty().bind(getScale().xProperty());
+        value.scaleYProperty().bind(getScale().yProperty());
+        copy.signal = new SimpleObjectProperty<>();
+        copy.signal.addListener((observable, oldSignal, newSignal) -> {
+            body.setFill(newSignal.colour());
+            value.setText(String.valueOf(newSignal.getDigitCharacter()));
+            copy.drain.put(newSignal);
+        });
+        copy.setSignal(signal.get());
+        return copy;
     }
 
 }

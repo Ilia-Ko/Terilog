@@ -4,6 +4,9 @@ import engine.Circuit;
 import engine.LogicLevel;
 import engine.components.Component;
 import engine.components.Pin;
+import engine.components.logic.two_arg.CKEY;
+import engine.components.memory.Trigger;
+import engine.connectivity.Selectable;
 import gui.Main;
 import gui.control.ControlMain;
 import gui.control.ControlMemSet;
@@ -21,16 +24,17 @@ import java.util.HashSet;
 public abstract class Linear extends Component {
 
     private int digits;
-    private Pin control, clock;
+    private Pin control, fill, clock;
     private MemCell[] cells;
 
     // initialization
     Linear(ControlMain control, int digits) {
         super(control);
         this.digits = digits;
+        getPins().addAll(makePins());
 
         cells = new MemCell[digits];
-        for (int i = 0; i < digits; i++) cells[i] = new MemCell(this, i);
+        for (int i = 0; i < digits; i++) cells[i] = new MemCell(this, digits - i - 1, i);
     }
     Linear(ControlMain control, Element data, int digits) {
         this(control, digits);
@@ -45,17 +49,6 @@ public abstract class Linear extends Component {
             e.printStackTrace();
             return new Pane();
         }
-    }
-    @Override protected HashSet<Pin> initPins() {
-        HashSet<Pin> pins = new HashSet<>();
-
-        // managing pins
-        control = new Pin(this, true, 0, 1);
-        clock = new Pin(this, true, 0, 2);
-        pins.add(control);
-        pins.add(clock);
-
-        return pins;
     }
     @Override protected ContextMenu buildContextMenu() {
         MenuItem itemSet = new MenuItem("Set value");
@@ -75,29 +68,31 @@ public abstract class Linear extends Component {
         menu.getItems().add(0, itemSet);
         return menu;
     }
+    private HashSet<Pin> makePins() {
+        HashSet<Pin> pins = new HashSet<>();
+
+        // managing pins
+        control = new Pin(this, true, 0, 1);
+        fill = new Pin(this, true, 0, 2);
+        clock = new Pin(this, true, digits + digits / 3, 2);
+        pins.add(control);
+        pins.add(fill);
+        pins.add(clock);
+
+        return pins;
+    }
 
     // simulation
     @Override public void simulate() {
         LogicLevel ctrl = control.get();
+        LogicLevel fill = this.fill.get();
         LogicLevel clck = clock.get();
 
-        for (MemCell cell : cells) cell.simulate(ctrl, clck);
+        for (MemCell cell : cells) cell.simulate(ctrl, fill, clck);
     }
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
-        // triggers' surrounding
-        summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.N_CH, 2);
-        summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.P_CH, 2);
-
-        // triggers themselves (everything x3)
-        summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.N_CH, digits * 3 * 5);
-        summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.P_CH, digits * 3 * 5);
-        summary.addMOSFET(Circuit.Summary.SOFT, Circuit.Summary.N_CH, digits * 3 * 3);
-        summary.addMOSFET(Circuit.Summary.SOFT, Circuit.Summary.P_CH, digits * 3 * 2);
-        summary.addResistor(digits * 3 * 3);
-        summary.addDiode(digits * 3);
-        summary.addInput(LogicLevel.POS, digits * 3);
-        summary.addInput(LogicLevel.NIL, digits * 3);
-        summary.addInput(LogicLevel.NEG, digits * 3);
+        CKEY.countdown(summary);
+        for (int i = 0; i < digits; i++) Trigger.countdown(summary);
     }
 
     // xml info
@@ -109,6 +104,18 @@ public abstract class Linear extends Component {
     @Override protected void readXML(Element comp) {
         super.readXML(comp);
         parseString(comp.getAttribute("mem"));
+    }
+
+    @Override public Selectable copy() {
+        Linear copy = (Linear) super.copy();
+        copy.digits = digits;
+        copy.getPins().addAll(copy.makePins());
+        copy.cells = new MemCell[digits];
+        for (int i = 0; i < digits; i++) {
+            copy.cells[i] = new MemCell(copy, digits - i - 1, i);
+            copy.cells[i].memProperty().setValue(cells[i].memProperty().getValue());
+        }
+        return copy;
     }
 
     // utils

@@ -16,6 +16,9 @@ public class PTI extends Gate1to1 {
     }
 
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
+        countdown(summary);
+    }
+    public static void countdown(Circuit.Summary summary) {
         summary.addMOSFET(Circuit.Summary.SOFT, Circuit.Summary.P_CH, 1);
         summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.N_CH, 1);
     }

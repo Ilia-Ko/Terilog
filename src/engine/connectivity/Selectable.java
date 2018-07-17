@@ -14,6 +14,7 @@ public interface Selectable {
 
     void delete();
     void move();
+    Selectable copy();
     void stop();
 
 }

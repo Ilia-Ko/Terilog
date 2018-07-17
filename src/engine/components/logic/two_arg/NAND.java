@@ -15,13 +15,6 @@ public class NAND extends Gate2to1 {
         super(control, data);
     }
 
-    @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
-        summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.P_CH, 2);
-        summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.N_CH, 2);
-        summary.addResistor(1);
-        summary.addInput(LogicLevel.NIL, 1);
-    }
-
     // simulation
     @Override LogicLevel function(LogicLevel a, LogicLevel b) {
         int va = a.volts();
@@ -29,6 +22,15 @@ public class NAND extends Gate2to1 {
         int v = Math.min(va, vb);
         v *= -1;
         return LogicLevel.parseValue(v);
+    }
+    @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
+        countdown(summary);
+    }
+    public static void countdown(Circuit.Summary summary) {
+        summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.P_CH, 2);
+        summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.N_CH, 2);
+        summary.addResistor(1);
+        summary.addInput(LogicLevel.NIL, 1);
     }
 
 }

@@ -73,6 +73,8 @@
 
                     <MenuItem text="Half Adder" onAction="#menuHalfAdder"/>
                     <MenuItem text="Full Adder" onAction="#menuFullAdder"/>
+                    <SeparatorMenuItem/>
+                    <MenuItem text="Counter" onAction="#menuCounter"/>
 
                 </Menu>
                 <Menu text="Memory">
@@ -122,6 +124,7 @@
             </Menu>
 
         </MenuBar>
+        <ProgressIndicator fx:id="indicator" visible="false"/>
         <Label fx:id="lblPoint"/>
 
     </HBox>

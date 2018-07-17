@@ -8,7 +8,7 @@ import org.w3c.dom.Element;
 
 import java.util.HashSet;
 
-import static engine.LogicLevel.ZZZ;
+import static engine.LogicLevel.*;
 
 public class OKEY extends Gate2to1 {
 
@@ -31,11 +31,17 @@ public class OKEY extends Gate2to1 {
     }
 
     // simulation
+    @Override public void simulate() {
+        out.put(function(inA.get(), inB.get()));
+    }
     @Override LogicLevel function(LogicLevel a, LogicLevel b) {
-        if (a == b) return ZZZ;
-        else return a;
+        if (b == NIL || b == POS) return a;
+        else return ZZZ;
     }
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
+        countdown(summary);
+    }
+    public static void countdown(Circuit.Summary summary) {
         summary.addMOSFET(Circuit.Summary.SOFT, Circuit.Summary.N_CH, 1);
         summary.addMOSFET(Circuit.Summary.SOFT, Circuit.Summary.P_CH, 1);
     }

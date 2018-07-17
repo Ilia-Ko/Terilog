@@ -4,6 +4,7 @@ import engine.Circuit;
 import engine.LogicLevel;
 import engine.components.Component;
 import engine.components.Pin;
+import engine.connectivity.Selectable;
 import gui.control.ControlMain;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -75,8 +76,11 @@ public class Reconciliator extends Component {
         else drain.put(s);
     }
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
+        countdown(summary);
+    }
+    public static void countdown(Circuit.Summary summary) {
         summary.addResistor(1);
-        summary.addInput(pull.get(), 1);
+        summary.addInput(LogicLevel.NIL, 1);
     }
 
     private void setPull(LogicLevel signal, boolean updateToggle) {
@@ -101,6 +105,18 @@ public class Reconciliator extends Component {
             System.out.printf("WARNING: unknown pull signal name '%s'. Using default MID value.\n", sigAttr);
         else
             setPull(sig, true);
+    }
+
+    @Override public Selectable copy() {
+        Reconciliator copy = (Reconciliator) super.copy();
+        Polygon body = (Polygon) copy.getRoot().lookup("#body");
+        copy.pull = new SimpleObjectProperty<>();
+        copy.pull.addListener((observable, oldPull, newPull) -> {
+            body.setFill(newPull.colour());
+            copy.drain.put(newPull);
+        });
+        copy.setPull(pull.get(), true);
+        return copy;
     }
 
 }

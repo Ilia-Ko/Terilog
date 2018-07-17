@@ -50,21 +50,9 @@ public class Node {
         return oldSig == sigResult;
     }
     private void update() {
-        if (sigResult != ERR) pins.forEach(pin -> pin.put(sigResult));
+        if (sigResult == ERR) pins.forEach(pin -> pin.put(ZZZ));
+        else pins.forEach(pin -> pin.put(sigResult));
         wires.forEach(wire -> wire.put(sigResult));
     }
-
-//    public static void join(Pin p1, Pin p2) {
-//        Node n1 = p1.node();
-//        Node n2 = p2.node();
-//        n1.joint.addAll(n2.pins);
-//        n2.joint.addAll(n1.pins);
-//    }
-//    public static void separate(Pin p1, Pin p2) {
-//        Node n1 = p1.node();
-//        Node n2 = p2.node();
-//        n1.joint.removeAll(n2.pins);
-//        n2.joint.removeAll(n1.pins);
-//    }
 
 }

@@ -48,9 +48,6 @@ public class Pin extends Circle implements Connectible {
     @Override public LogicLevel get() {
         return signal;
     }
-    public Node node() {
-        return node;
-    }
     public boolean hasLowImpedance() {
         return !highImpedance;
     }

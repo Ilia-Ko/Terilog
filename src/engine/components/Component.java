@@ -18,6 +18,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 
 public abstract class Component implements Selectable {
@@ -167,6 +168,22 @@ public abstract class Component implements Selectable {
         IntegerProperty dY = new SimpleIntegerProperty(root.layoutYProperty().intValue() - control.getMouseY().get());
         root.layoutXProperty().bind(control.getMouseX().add(dX));
         root.layoutYProperty().bind(control.getMouseY().add(dY));
+    }
+    @Override public Selectable copy() {
+        try {
+            Component copy = this.getClass().getConstructor(ControlMain.class).newInstance(control);
+            copy.stop();
+            copy.root.layoutXProperty().setValue(root.getLayoutX());
+            copy.root.layoutYProperty().setValue(root.getLayoutY());
+            copy.root.getTransforms().clear();
+            copy.rotate = rotate.clone();
+            copy.scale = scale.clone();
+            copy.root.getTransforms().addAll(copy.rotate, copy.scale);
+            return copy;
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
     @Override public void stop() {
         confirm();
