@@ -3,10 +3,7 @@ package gui.control;
 import engine.Circuit;
 import engine.TerilogIO;
 import engine.components.Component;
-import engine.components.arithmetic.Counter;
-import engine.components.arithmetic.FullAdder;
-import engine.components.arithmetic.HalfAdder;
-import engine.components.arithmetic.TryteAdder;
+import engine.components.arithmetic.*;
 import engine.components.logic.one_arg.NTI;
 import engine.components.logic.one_arg.PTI;
 import engine.components.logic.one_arg.STI;
@@ -559,6 +556,11 @@ public class ControlMain {
     @FXML private void menuTryteAdder() {
         breakInsertion();
         flyComp = new TryteAdder(this);
+        holdingComp = true;
+    }
+    @FXML private void menuTryteMultiplier() {
+        breakInsertion();
+        flyComp = new TryteMultiplier(this);
         holdingComp = true;
     }
     @FXML private void menuCounter() {

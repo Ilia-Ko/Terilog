@@ -87,10 +87,11 @@ public class ControlAbout {
         TreeItem<Label> compLog2GateNOR = newItem("NOR", "comp/log2/gates/nor.html");
         TreeItem<Label> compLog2GateNCON = newItem("NCON", "comp/log2/gates/ncon.html");
         TreeItem<Label> compLog2GateNANY = newItem("NANY", "comp/log2/gates/nany.html");
+        TreeItem<Label> compLog2GateMUL = newItem("MUL", "comp/log2/gates/mul.html");
         TreeItem<Label> compLog2Key = newItem("Keys", "comp/log2/keys/keys.html");
         TreeItem<Label> compLog2KeyOKEY = newItem("OKEY", "comp/log2/keys/okey.html");
         TreeItem<Label> compLog2KeyCKEY = newItem("CKEY", "comp/log2/keys/ckey.html");
-        compLog2Gate.getChildren().addAll(compLog2GateNAND, compLog2GateNOR, compLog2GateNCON, compLog2GateNANY);
+        compLog2Gate.getChildren().addAll(compLog2GateNAND, compLog2GateNOR, compLog2GateNCON, compLog2GateNANY, compLog2GateMUL);
         compLog2Key.getChildren().addAll(compLog2KeyOKEY, compLog2KeyCKEY);
         compLog2.getChildren().addAll(compLog2Gate, compLog2Key);
         rootComp.getChildren().add(compLog2);
@@ -99,7 +100,10 @@ public class ControlAbout {
         TreeItem<Label> compArith = newItem("Arithmetic", "comp/arith/arithmetic.html");
         TreeItem<Label> compArithHalfAdder = newItem("Half Adder", "comp/arith/half-adder.html");
         TreeItem<Label> compArithFullAdder = newItem("Full Adder", "comp/arith/full-adder.html");
-        compArith.getChildren().addAll(compArithHalfAdder, compArithFullAdder);
+        TreeItem<Label> compArithTryteAdder = newItem("Tryte Adder", "comp/arith/tryte-adder.html");
+        TreeItem<Label> compArithTryteMult = newItem("Tryte Multiplier", "comp/arith/tryte-multiplier.html");
+        TreeItem<Label> compArithCounter = newItem("Counter", "comp/arith/counter.html");
+        compArith.getChildren().addAll(compArithHalfAdder, compArithFullAdder, compArithTryteAdder, compArithTryteMult, compArithCounter);
         rootComp.getChildren().add(compArith);
 
         // about: comp.memory

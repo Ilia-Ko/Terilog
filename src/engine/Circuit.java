@@ -2,10 +2,7 @@ package engine;
 
 import engine.components.Component;
 import engine.components.Pin;
-import engine.components.arithmetic.Counter;
-import engine.components.arithmetic.FullAdder;
-import engine.components.arithmetic.HalfAdder;
-import engine.components.arithmetic.TryteAdder;
+import engine.components.arithmetic.*;
 import engine.components.logic.one_arg.NTI;
 import engine.components.logic.one_arg.PTI;
 import engine.components.logic.one_arg.STI;
@@ -202,6 +199,9 @@ public class Circuit {
                         break;
                     case "tryteadder":
                         add(new TryteAdder(control, comp));
+                        break;
+                    case "trytemultiplier":
+                        add(new TryteMultiplier(control, comp));
                         break;
                     case "counter":
                         add(new Counter(control, comp));

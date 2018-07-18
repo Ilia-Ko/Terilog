@@ -35,6 +35,9 @@ public class MUL extends Gate2to1 {
         return LogicLevel.parseValue(a.volts() * b.volts());
     }
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
+        countdown(summary);
+    }
+    public static void countdown(Circuit.Summary summary) {
         summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.P_CH, 4);
         summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.N_CH, 4);
         summary.addInput(LogicLevel.NEG, 1);

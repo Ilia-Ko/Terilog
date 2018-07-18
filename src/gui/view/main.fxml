@@ -85,6 +85,7 @@
                     <MenuItem text="Full Adder" onAction="#menuFullAdder"/>
                     <SeparatorMenuItem/>
                     <MenuItem text="Tryte Adder" onAction="#menuTryteAdder"/>
+                    <MenuItem text="Tryte Multiplier" onAction="#menuTryteMultiplier"/>
                     <SeparatorMenuItem/>
                     <MenuItem text="Counter" onAction="#menuCounter"/>
 
