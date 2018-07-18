@@ -222,7 +222,7 @@ public abstract class Flat extends Component {
         }
 
         // decode to non-symmetric unbalanced TNS
-        int length = (int) Math.floor(Math.log(value + 1) / Math.log(3.0));
+        int length = (int) Math.ceil(Math.log(value + 1) / Math.log(3.0));
         int[] digits = new int[length + 1]; // +1 for SBTNS
         for (int i = 0; i <= length; i++) {
             digits[i] = (int) (value % 3L);

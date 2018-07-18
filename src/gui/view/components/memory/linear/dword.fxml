@@ -4,10 +4,11 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.shape.*?>
-<Pane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+<Pane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" prefWidth="32" prefHeight="3">
 
     <Rectangle strokeWidth="0.1" stroke="black" fill="lightgray" width="32" height="3"/>
     <Rectangle strokeWidth="0.1" stroke="black" fill="white" x="31.6" y="1" width="0.4" height="2"/>
+    <Rectangle strokeWidth="0.1" stroke="black" fill="white" x="0" y="1" width="0.4" height="2"/>
 
     <Rectangle strokeWidth="0.1" stroke="black" fill="white" x= "0.5" y="0.5" width="3" height="2" arcWidth="1" arcHeight="1"/>
     <Label fx:id="t72" style="-fx-font-size: 1.5px" layoutX= "0.5" textAlignment="CENTER"/>

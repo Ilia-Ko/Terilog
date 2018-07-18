@@ -75,7 +75,7 @@ public class Wire extends Line implements Connectible, Selectable {
     }
 
     // layout mode
-    void confirm() {
+    public void confirm() {
         startXProperty().unbind();
         startYProperty().unbind();
         endXProperty().unbind();
@@ -91,11 +91,16 @@ public class Wire extends Line implements Connectible, Selectable {
         control.getCircuit().add(this);
 
         // add squares
-        double a = 1.0 / 6.0, b = a * 2.0;
-        r1 = new Rectangle(getStartX() - a, getStartY() - a, b, b);
+        DoubleProperty a = new SimpleDoubleProperty(1.0 / 6.0);
+        double b = 1.0 / 3.0;
+        r1 = new Rectangle(b, b);
+        r1.xProperty().bind(startXProperty().subtract(a));
+        r1.yProperty().bind(startYProperty().subtract(a));
         r1.fillProperty().bind(strokeProperty());
         r1.setOnContextMenuRequested(mouse -> menu.show(this, mouse.getScreenX(), mouse.getScreenY()));
-        r2 = new Rectangle(getEndX() - a, getEndY() - a, b, b);
+        r2 = new Rectangle(b, b);
+        r2.xProperty().bind(endXProperty().subtract(a));
+        r2.yProperty().bind(endYProperty().subtract(a));
         r2.fillProperty().bind(strokeProperty());
         r2.setOnContextMenuRequested(mouse -> menu.show(this, mouse.getScreenX(), mouse.getScreenY()));
         control.getParent().getChildren().addAll(r1, r2);
@@ -204,7 +209,7 @@ public class Wire extends Line implements Connectible, Selectable {
         if (x0 == x1) return x == x0 && between(y, y0, y1);
         else if (y0 == y1) return y == y0 && between(x, x0, x1);
         else {
-            // diagonal wires are not recommended, but it is not forbidden
+            // diagonal wires are neither recommended nor forbidden
             double k = (double) (y1 - y0) / (double) (x1 - x0);
             double m = y0 - k * x0;
             return y == (int) Math.round(k * x + m);
@@ -243,6 +248,46 @@ public class Wire extends Line implements Connectible, Selectable {
     }
     private static boolean between(int what, int a, int b) {
         return Math.abs(what - a) + Math.abs(what - b) == Math.abs(a - b);
+    }
+    public static Wire optimize(Wire w1, Wire w2) {
+        // intersecting
+        boolean s2in1 = w1.inside(w2.startXProperty().intValue(), w2.startYProperty().intValue());
+        boolean e2in1 = w1.inside(w2.endXProperty().intValue(), w2.endYProperty().intValue());
+        boolean s1in2 = w2.inside(w1.startXProperty().intValue(), w1.startYProperty().intValue());
+        boolean e1in2 = w2.inside(w1.endXProperty().intValue(), w1.endYProperty().intValue());
+        // vertically parallel
+        boolean vPar = w1.startXProperty().intValue() == w1.endXProperty().intValue() &&
+                w1.endXProperty().intValue() == w2.startXProperty().intValue() &&
+                w2.startXProperty().intValue() == w2.endXProperty().intValue();
+        // horizontally parallel
+        boolean hPar = w1.startYProperty().intValue() == w1.endYProperty().intValue() &&
+                w1.endYProperty().intValue() == w2.startYProperty().intValue() &&
+                w2.startYProperty().intValue() == w2.endYProperty().intValue();
+
+        if ((s2in1 || e2in1) && (hPar || vPar)) {
+            if (s2in1 && e2in1) { // w1 covers w2 completely
+                return w2;
+            } else if (s1in2 && e1in2) { // w2 covers w1 completely
+                return w1;
+            } else if (s2in1 && e1in2) { // w1 overlaps w2
+                if (hPar) w1.endXProperty().setValue(w2.endXProperty().intValue());
+                else w1.endYProperty().setValue(w2.endYProperty().intValue());
+                return w2;
+            } else if (s1in2 && e2in1) { // w2 overlaps w1
+                if (hPar) w2.endXProperty().setValue(w1.endXProperty().intValue());
+                else w2.endYProperty().setValue(w1.endYProperty().intValue());
+                return w1;
+            } else if (s2in1 && s1in2) { // common start
+                if (hPar) w1.startXProperty().setValue(w2.endXProperty().intValue());
+                else w1.startYProperty().setValue(w2.endYProperty().intValue());
+                return w2;
+            } else if (e2in1&& e1in2) { // common end
+                if (hPar) w1.endXProperty().setValue(w2.startXProperty().intValue());
+                else w1.endYProperty().setValue(w2.startYProperty().intValue());
+                return w2;
+            }
+        }
+        return null;
     }
 
 }

@@ -3,7 +3,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.shape.Circle?>
-<Pane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+<Pane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" prefWidth="2" prefHeight="2">
 
     <Circle fx:id="body" strokeWidth="0.1" centerX="1" centerY="1" radius="1"/>
     <Label fx:id="value" textFill="white" style="-fx-font-size: 1.5px"/>

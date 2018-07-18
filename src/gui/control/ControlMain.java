@@ -6,9 +6,13 @@ import engine.components.Component;
 import engine.components.arithmetic.Counter;
 import engine.components.arithmetic.FullAdder;
 import engine.components.arithmetic.HalfAdder;
+import engine.components.arithmetic.TryteAdder;
 import engine.components.logic.one_arg.NTI;
 import engine.components.logic.one_arg.PTI;
 import engine.components.logic.one_arg.STI;
+import engine.components.logic.path.Decoder_1_3;
+import engine.components.logic.path.Demux_1_3;
+import engine.components.logic.path.Mux_3_1;
 import engine.components.logic.two_arg.*;
 import engine.components.lumped.*;
 import engine.components.memory.Trigger;
@@ -213,6 +217,12 @@ public class ControlMain {
             ioSystem = null;
         }
         lastSave = null;
+
+        // debug only
+        if (ioSystem != null) {
+            lastSave = new File("/home/ilia/Java/Terilog/example/arithmetic/Tryte-Multiplier.xml");
+            loadSavedFile();
+        }
     }
     private void renderField() {
         // configure gc
@@ -416,6 +426,9 @@ public class ControlMain {
         menuUndo.setDisable(true);
         menuRedo.setDisable(true);
     }
+    @FXML private void menuOptWires() {
+        circuit.optimizeWires();
+    }
 
     // menu.add.mosfet
     @FXML private void menuHardN() {
@@ -501,6 +514,11 @@ public class ControlMain {
         flyComp = new NANY(this);
         holdingComp = true;
     }
+    @FXML private void menuMUL() {
+        breakInsertion();
+        flyComp = new MUL(this);
+        holdingComp = true;
+    }
     @FXML private void menuOKEY() {
         breakInsertion();
         flyComp = new OKEY(this);
@@ -509,6 +527,22 @@ public class ControlMain {
     @FXML private void menuCKEY() {
         breakInsertion();
         flyComp = new CKEY(this);
+        holdingComp = true;
+    }
+    // menu.add.path
+    @FXML private void menuDecoder1to3() {
+        breakInsertion();
+        flyComp = new Decoder_1_3(this);
+        holdingComp = true;
+    }
+    @FXML private void menuMux3to1() {
+        breakInsertion();
+        flyComp = new Mux_3_1(this);
+        holdingComp = true;
+    }
+    @FXML private void menuDemux1to3() {
+        breakInsertion();
+        flyComp = new Demux_1_3(this);
         holdingComp = true;
     }
     // menu.add.arithmetic
@@ -520,6 +554,11 @@ public class ControlMain {
     @FXML private void menuFullAdder() {
         breakInsertion();
         flyComp = new FullAdder(this);
+        holdingComp = true;
+    }
+    @FXML private void menuTryteAdder() {
+        breakInsertion();
+        flyComp = new TryteAdder(this);
         holdingComp = true;
     }
     @FXML private void menuCounter() {
@@ -718,12 +757,10 @@ public class ControlMain {
     public void setCircuit(Circuit circuit) {
         this.circuit = circuit;
         stage.setTitle(String.format("%s - %s", Main.TITLE, circuit.nameProperty().get()));
+        renderField();
 
         // bindings
         circuit.nameProperty().addListener(((observable, oldName, newName) -> stage.setTitle(String.format("%s - %s", Main.TITLE, newName))));
-//        menuRun.disableProperty().bind(circuit.taskRunProperty());
-//        menuStop.disableProperty().bind(circuit.taskRunProperty().not());
-//        progress.visibleProperty().bind(circuit.taskRunProperty());
     }
     public Pane getParent() {
         return parent;

@@ -5,7 +5,7 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.shape.Polygon?>
 <?import java.lang.*?>
-<Pane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+<Pane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" prefWidth="2" prefHeight="2">
 
     <!--wires-->
     <Line stroke="black" strokeWidth="0.1" startX="0" startY="1" endX="0.5" endY="1"/>

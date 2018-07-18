@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.shape.Polygon?>
+<?import java.lang.*?>
+<Pane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" prefWidth="4" prefHeight="14">
+
+    <Polygon strokeWidth="0.1" stroke="black" fill="lightgray">
+        <points>
+            <Double fx:value="0"/><Double fx:value="0"/>
+            <Double fx:value="3"/><Double fx:value="0"/>
+            <Double fx:value="4"/><Double fx:value="1"/>
+            <Double fx:value="4"/><Double fx:value="13"/>
+            <Double fx:value="3"/><Double fx:value="14"/>
+            <Double fx:value="0"/><Double fx:value="14"/>
+            <Double fx:value="0"/><Double fx:value="7.5"/>
+            <Double fx:value="1"/><Double fx:value="7"/>
+            <Double fx:value="0"/><Double fx:value="6.5"/>
+            <Double fx:value="0"/><Double fx:value="0"/>
+        </points>
+    </Polygon>
+
+    <Line strokeWidth="0.1" stroke="black" startX="1" startY="3" endX="3" endY="3"/>
+    <Line strokeWidth="0.1" stroke="black" startX="2" startY="2" endX="2" endY="4"/>
+
+</Pane>

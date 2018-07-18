@@ -5,14 +5,14 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.shape.*?>
 <?import java.lang.*?>
-<Pane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+<Pane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" prefWidth="4" prefHeight="3">
 
     <!--legs-->
     <Line stroke="darkblue" strokeWidth="0.1" startX="0" startY="2" endX="2" endY="2"/>
     <Line stroke="darkblue" strokeWidth="0.1" startX="3" startY="2" endX="4" endY="2"/>
-    <Line stroke="darkblue" strokeWidth="0.1" startX="1" startY="2" endX="1" endY="1"/>
+    <Line stroke="darkblue" strokeWidth="0.1" startX="1" startY="2.5" endX="1" endY="1"/>
     <Line stroke="darkblue" strokeWidth="0.1" startX="2" startY="2" endX="2" endY="1"/>
-    <Line stroke="darkblue" strokeWidth="0.1" startX="3" startY="2" endX="3" endY="1"/>
+    <Line stroke="darkblue" strokeWidth="0.1" startX="3" startY="2.5" endX="3" endY="1"/>
 
     <!--legs' caps-->
     <Line stroke="darkblue" strokeWidth="0.1" startX="0.8" startY="1" endX="1.2" endY="1"/>
@@ -22,6 +22,16 @@
     <!--gate-->
     <Line stroke="darkblue" strokeWidth="0.1" startX="0.8" startY="0.8" endX="3.2" endY="0.8"/>
     <Line stroke="darkblue" strokeWidth="0.1" startX="2.0" startY="0.8" endX="2.0" endY="0.0"/>
+
+    <!--diode's legs-->
+    <Line stroke="darkblue" strokeWidth="0.1" startX="1" startY="2.5" endX="1.5" endY="2.5"/>
+    <Line stroke="darkblue" strokeWidth="0.1" startX="2.5" startY="2.5" endX="3" endY="2.5"/>
+
+    <!--diode's body-->
+    <Line stroke="darkblue" strokeWidth="0.1" startX="1.5" startY="2.2" endX="1.5" endY="2.8"/>
+    <Line stroke="darkblue" strokeWidth="0.1" startX="1.5" startY="2.8" endX="2.5" endY="2.5"/>
+    <Line stroke="darkblue" strokeWidth="0.1" startX="2.5" startY="2.5" endX="1.5" endY="2.2"/>
+    <Line stroke="darkblue" strokeWidth="0.1" startX="2.5" startY="2.2" endX="2.5" endY="2.8"/>
 
     <!--triangle-->
     <Polygon fill="darkblue">

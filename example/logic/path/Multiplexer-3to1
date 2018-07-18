@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<circuit depth="60" name="Multiplexer 3 to 1">
+    <comp class="ckey" mx="1" my="1" rot="0" x="14" y="3"/>
+    <comp class="voltage" mx="1" my="1" rot="-90" sig="LOW" x="6" y="5"/>
+    <comp class="voltage" mx="1" my="1" rot="-90" sig="MID" x="6" y="11"/>
+    <comp class="voltage" mx="1" my="1" rot="-450" sig="HIGH" x="6" y="8"/>
+    <comp class="ckey" mx="1" my="1" rot="0" x="20" y="9"/>
+    <comp class="voltage" mx="1" my="1" rot="-180" sig="MID" x="18" y="20"/>
+    <comp class="indicator" mx="1" my="1" rot="0" x="28" y="6"/>
+    <comp class="ckey" mx="1" my="1" rot="0" x="17" y="6"/>
+    <comp class="decoder_1_3" mx="1" my="1" rot="-90" x="15" y="16"/>
+    <wire x0="17" x1="17" y0="18" y1="16"/>
+    <wire x0="16" x1="16" y0="14" y1="5"/>
+    <wire x0="18" x1="22" y0="13" y1="13"/>
+    <wire x0="18" x1="18" y0="14" y1="13"/>
+    <wire x0="22" x1="22" y0="13" y1="11"/>
+    <wire x0="19" x1="17" y0="12" y1="12"/>
+    <wire x0="19" x1="19" y0="8" y1="12"/>
+    <wire x0="17" x1="17" y0="12" y1="14"/>
+    <wire x0="8" x1="17" y0="7" y1="7"/>
+    <wire x0="26" x1="18" y0="4" y1="4"/>
+    <wire x0="21" x1="26" y0="7" y1="7"/>
+    <wire x0="26" x1="24" y0="10" y1="10"/>
+    <wire x0="14" x1="8" y0="4" y1="4"/>
+    <wire x0="20" x1="8" y0="10" y1="10"/>
+    <wire x0="26" x1="26" y0="4" y1="10"/>
+    <wire x0="26" x1="28" y0="7" y1="7"/>
+    <grid h="56" w="100"/>
+</circuit>

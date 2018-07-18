@@ -12,7 +12,7 @@ import org.w3c.dom.Element;
 import java.io.IOException;
 import java.util.HashSet;
 
-import static engine.LogicLevel.ERR;
+import static engine.LogicLevel.ZZZ;
 
 abstract class Gate2to1 extends Component {
 
@@ -51,7 +51,7 @@ abstract class Gate2to1 extends Component {
 
         if (a.isUnstable() || b.isUnstable()) {
             if (a == b) out.put(a);
-            else out.put(ERR);
+            else out.put(ZZZ);
         } else out.put(function(a, b));
     }
     abstract LogicLevel function(LogicLevel a, LogicLevel b);

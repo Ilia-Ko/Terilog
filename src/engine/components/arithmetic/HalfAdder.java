@@ -20,7 +20,7 @@ import org.w3c.dom.Element;
 import java.io.IOException;
 import java.util.HashSet;
 
-import static engine.LogicLevel.ERR;
+import static engine.LogicLevel.ZZZ;
 import static engine.LogicLevel.parseValue;
 
 public class HalfAdder extends Component {
@@ -78,8 +78,8 @@ public class HalfAdder extends Component {
                 outS.put(a);
                 outC.put(b);
             } else {
-                outS.put(ERR);
-                outC.put(ERR);
+                outS.put(ZZZ);
+                outC.put(ZZZ);
             }
         } else {
             int s = (a.volts() + b.volts());

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<circuit depth="60" name="Tryte Adder">
+    <comp class="indicator" mx="1" my="1" rot="90" x="29" y="25"/>
+    <comp class="voltage" mx="1" my="1" rot="0" sig="MID" x="13" y="1"/>
+    <comp class="voltage" mx="1" my="1" rot="0" sig="MID" x="35" y="1"/>
+    <comp class="sti" mode="0to0" mx="1" my="1" rot="90" x="56" y="5"/>
+    <comp class="fulladder" mx="1" my="1" rot="90" x="56" y="11"/>
+    <comp class="voltage" mx="1" my="1" rot="0" sig="MID" x="33" y="1"/>
+    <comp class="voltage" mx="1" my="1" rot="0" sig="MID" x="54" y="1"/>
+    <comp class="voltage" mx="1" my="1" rot="0" sig="MID" x="19" y="1"/>
+    <comp class="voltage" mx="1" my="1" rot="0" sig="MID" x="31" y="1"/>
+    <comp class="fulladder" mx="1" my="1" rot="90" x="16" y="11"/>
+    <comp class="indicator" mx="1" my="1" rot="90" x="13" y="25"/>
+    <comp class="voltage" mx="1" my="1" rot="0" sig="MID" x="27" y="1"/>
+    <comp class="indicator" mx="1" my="1" rot="90" x="35" y="25"/>
+    <comp class="fulladder" mx="1" my="1" rot="90" x="48" y="11"/>
+    <comp class="fulladder" mx="1" my="1" rot="90" x="32" y="11"/>
+    <comp class="voltage" mx="1" my="1" rot="0" sig="MID" x="17" y="1"/>
+    <comp class="sti" mode="0to0" mx="1" my="1" rot="90" x="13" y="19"/>
+    <comp class="indicator" mx="1" my="1" rot="90" x="31" y="25"/>
+    <comp class="indicator" mx="1" my="1" rot="90" x="37" y="25"/>
+    <comp class="fulladder" mx="1" my="1" rot="90" x="24" y="11"/>
+    <comp class="voltage" mx="1" my="1" rot="0" sig="MID" x="11" y="1"/>
+    <comp class="voltage" mx="1" my="1" rot="0" sig="MID" x="21" y="1"/>
+    <comp class="voltage" mx="1" my="1" rot="0" sig="MID" x="37" y="1"/>
+    <comp class="voltage" mx="1" my="1" rot="0" sig="MID" x="15" y="1"/>
+    <comp class="indicator" mx="1" my="1" rot="90" x="39" y="25"/>
+    <comp class="fulladder" mx="1" my="1" rot="90" x="40" y="11"/>
+    <comp class="voltage" mx="1" my="1" rot="0" sig="MID" x="29" y="1"/>
+    <comp class="indicator" mx="1" my="1" rot="90" x="33" y="25"/>
+    <wire x0="52" x1="49" y0="17" y1="17"/>
+    <wire x0="47" x1="49" y0="11" y1="11"/>
+    <wire x0="49" x1="49" y0="11" y1="17"/>
+    <wire x0="39" x1="41" y0="11" y1="11"/>
+    <wire x0="41" x1="41" y0="11" y1="17"/>
+    <wire x0="41" x1="44" y0="17" y1="17"/>
+    <wire x0="31" x1="33" y0="11" y1="11"/>
+    <wire x0="33" x1="33" y0="11" y1="17"/>
+    <wire x0="33" x1="36" y0="17" y1="17"/>
+    <wire x0="23" x1="25" y0="11" y1="11"/>
+    <wire x0="25" x1="25" y0="11" y1="17"/>
+    <wire x0="25" x1="28" y0="17" y1="17"/>
+    <wire x0="15" x1="17" y0="11" y1="11"/>
+    <wire x0="17" x1="17" y0="11" y1="17"/>
+    <wire x0="17" x1="20" y0="17" y1="17"/>
+    <wire x0="55" x1="55" y0="11" y1="9"/>
+    <wire x0="55" x1="55" y0="5" y1="3"/>
+    <wire x0="12" x1="12" y0="25" y1="23"/>
+    <wire x0="12" x1="12" y0="19" y1="17"/>
+    <wire x0="14" x1="28" y0="24" y1="24"/>
+    <wire x0="14" x1="14" y0="17" y1="24"/>
+    <wire x0="28" x1="28" y0="24" y1="25"/>
+    <wire x0="22" x1="30" y0="23" y1="23"/>
+    <wire x0="22" x1="22" y0="17" y1="23"/>
+    <wire x0="30" x1="30" y0="23" y1="25"/>
+    <wire x0="30" x1="32" y0="22" y1="22"/>
+    <wire x0="30" x1="30" y0="17" y1="22"/>
+    <wire x0="32" x1="32" y0="25" y1="22"/>
+    <wire x0="54" x1="38" y0="24" y1="24"/>
+    <wire x0="54" x1="54" y0="17" y1="24"/>
+    <wire x0="38" x1="38" y0="24" y1="25"/>
+    <wire x0="36" x1="46" y0="23" y1="23"/>
+    <wire x0="36" x1="36" y0="25" y1="23"/>
+    <wire x0="46" x1="46" y0="23" y1="17"/>
+    <wire x0="38" x1="34" y0="22" y1="22"/>
+    <wire x0="38" x1="38" y0="17" y1="22"/>
+    <wire x0="34" x1="34" y0="22" y1="25"/>
+    <wire x0="12" x1="11" y0="11" y1="11"/>
+    <wire x0="12" x1="12" y0="3" y1="11"/>
+    <wire x0="28" x1="13" y0="10" y1="10"/>
+    <wire x0="28" x1="28" y0="3" y1="10"/>
+    <wire x0="13" x1="13" y0="10" y1="11"/>
+    <wire x0="14" x1="19" y0="9" y1="9"/>
+    <wire x0="14" x1="14" y0="3" y1="9"/>
+    <wire x0="19" x1="19" y0="9" y1="11"/>
+    <wire x0="30" x1="21" y0="9" y1="9"/>
+    <wire x0="30" x1="30" y0="3" y1="9"/>
+    <wire x0="21" x1="21" y0="9" y1="11"/>
+    <wire x0="16" x1="27" y0="8" y1="8"/>
+    <wire x0="16" x1="16" y0="3" y1="8"/>
+    <wire x0="27" x1="27" y0="8" y1="11"/>
+    <wire x0="32" x1="29" y0="10" y1="10"/>
+    <wire x0="32" x1="32" y0="3" y1="10"/>
+    <wire x0="29" x1="29" y0="10" y1="11"/>
+    <wire x0="18" x1="35" y0="7" y1="7"/>
+    <wire x0="18" x1="18" y0="3" y1="7"/>
+    <wire x0="35" x1="35" y0="7" y1="11"/>
+    <wire x0="34" x1="37" y0="10" y1="10"/>
+    <wire x0="34" x1="34" y0="3" y1="10"/>
+    <wire x0="37" x1="37" y0="10" y1="11"/>
+    <wire x0="20" x1="43" y0="6" y1="6"/>
+    <wire x0="20" x1="20" y0="3" y1="6"/>
+    <wire x0="43" x1="43" y0="6" y1="11"/>
+    <wire x0="36" x1="45" y0="9" y1="9"/>
+    <wire x0="36" x1="36" y0="3" y1="9"/>
+    <wire x0="45" x1="45" y0="9" y1="11"/>
+    <wire x0="22" x1="51" y0="5" y1="5"/>
+    <wire x0="22" x1="22" y0="3" y1="5"/>
+    <wire x0="51" x1="51" y0="5" y1="11"/>
+    <wire x0="38" x1="53" y0="10" y1="10"/>
+    <wire x0="38" x1="38" y0="3" y1="10"/>
+    <wire x0="53" x1="53" y0="10" y1="11"/>
+    <grid h="56" w="100"/>
+</circuit>

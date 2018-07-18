@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--suppress JavaFxRedundantPropertyValue -->
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.*?>
+<Pane xmlns="http://javafx.com/javafx" prefHeight="3" prefWidth="4">
+
+    <Rectangle strokeWidth="0.1" stroke="black" fill="lightgray" x="1" y="0" width="2" height="3"/>
+
+    <Line strokeWidth="0.1" stroke="black" startX="0" startY="1" endX="1" endY="1"/>
+    <Line strokeWidth="0.1" stroke="black" startX="0" startY="2" endX="1" endY="2"/>
+    <Line strokeWidth="0.1" stroke="black" startX="3" startY="1" endX="4" endY="1"/>
+
+    <Line strokeWidth="0.1" stroke="black" startX="1.5" startY="1" endX="2.5" endY="2"/>
+    <Line strokeWidth="0.1" stroke="black" startX="1.5" startY="2" endX="2.5" endY="1"/>
+
+</Pane>

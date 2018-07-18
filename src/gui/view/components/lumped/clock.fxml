@@ -4,7 +4,7 @@
 <?import javafx.scene.shape.Polyline?>
 <?import javafx.scene.shape.Rectangle?>
 <?import java.lang.*?>
-<Pane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+<Pane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" prefWidth="4" prefHeight="4">
 
     <Rectangle strokeWidth="0.1" stroke="black" fill="lightgray" width="4" height="4" arcHeight="1" arcWidth="1"/>
 

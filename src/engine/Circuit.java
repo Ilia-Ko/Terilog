@@ -5,9 +5,13 @@ import engine.components.Pin;
 import engine.components.arithmetic.Counter;
 import engine.components.arithmetic.FullAdder;
 import engine.components.arithmetic.HalfAdder;
+import engine.components.arithmetic.TryteAdder;
 import engine.components.logic.one_arg.NTI;
 import engine.components.logic.one_arg.PTI;
 import engine.components.logic.one_arg.STI;
+import engine.components.logic.path.Decoder_1_3;
+import engine.components.logic.path.Demux_1_3;
+import engine.components.logic.path.Mux_3_1;
 import engine.components.logic.two_arg.*;
 import engine.components.lumped.*;
 import engine.components.memory.Trigger;
@@ -170,11 +174,24 @@ public class Circuit {
                     case "nany":
                         add(new NANY(control, comp));
                         break;
+                    case "mul":
+                        add(new MUL(control, comp));
+                        break;
                     case "okey":
                         add(new OKEY(control, comp));
                         break;
                     case "ckey":
                         add(new CKEY(control, comp));
+                        break;
+                    // logic.path
+                    case "decoder_1_3":
+                        add(new Decoder_1_3(control, comp));
+                        break;
+                    case "mux_3_1":
+                        add(new Mux_3_1(control, comp));
+                        break;
+                    case "demux_1_3":
+                        add(new Demux_1_3(control, comp));
                         break;
                     // arithmetic
                     case "halfadder":
@@ -182,6 +199,9 @@ public class Circuit {
                         break;
                     case "fulladder":
                         add(new FullAdder(control, comp));
+                        break;
+                    case "tryteadder":
+                        add(new TryteAdder(control, comp));
                         break;
                     case "counter":
                         add(new Counter(control, comp));
@@ -435,6 +455,21 @@ public class Circuit {
         components.forEach(comp -> comp.itIsAFinalCountdown(summary));
         return summary.makeFinalCountdown();
     }
+    public void optimizeWires() {
+        ArrayList<Wire> tmp = new ArrayList<>();
+
+        for (int i = 0; i < wires.size(); i++)
+            for (int j = i + 1; j < wires.size(); j++) {
+                Wire odd = Wire.optimize(wires.get(i), wires.get(j));
+                if (odd != null) {
+                    odd.delete(false);
+                    tmp.add(odd);
+                }
+            }
+
+        wires.removeAll(tmp);
+        tmp.clear();
+    }
 
     // xml info
     Element writeCircuitToXML(Document doc) {
@@ -514,16 +549,17 @@ public class Circuit {
         private String makeFinalCountdown() {
             // general quantities
             info += String.format("Circuit '%s' summary:\n", name.get());
-            info += String.format("Components total:\t%d\n", numComps);
-            info += String.format("Hard P:\t\t\t%d\n", numHardP);
-            info += String.format("Hard N:\t\t\t%d\n", numHardN);
-            info += String.format("Soft P:\t\t\t%d\n", numSoftP);
-            info += String.format("Soft N:\t\t\t%d\n", numSoftN);
-            info += String.format("Diodes:\t\t\t%d\n", numDiodes);
-            info += String.format("Resistors:\t\t%d\n", numRes);
-            info += String.format("Wires:\t\t\t%d\n", numWires);
-            info += String.format("Inputs:\t\t\t%d\n", numInputs);
-            info += String.format("Outputs:\t\t%d\n", numOutputs);
+            info += String.format("Big components:\t%d\n", numComps);
+            info += String.format("Hard P:\t\t%d\n", numHardP);
+            info += String.format("Hard N:\t\t%d\n", numHardN);
+            info += String.format("Soft P:\t\t%d\n", numSoftP);
+            info += String.format("Soft N:\t\t%d\n", numSoftN);
+            info += String.format("Transistors:\t%d\n", numHardP + numHardN + numSoftP + numSoftN);
+            info += String.format("Diodes:\t\t%d\n", numDiodes);
+            info += String.format("Resistors:\t%d\n", numRes);
+            info += String.format("Wires:\t\t%d\n", numWires);
+            info += String.format("Inputs:\t\t%d\n", numInputs);
+            info += String.format("Outputs:\t%d\n", numOutputs);
             info += needsClock ? "The circuit uses clock.\n" : "The circuit does not use clock.\n";
             info += numRAMs > 0 ? String.format("The circuit uses %d RAM block(s).\n", numRAMs) : "The circuit does not use RAM.\n";
             // percentage

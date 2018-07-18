@@ -28,6 +28,8 @@
                 <MenuItem text="Undo" accelerator="Ctrl+Z" onAction="#menuUndo" disable="true" fx:id="menuUndo"/>
                 <MenuItem text="Redo" accelerator="Ctrl+Y" onAction="#menuRedo" disable="true" fx:id="menuRedo"/>
                 <MenuItem text="Clear history" onAction="#forgetHistory"/>
+                <SeparatorMenuItem/>
+                <MenuItem text="Optimize wires" onAction="#menuOptWires"/>
 
             </Menu>
             <Menu text="Add">
@@ -64,15 +66,25 @@
                     <MenuItem text="NOR" onAction="#menuNOR"/>
                     <MenuItem text="NCON" onAction="#menuNCON"/>
                     <MenuItem text="NANY" onAction="#menuNANY"/>
+                    <MenuItem text="MUL" onAction="#menuMUL"/>
                     <SeparatorMenuItem/>
                     <MenuItem text="OKEY" onAction="#menuOKEY"/>
                     <MenuItem text="CKEY" onAction="#menuCKEY"/>
+
+                </Menu>
+                <Menu text="Data path">
+
+                    <MenuItem text="Decoder 1-3" onAction="#menuDecoder1to3"/>
+                    <MenuItem text="Multiplexer 3-1" onAction="#menuMux3to1"/>
+                    <MenuItem text="Demultiplexer 1-3" onAction="#menuDemux1to3"/>
 
                 </Menu>
                 <Menu text="Arithmetic">
 
                     <MenuItem text="Half Adder" onAction="#menuHalfAdder"/>
                     <MenuItem text="Full Adder" onAction="#menuFullAdder"/>
+                    <SeparatorMenuItem/>
+                    <MenuItem text="Tryte Adder" onAction="#menuTryteAdder"/>
                     <SeparatorMenuItem/>
                     <MenuItem text="Counter" onAction="#menuCounter"/>
 

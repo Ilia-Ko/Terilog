@@ -18,7 +18,7 @@ import org.w3c.dom.Element;
 import java.io.IOException;
 import java.util.HashSet;
 
-import static engine.LogicLevel.ERR;
+import static engine.LogicLevel.ZZZ;
 import static engine.LogicLevel.parseValue;
 
 public class FullAdder extends Component {
@@ -55,9 +55,9 @@ public class FullAdder extends Component {
         }
     }
     @Override protected HashSet<Pin> initPins() {
-        inA = new Pin(this, true, 0, 1);
-        inB = new Pin(this, true, 0, 3);
-        inC = new Pin(this, true, 0, 5);
+        inA = new Pin(this, true, 0, 3);
+        inB = new Pin(this, true, 0, 5);
+        inC = new Pin(this, true, 0, 1);
         outS = new Pin(this, false, 6, 2);
         outC = new Pin(this, false, 6, 4);
         HashSet<Pin> pins = new HashSet<>();
@@ -80,8 +80,8 @@ public class FullAdder extends Component {
                 outS.put(b);
                 outC.put(c);
             } else {
-                outS.put(ERR);
-                outC.put(ERR);
+                outS.put(ZZZ);
+                outC.put(ZZZ);
             }
         } else {
             int sum, carry;
