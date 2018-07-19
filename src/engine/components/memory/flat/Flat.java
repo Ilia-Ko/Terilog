@@ -222,15 +222,14 @@ public abstract class Flat extends Component {
         }
 
         // decode to non-symmetric unbalanced TNS
-        int length = (int) Math.ceil(Math.log(value + 1) / Math.log(3.0));
-        int[] digits = new int[length + 1]; // +1 for SBTNS
-        for (int i = 0; i <= length; i++) {
+        int[] digits = new int[size];
+        for (int i = 0; i < size; i++) {
             digits[i] = (int) (value % 3L);
             value /= 3L;
         }
 
         // decode to SBTNS
-        for (int i = 0; i < length; i++) {
+        for (int i = 0; i < size; i++) {
             if (digits[i] == 2) {
                 trits[i] = NEG;
                 digits[i+1]++;
@@ -241,14 +240,10 @@ public abstract class Flat extends Component {
                 trits[i] = LogicLevel.parseValue(digits[i]);
             }
         }
-        trits[length] = LogicLevel.parseValue(digits[length]);
-
-        // fill with zeroes
-        for (int i = length + 1; i < size; i++) trits[i] = NIL;
 
         // negate if needed
         if (neg)
-            for (int i = 0; i <= length; i++)
+            for (int i = 0; i < size; i++)
                 trits[i] = LogicLevel.parseValue(-trits[i].volts());
 
         return trits;

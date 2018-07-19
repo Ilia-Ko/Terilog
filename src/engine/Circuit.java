@@ -171,6 +171,18 @@ public class Circuit {
                     case "nany":
                         add(new NANY(control, comp));
                         break;
+                    case "trytenand":
+                        add(new TryteNAND(control, comp));
+                        break;
+                    case "trytenor":
+                        add(new TryteNOR(control, comp));
+                        break;
+                    case "trytencon":
+                        add(new TryteNCON(control, comp));
+                        break;
+                    case "trytenany":
+                        add(new TryteNANY(control, comp));
+                        break;
                     case "mul":
                         add(new MUL(control, comp));
                         break;
@@ -565,8 +577,8 @@ public class Circuit {
             // percentage
             double numVolts = numVoltNeg + numVoltNil + numVoltPos;
             double perNeg = 100.0 * numVoltNeg / numVolts;
-            double perNil = 100.0 * numVoltNil / numVolts;
-            double perPos = 100.0 - perNeg - perNil;
+            double perPos = 100.0 * numVoltPos / numVolts;
+            double perNil = 100.0 - perNeg - perPos;
             double imbalance = 100.0 * Math.abs(numVoltPos - numVoltNeg) / (double) numVoltNil;
             info += String.format("NEG DC Load:\t%.1f%%\n", perNeg);
             info += String.format("NIL DC Load:\t%.1f%%\n", perNil);

@@ -17,6 +17,9 @@ public class NANY extends Gate2to1 {
 
     // simulation
     @Override LogicLevel function(LogicLevel a, LogicLevel b) {
+        return func(a, b);
+    }
+    static LogicLevel func(LogicLevel a, LogicLevel b) {
         int va = a.volts();
         int vb = b.volts();
         int v;

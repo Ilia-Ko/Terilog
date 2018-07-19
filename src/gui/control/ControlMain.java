@@ -216,10 +216,10 @@ public class ControlMain {
         lastSave = null;
 
         // debug only
-        if (ioSystem != null) {
-            lastSave = new File("/home/ilia/Java/Terilog/example/arithmetic/Tryte-Multiplier.xml");
-            loadSavedFile();
-        }
+//        if (ioSystem != null) {
+//            lastSave = new File("");
+//            loadSavedFile();
+//        }
     }
     private void renderField() {
         // configure gc
@@ -408,6 +408,7 @@ public class ControlMain {
         }
     }
     public void appendHistory(HistoricalEvent event) {
+        if (histUndo.size() > 144) histUndo.clear();
         histUndo.push(event);
         menuUndo.setDisable(false);
     }
@@ -509,6 +510,26 @@ public class ControlMain {
     @FXML private void menuNANY() {
         breakInsertion();
         flyComp = new NANY(this);
+        holdingComp = true;
+    }
+    @FXML private void menuTryteNAND() {
+        breakInsertion();
+        flyComp = new TryteNAND(this);
+        holdingComp = true;
+    }
+    @FXML private void menuTryteNOR() {
+        breakInsertion();
+        flyComp = new TryteNOR(this);
+        holdingComp = true;
+    }
+    @FXML private void menuTryteNCON() {
+        breakInsertion();
+        flyComp = new TryteNCON(this);
+        holdingComp = true;
+    }
+    @FXML private void menuTryteNANY() {
+        breakInsertion();
+        flyComp = new TryteNANY(this);
         holdingComp = true;
     }
     @FXML private void menuMUL() {
