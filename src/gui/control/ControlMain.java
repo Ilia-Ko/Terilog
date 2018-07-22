@@ -29,6 +29,7 @@ import javafx.beans.property.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -97,6 +98,7 @@ public class ControlMain {
     private BooleanProperty isSelecting;
     private IntegerProperty selStartX, selStartY;
     private ContextMenu selMenu;
+    private boolean needsTranslation;
 
     // actions history
     private Stack<HistoricalEvent> histUndo, histRedo;
@@ -123,18 +125,20 @@ public class ControlMain {
 
         scroll.addEventFilter(MouseEvent.MOUSE_DRAGGED, mouse -> {
             if (mouse.getButton() == MouseButton.PRIMARY) {
+                needsTranslation = true;
+                onGlobalMouseMoved(mouse);
                 if (!isSelecting.get()) {
                     isSelecting.setValue(true);
                     selStartX.setValue(mouseX.get());
                     selStartY.setValue(mouseY.get());
                 }
-                onGlobalMouseMoved(mouse);
                 mouse.consume();
             }
         });
         scroll.addEventFilter(MouseEvent.MOUSE_CLICKED, this::onGlobalMouseClicked);
         scroll.addEventFilter(KeyEvent.KEY_PRESSED, this::onGlobalKeyPressed);
         stack.addEventFilter(MouseEvent.MOUSE_MOVED, this::onGlobalMouseMoved);
+        stack.addEventFilter(MouseEvent.MOUSE_DRAGGED, this::onGlobalMouseMoved);
 
         // init field
         field.widthProperty().bind(w.multiply(p));
@@ -216,10 +220,10 @@ public class ControlMain {
         lastSave = null;
 
         // debug only
-//        if (ioSystem != null) {
-//            lastSave = new File("");
-//            loadSavedFile();
-//        }
+        if (ioSystem != null) {
+            lastSave = new File("");
+            loadSavedFile();
+        }
     }
     private void renderField() {
         // configure gc
@@ -259,13 +263,21 @@ public class ControlMain {
 
     // some actions
     private void onGlobalMouseMoved(MouseEvent mouse) {
-        // isStable coordinates
-        int mx = (int) Math.round(mouse.getX() / p.get());
-        int my = (int) Math.round(mouse.getY() / p.get());
+        // update coordinates
+        double x = mouse.getX();
+        double y = mouse.getY();
+        if (needsTranslation) {
+            Point2D pos = stack.sceneToLocal(mouse.getSceneX(), mouse.getSceneY());
+            x = pos.getX();
+            y = pos.getY();
+            needsTranslation = false;
+        }
+        int mx = (int) Math.round(x / p.get());
+        int my = (int) Math.round(y / p.get());
         mouseX.setValue(mx);
         mouseY.setValue(my);
 
-        // isStable mouse position label
+        // update mouse position label
         lblPoint.setText(String.format("%3d : %3d ", mx, my));
     }
     private void onGlobalMouseClicked(MouseEvent mouse) {
@@ -512,6 +524,16 @@ public class ControlMain {
         flyComp = new NANY(this);
         holdingComp = true;
     }
+    @FXML private void menuMUL() {
+        breakInsertion();
+        flyComp = new MUL(this);
+        holdingComp = true;
+    }
+    @FXML private void menuCMP() {
+        breakInsertion();
+        flyComp = new CMP(this);
+        holdingComp = true;
+    }
     @FXML private void menuTryteNAND() {
         breakInsertion();
         flyComp = new TryteNAND(this);
@@ -532,9 +554,9 @@ public class ControlMain {
         flyComp = new TryteNANY(this);
         holdingComp = true;
     }
-    @FXML private void menuMUL() {
+    @FXML private void menuTryteCMP() {
         breakInsertion();
-        flyComp = new MUL(this);
+        flyComp = new TryteCMP(this);
         holdingComp = true;
     }
     @FXML private void menuOKEY() {

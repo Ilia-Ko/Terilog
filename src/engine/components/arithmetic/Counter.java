@@ -33,9 +33,9 @@ public class Counter extends Component {
     public static final int MIN_VALUE = -364;
 
     private Pin reset, clock;
-    private Pin[] read;
+    private Pin[] write, read;
     private IntegerProperty value;
-    private int prevClock;
+    private int prevClock, prevRset, nextValue;
 
     public Counter(ControlMain control) {
         super(control);
@@ -77,9 +77,12 @@ public class Counter extends Component {
         pins.add(reset);
         pins.add(clock);
 
+        write = new Pin[6];
         read = new Pin[6];
         for (int i = 0; i < 6; i++) {
-            read[i] = new Pin(this, false, 6 - i, 3);
+            write[i] = new Pin(this, true, 7 - i - i / 3, 0);
+            read[i] = new Pin(this, false, 7 - i - i / 3, 3);
+            pins.add(write[i]);
             pins.add(read[i]);
         }
 
@@ -99,8 +102,14 @@ public class Counter extends Component {
         LogicLevel rset = reset.get();
 
         if (clck == ERR || rset == ERR) {
-            for (Pin pin : read) pin.put(ERR);
+            for (Pin pin : read) pin.put(ZZZ);
         } else if (rset == POS) {
+            LogicLevel[] in = new LogicLevel[6];
+            for (int i = 0; i < 6; i++) in[i] = write[i].get();
+            nextValue = (int) Flat.encode(in, 6);
+        } else if (rset == NIL && prevRset == 1) {
+            value.setValue(nextValue);
+        } else if (rset == NEG) {
             value.setValue(MIN_VALUE);
         } else if (clck == POS && prevClock != 1) {
             value.setValue(value.get() + 1);
@@ -109,6 +118,7 @@ public class Counter extends Component {
         LogicLevel[] trits = Flat.decode(value.get(), 6);
         for (int i = 0; i < 6; i++) read[i].put(trits[i]);
         prevClock = clck.volts();
+        prevRset = rset.volts();
     }
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
         countdown(summary);

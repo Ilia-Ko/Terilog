@@ -4,6 +4,7 @@ import engine.Circuit;
 import engine.LogicLevel;
 import engine.components.Component;
 import engine.components.Pin;
+import engine.components.logic.one_arg.STI;
 import engine.components.logic.two_arg.CKEY;
 import gui.Main;
 import gui.control.ControlMain;
@@ -73,6 +74,9 @@ public class Mux_3_1 extends Component {
         CKEY.countdown(summary);
         CKEY.countdown(summary);
         CKEY.countdown(summary);
+        STI.countdown(summary);
+        STI.countdown(summary);
+        STI.countdown(summary);
         Decoder_1_3.countdown(summary);
     }
 

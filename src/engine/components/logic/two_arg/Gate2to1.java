@@ -35,8 +35,8 @@ abstract class Gate2to1 extends Component {
     }
     @Override protected HashSet<Pin> initPins() {
         inA = new Pin(this, true, 0, 1);
-        inB = new Pin(this, true, 0, 3);
-        out = new Pin(this, false, 8, 2);
+        inB = new Pin(this, true, 0, 2);
+        out = new Pin(this, false, 4, 1);
         HashSet<Pin> pins = new HashSet<>();
         pins.add(inA);
         pins.add(inB);

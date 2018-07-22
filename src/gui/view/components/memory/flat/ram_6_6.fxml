@@ -4,13 +4,13 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.shape.*?>
 <?import java.lang.*?>
-<Pane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" prefWidth="7" prefHeight="7">
+<Pane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" prefWidth="8" prefHeight="8">
 
-    <Rectangle strokeWidth="0.1" stroke="black" fill="lightgray" x="0" y="0" width="7" height="7"/>
-    <Rectangle strokeWidth="0.1" stroke="black" fill="white" x="6" y="5" width="1" height="2"/>
+    <Rectangle strokeWidth="0.1" stroke="black" fill="lightgray" x="0" y="0" width="8" height="8"/>
+    <Rectangle strokeWidth="0.1" stroke="black" fill="white" x="7" y="6" width="1" height="2"/>
 
     <!-- R -->
-    <Polygon stroke="transparent" fill="black">
+    <Polygon stroke="transparent" fill="black" translateX="0.5">
         <points>
             <Double fx:value="0.241"/><Double fx:value="2.776"/>
             <Double fx:value="1.690"/><Double fx:value="2.776"/>
@@ -25,7 +25,7 @@
     </Polygon>
 
     <!-- A -->
-    <Polygon stroke="transparent" fill="black">
+    <Polygon stroke="transparent" fill="black" translateX="0.5">
         <points>
             <Double fx:value="2.172"/><Double fx:value="2.776"/>
             <Double fx:value="3.379"/><Double fx:value="2.776"/>
@@ -39,7 +39,7 @@
     </Polygon>
 
     <!-- M -->
-    <Polygon stroke="transparent" fill="black">
+    <Polygon stroke="transparent" fill="black" translateX="0.5">
         <points>
             <Double fx:value="4.103"/><Double fx:value="2.776"/>
             <Double fx:value="5.310"/><Double fx:value="2.776"/>

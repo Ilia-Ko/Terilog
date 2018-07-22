@@ -1,33 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--suppress ALL -->
-
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.shape.*?>
-<?import java.lang.*?>
-<Pane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" prefWidth="8" prefHeight="4">
+<Pane xmlns="http://javafx.com/javafx" prefWidth="4" prefHeight="3">
 
     <!--legs-->
     <Line stroke="black" strokeWidth="0.1" startX="0" startY="1" endX="1" endY="1"/>
-    <Line stroke="black" strokeWidth="0.1" startX="0" startY="3" endX="1" endY="3"/>
-    <Line stroke="black" strokeWidth="0.1" startX="7" startY="2" endX="8" endY="2"/>
+    <Line stroke="black" strokeWidth="0.1" startX="0" startY="2" endX="1" endY="2"/>
+    <Line stroke="black" strokeWidth="0.1" startX="3.5" startY="1" endX="4" endY="1"/>
 
     <!--body-->
-    <Polyline stroke="black" strokeWidth="0.1" fill="lightgray">
-        <points>
-            <Double fx:value="3"/> <Double fx:value="0"/>
-            <Double fx:value="1"/> <Double fx:value="0"/>
-            <Double fx:value="1"/> <Double fx:value="4"/>
-            <Double fx:value="3"/> <Double fx:value="4"/>
-        </points>
-    </Polyline>
-    <Arc stroke="black" strokeWidth="0.1" fill="lightgray" type="OPEN"
-         centerX="3" centerY="2"
-         radiusX="2" radiusY="2"
-         startAngle="-90" length="180"/>
+    <Rectangle stroke="black" strokeWidth="0.1" fill="lightgray" x="1" y="0" width="2" height="3"/>
+    <Label text="&#38;" layoutX="1.5" layoutY="0" maxWidth="2" maxHeight="3" textFill="black" style="-fx-font-size: 1.5px" textAlignment="CENTER"/>
 
     <!--head-->
-    <Circle stroke="black" strokeWidth="0.1" fill="lightgray"
-            centerX="6" centerY="2" radius="1"/>
+    <Circle stroke="black" strokeWidth="0.1" fill="lightgray" centerX="3" centerY="1" radius="0.5"/>
 
 </Pane>

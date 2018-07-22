@@ -63,14 +63,17 @@
                 <Menu text="Logic 2-arg">
 
                     <MenuItem text="Trit NAND" onAction="#menuNAND"/>
-                    <MenuItem text="Tryte NAND" onAction="#menuTryteNAND"/>
                     <MenuItem text="Trit NOR" onAction="#menuNOR"/>
-                    <MenuItem text="Tryte NOR" onAction="#menuTryteNOR"/>
                     <MenuItem text="Trit NCON" onAction="#menuNCON"/>
-                    <MenuItem text="Tryte NCON" onAction="#menuTryteNCON"/>
                     <MenuItem text="Trit NANY" onAction="#menuNANY"/>
-                    <MenuItem text="Tryte NANY" onAction="#menuTryteNANY"/>
                     <MenuItem text="Trit MUL" onAction="#menuMUL"/>
+                    <MenuItem text="Trit CMP" onAction="#menuCMP"/>
+                    <SeparatorMenuItem/>
+                    <MenuItem text="Tryte NAND" onAction="#menuTryteNAND"/>
+                    <MenuItem text="Tryte NOR" onAction="#menuTryteNOR"/>
+                    <MenuItem text="Tryte NCON" onAction="#menuTryteNCON"/>
+                    <MenuItem text="Tryte NANY" onAction="#menuTryteNANY"/>
+                    <MenuItem text="Tryte CMP" onAction="#menuTryteCMP"/>
                     <SeparatorMenuItem/>
                     <MenuItem text="OKEY" onAction="#menuOKEY"/>
                     <MenuItem text="CKEY" onAction="#menuCKEY"/>

@@ -64,24 +64,24 @@ public abstract class Flat extends Component {
     private HashSet<Pin> makePins() {
         HashSet<Pin> pins = new HashSet<>();
 
-        control = new Pin(this, true, unitLength + 1, 1);
-        fill = new Pin(this, true, unitLength + 1, 2);
-        clock = new Pin(this, true, unitLength + 1, addressLen);
+        control = new Pin(this, true, unitLength + unitLength / 3, 1);
+        fill = new Pin(this, true, unitLength + unitLength / 3, 2);
+        clock = new Pin(this, true, unitLength + unitLength / 3, addressLen + addressLen / 3 - 1);
         pins.add(control);
         pins.add(fill);
         pins.add(clock);
 
         address = new Pin[addressLen];
         for (int i = 0; i < addressLen; i++) {
-            address[i] = new Pin(this, true, 0, i + 1);
+            address[i] = new Pin(this, true, 0, i + 1 + i / 3);
             pins.add(address[i]);
         }
 
         write = new Pin[unitLength];
         read = new Pin[unitLength];
         for (int i = 0; i < unitLength; i++) {
-            write[i] = new Pin(this, true, i + 1, 0);
-            read[i] = new Pin(this, false, i + 1, addressLen + 1);
+            write[i] = new Pin(this, true, i + 1 + i / 3, 0);
+            read[i] = new Pin(this, false, i + 1 + i / 3, addressLen + addressLen / 3);
             pins.add(write[i]);
             pins.add(read[i]);
         }

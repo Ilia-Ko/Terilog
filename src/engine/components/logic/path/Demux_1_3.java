@@ -3,6 +3,7 @@ package engine.components.logic.path;
 import engine.Circuit;
 import engine.components.Component;
 import engine.components.Pin;
+import engine.components.logic.one_arg.STI;
 import engine.components.logic.two_arg.CKEY;
 import engine.components.lumped.Reconciliator;
 import gui.Main;
@@ -84,6 +85,9 @@ public class Demux_1_3 extends Component {
         CKEY.countdown(summary);
         CKEY.countdown(summary);
         CKEY.countdown(summary);
+        STI.countdown(summary);
+        STI.countdown(summary);
+        STI.countdown(summary);
         Reconciliator.countdown(summary);
         Reconciliator.countdown(summary);
         Reconciliator.countdown(summary);

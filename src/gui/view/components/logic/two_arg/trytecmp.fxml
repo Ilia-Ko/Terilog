@@ -21,6 +21,6 @@
         </points>
     </Polygon>
 
-    <Label text="N&#10;C&#10;O&#10;N" layoutX="1" layoutY="1" maxWidth="2" maxHeight="12" textFill="black" style="-fx-font-size: 1.5px" textAlignment="CENTER"/>
+    <Label text="C&#10;M&#10;P&#10;" layoutX="1" layoutY="1" maxWidth="2" maxHeight="12" textFill="black" style="-fx-font-size: 1.5px" textAlignment="CENTER"/>
 
 </Pane>

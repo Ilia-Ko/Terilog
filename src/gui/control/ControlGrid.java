@@ -11,7 +11,7 @@ public class ControlGrid {
 
     // input bounds
     private static final int MIN_GRID_SIZE = 12;
-    private static final int MAX_GRID_SIZE = 144;
+    private static final int MAX_GRID_SIZE = 144 * 2;
 
     // gui
     @FXML private TextField txtWidth;

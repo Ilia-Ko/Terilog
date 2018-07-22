@@ -171,6 +171,12 @@ public class Circuit {
                     case "nany":
                         add(new NANY(control, comp));
                         break;
+                    case "mul":
+                        add(new MUL(control, comp));
+                        break;
+                    case "cmp":
+                        add(new CMP(control, comp));
+                        break;
                     case "trytenand":
                         add(new TryteNAND(control, comp));
                         break;
@@ -183,8 +189,8 @@ public class Circuit {
                     case "trytenany":
                         add(new TryteNANY(control, comp));
                         break;
-                    case "mul":
-                        add(new MUL(control, comp));
+                    case "trytecmp":
+                        add(new TryteCMP(control, comp));
                         break;
                     case "okey":
                         add(new OKEY(control, comp));
@@ -429,7 +435,8 @@ public class Circuit {
             // Wait time is computed in millis.
             // It is 4 times shorter than a period, because Clock must change its signal four times a period.
             // Finally, 2 millis are spared for 'catching up check'
-            long wait = Math.round(1000.0 / simFrequency.get() / 4.0) - 2L;
+            long wait = 0;
+            if (simFrequency.get() > 0.083) wait = Math.round(1000.0 / simFrequency.get() / 4.0) - 2L;
 
             while (isSimRunning && isStableStateFound) { // simulation stops too if circuit cannot be stabilized
                 // measure time spent to stabilization
@@ -446,8 +453,13 @@ public class Circuit {
                     isReady.setValue(true); // mark stabilization finished
                 });
 
-                // wait till the next oscillation
-                while (System.currentTimeMillis() - time < wait);
+                if (wait > 0) {
+                    // wait till the next oscillation
+                    while (System.currentTimeMillis() - time < wait);
+                } else {
+                    // wait until stabilization finishes
+                    while (!isReady.get());
+                }
 
                 // check whether stabilization process is catching up with clock
                 if (!isReady.get()) {
@@ -481,6 +493,7 @@ public class Circuit {
 
         wires.removeAll(tmp);
         tmp.clear();
+        needsParsing = true;
     }
 
     // xml info
