@@ -22,7 +22,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 
-import static engine.LogicLevel.*;
+import static engine.LogicLevel.NEG;
+import static engine.LogicLevel.POS;
 
 public abstract class Flat extends Component {
 
@@ -77,11 +78,12 @@ public abstract class Flat extends Component {
             pins.add(address[i]);
         }
 
+        int r = unitLength + unitLength / 3 - 1;
         write = new Pin[unitLength];
         read = new Pin[unitLength];
         for (int i = 0; i < unitLength; i++) {
-            write[i] = new Pin(this, true, i + 1 + i / 3, 0);
-            read[i] = new Pin(this, false, i + 1 + i / 3, addressLen + addressLen / 3);
+            write[i] = new Pin(this, true, r - i - i / 3, 0);
+            read[i] = new Pin(this, false, r - i - i / 3, addressLen + addressLen / 3);
             pins.add(write[i]);
             pins.add(read[i]);
         }
@@ -202,50 +204,33 @@ public abstract class Flat extends Component {
     // utils
     public static long encode(LogicLevel[] digits, int size) {
         assert digits.length >= size;
-
         long res = 0L;
         for (int i = size - 1; i >= 0; i--) {
             res *= 3L;
             res += (long) digits[i].volts();
         }
-
         return res;
     }
     public static LogicLevel[] decode(long value, int size) {
         LogicLevel[] trits = new LogicLevel[size];
         boolean neg = false;
-
         // check sign
         if (value < 0L) {
             neg = true;
             value *= -1L;
         }
-
-        // decode to non-symmetric unbalanced TNS
+        // decode to SBTNS
         int[] digits = new int[size];
         for (int i = 0; i < size; i++) {
-            digits[i] = (int) (value % 3L);
+            digits[i] += (int) (value % 3L);
             value /= 3L;
-        }
-
-        // decode to SBTNS
-        for (int i = 0; i < size; i++) {
-            if (digits[i] == 2) {
-                trits[i] = NEG;
+            if (digits[i] > 1) {
+                digits[i] -= 3;
                 digits[i+1]++;
-            } else if (digits[i] == 3) {
-                trits[i] = NIL;
-                digits[i+1]++;
-            } else {
-                trits[i] = LogicLevel.parseValue(digits[i]);
             }
+            if (neg) digits[i] = -digits[i];
+            trits[i] = LogicLevel.parseValue(digits[i]);
         }
-
-        // negate if needed
-        if (neg)
-            for (int i = 0; i < size; i++)
-                trits[i] = LogicLevel.parseValue(-trits[i].volts());
-
         return trits;
     }
 

@@ -123,13 +123,13 @@ public abstract class Linear extends Component {
         StringBuilder builder = new StringBuilder();
         int c = 0;
         for (MemCell cell : cells) {
-            builder.append(cell.memProperty().get().getDigitCharacter());
+            builder.insert(0, cell.memProperty().get().getDigitCharacter());
             if (c++ == 2) {
-                builder.append('\'');
+                builder.insert(0, '\'');
                 c = 0;
             }
         }
-        return builder.deleteCharAt(builder.length() - 1).toString();
+        return builder.toString();
     }
     private void parseString(String str) {
         int c = digits;

@@ -81,6 +81,11 @@ public class STI extends Gate1to1 {
         if (v == 0 && convertNILToZZZ.get()) return LogicLevel.ZZZ;
         return LogicLevel.parseValue(v);
     }
+    public static LogicLevel func(LogicLevel a) {
+        int v = a.volts();
+        v *= -1;
+        return LogicLevel.parseValue(v);
+    }
 
     // xml info
     @Override public Element writeXML(Document doc) {

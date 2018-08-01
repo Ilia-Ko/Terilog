@@ -58,7 +58,7 @@ public class TerilogIO {
         for (int i = 0; i < length; i++) {
             LogicLevel[] value = Flat.decode(data[i], unitSize);
             StringBuilder number = new StringBuilder();
-            for (int j = 0; j < unitSize; j++) number.append(value[j].getDigitCharacter());
+            for (int j = 0; j < unitSize; j++) number.insert(0, value[j].getDigitCharacter());
             writer.write(number.toString());
             if ((i + 1) % 27 == 0) writer.newLine();
             else writer.write(' ');
@@ -75,7 +75,8 @@ public class TerilogIO {
             while (tokenizer.hasMoreTokens() && index < length) {
                 String token = tokenizer.nextToken();
                 LogicLevel[] trits = new LogicLevel[token.length()];
-                for (int i = 0; i < trits.length; i++) trits[i] = LogicLevel.parseDigit(token.charAt(i));
+                int pos = trits.length;
+                for (int i = 0; i < trits.length; i++) trits[--pos] = LogicLevel.parseDigit(token.charAt(i));
                 data[index++] = Flat.encode(trits, unitSize);
             }
         }
