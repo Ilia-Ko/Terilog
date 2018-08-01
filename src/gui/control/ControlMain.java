@@ -26,15 +26,18 @@ import engine.wires.FlyWire;
 import gui.Main;
 import javafx.application.Platform;
 import javafx.beans.property.*;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
@@ -55,9 +58,11 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import javax.imageio.ImageIO;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
@@ -220,10 +225,10 @@ public class ControlMain {
         lastSave = null;
 
         // debug only
-        if (ioSystem != null) {
-            lastSave = new File("");
-            loadSavedFile();
-        }
+//        if (ioSystem != null) {
+//            lastSave = new File("pathToXML");
+//            loadSavedFile();
+//        }
     }
     private void renderField() {
         // configure gc
@@ -392,6 +397,39 @@ public class ControlMain {
         // save it
         updateSavedFile();
     }
+    @FXML private void menuExportPNG() {
+        // configure file chooser
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Export PNG image");
+        chooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        chooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("PNG files", "*.png"));
+
+        // get file
+        File save = chooser.showSaveDialog(stage);
+        if (save == null) return;
+
+        // make snapshot
+        SnapshotParameters params = new SnapshotParameters();
+        WritableImage fxImage = new WritableImage(w.get() * p.intValue(), h.get() * p.intValue());
+        params.setDepthBuffer(false);
+        double memSize = Runtime.getRuntime().freeMemory();
+        double imgSize = fxImage.getHeight() * fxImage.getWidth() * 4;
+        if (imgSize > memSize) {
+            double sc = Math.sqrt(memSize / imgSize);
+            params.setTransform(new Scale(sc, sc));
+            fxImage = new WritableImage((int) (fxImage.getWidth() * sc), (int) (fxImage.getHeight() * sc));
+        }
+        fxImage = parent.snapshot(params, fxImage);
+        BufferedImage bufImage = SwingFXUtils.fromFXImage(fxImage, null);
+
+        // save it
+        try {
+            ImageIO.write(bufImage, "png", save);
+        } catch (IOException e) {
+            e.printStackTrace();
+            makeAlert(Alert.AlertType.ERROR, "Export PNG", "Failed to export PNG due to IO error.");
+        }
+    }
     @FXML private void menuToggle() {
         stage.setFullScreen(!stage.isFullScreen());
     }
@@ -532,6 +570,11 @@ public class ControlMain {
     @FXML private void menuCMP() {
         breakInsertion();
         flyComp = new CMP(this);
+        holdingComp = true;
+    }
+    @FXML private void menuEQU() {
+        breakInsertion();
+        flyComp = new EQU(this);
         holdingComp = true;
     }
     @FXML private void menuTryteNAND() {

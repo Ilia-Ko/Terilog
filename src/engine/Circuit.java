@@ -177,6 +177,9 @@ public class Circuit {
                     case "cmp":
                         add(new CMP(control, comp));
                         break;
+                    case "equ":
+                        add(new EQU(control, comp));
+                        break;
                     case "trytenand":
                         add(new TryteNAND(control, comp));
                         break;

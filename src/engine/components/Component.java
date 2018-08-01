@@ -9,7 +9,6 @@ import javafx.beans.property.*;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Rotate;
@@ -126,7 +125,6 @@ public abstract class Component implements Selectable {
         root.layoutYProperty().unbind();
 
         root.setOpacity(1.0);
-        Tooltip.install(root, new Tooltip(getClass().getSimpleName()));
 
         control.getCircuit().add(this);
 
