@@ -35,7 +35,7 @@ public class Counter extends Component {
     private Pin reset, clock;
     private Pin[] write, read;
     private IntegerProperty value;
-    private int prevClock, prevRset, nextValue;
+    private int nextValue;
 
     public Counter(ControlMain control) {
         super(control);
@@ -54,6 +54,7 @@ public class Counter extends Component {
             }
         });
         value.setValue(MIN_VALUE);
+        nextValue = MIN_VALUE;
     }
     public Counter(ControlMain control, Element comp) {
         this(control);
@@ -100,25 +101,24 @@ public class Counter extends Component {
     @Override public void simulate() {
         LogicLevel clck = clock.get();
         LogicLevel rset = reset.get();
-
+        // simulate
         if (clck == ERR || rset == ERR) {
             for (Pin pin : read) pin.put(ZZZ);
-        } else if (rset == POS) {
-            LogicLevel[] in = new LogicLevel[6];
-            for (int i = 0; i < 6; i++) in[i] = write[i].get();
-            nextValue = (int) Flat.encode(in, 6);
-        } else if (rset == NIL && prevRset == 1) {
+        } else if (clck == POS) {
+            if (rset == NIL) {
+                nextValue = value.get() + 1;
+            } else if (rset == POS) {
+                LogicLevel[] in = new LogicLevel[6];
+                for (int i = 0; i < 6; i++) in[i] = write[i].get();
+                nextValue = (int) Flat.encode(in, 6);
+            } else if (rset == NEG) {
+                nextValue = MIN_VALUE;
+            }
+        } else if (clck == NIL) {
             value.setValue(nextValue);
-        } else if (rset == NEG) {
-            value.setValue(MIN_VALUE);
-        } else if (clck == POS && prevClock != 1) {
-            value.setValue(value.get() + 1);
-            if (value.get() == 1 - MIN_VALUE) value.setValue(MIN_VALUE);
+            LogicLevel[] trits = Flat.decode(value.get(), 6);
+            for (int i = 0; i < 6; i++) read[i].put(trits[i]);
         }
-        LogicLevel[] trits = Flat.decode(value.get(), 6);
-        for (int i = 0; i < 6; i++) read[i].put(trits[i]);
-        prevClock = clck.volts();
-        prevRset = rset.volts();
     }
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
         countdown(summary);
@@ -153,7 +153,6 @@ public class Counter extends Component {
             }
         });
         copy.value.setValue(value.get());
-        copy.prevClock = prevClock;
         return copy;
     }
 

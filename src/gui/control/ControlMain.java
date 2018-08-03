@@ -226,7 +226,7 @@ public class ControlMain {
 
         // debug only
 //        if (ioSystem != null) {
-//            lastSave = new File("pathToDebugXML");
+//            lastSave = new File("pathToXMLForDebug");
 //            loadSavedFile();
 //        }
     }
