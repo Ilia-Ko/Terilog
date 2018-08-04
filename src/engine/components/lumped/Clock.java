@@ -15,7 +15,7 @@ import java.util.HashSet;
 
 public class Clock extends Component {
 
-    public static final double DEF_FREQUENCY = 2; // Hz
+    public static final double DEF_FREQUENCY = 0; // Hz (0 means as fast as possible)
 
     private int phase, dir;
     private Pin drain;
@@ -25,7 +25,7 @@ public class Clock extends Component {
     public Clock(ControlMain control) {
         super(control);
         phase = 1;
-        dir = -1;
+        dir = 1;
 
         curve = (Polyline) getRoot().lookup("#curve");
         curve.setStroke(LogicLevel.POS.colour());
