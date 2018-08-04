@@ -24,8 +24,8 @@ public class Clock extends Component {
     // initialization
     public Clock(ControlMain control) {
         super(control);
-        phase = 0;
-        dir = 1;
+        phase = 1;
+        dir = -1;
 
         curve = (Polyline) getRoot().lookup("#curve");
         curve.setStroke(LogicLevel.POS.colour());
