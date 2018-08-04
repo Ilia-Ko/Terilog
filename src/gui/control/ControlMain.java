@@ -109,7 +109,7 @@ public class ControlMain {
     private Stack<HistoricalEvent> histUndo, histRedo;
 
     // initialization
-    public void initialSetup(Stage stage, String defFont, double screenWidth, double screenHeight) {
+    public void initialSetup(Stage stage, String defFont, double screenWidth, double screenHeight, File fastLaunch) {
         this.stage = stage;
         this.defFont = defFont;
 
@@ -224,11 +224,13 @@ public class ControlMain {
         }
         lastSave = null;
 
-        // debug only
-//        if (ioSystem != null) {
-//            lastSave = new File("pathToXMLForDebug");
-//            loadSavedFile();
-//        }
+        // open fast launch file
+        if (ioSystem != null && fastLaunch != null) {
+            lastSave = fastLaunch;
+            loadSavedFile();
+            renderField();
+            stage.setTitle(String.format("%s - %s", Main.TITLE, circuit.nameProperty().get()));
+        }
     }
     private void renderField() {
         // configure gc

@@ -58,7 +58,7 @@ public class TryteCMP extends Component {
     // simulation
     @Override public void simulate() {
         LogicLevel res = NIL;
-        for (int i = 0; i < 6 && res == NIL; i++) res = CMP.func(inA[i].get(), inB[i].get());
+        for (int i = 5; i >= 0 && res == NIL; i--) res = CMP.func(inA[i].get(), inB[i].get());
         out.put(res);
     }
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {

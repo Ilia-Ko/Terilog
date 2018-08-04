@@ -10,6 +10,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.IOException;
 
 public class Main extends Application {
@@ -25,6 +26,9 @@ public class Main extends Application {
     private double defWidth, defHeight;
     private double minWidth, minHeight;
     private String defFont;
+
+    // fast launch
+    private static File fastLaunch;
 
     @Override public void init() throws Exception {
         super.init();
@@ -62,7 +66,7 @@ public class Main extends Application {
         root.setStyle(defFont);
         Scene scene = new Scene(root, defWidth, defHeight);
         ControlMain control = loader.getController();
-        control.initialSetup(stage, defFont, maxWidth, maxHeight);
+        control.initialSetup(stage, defFont, maxWidth, maxHeight, fastLaunch);
 
         // make window
         stage.setTitle(TITLE);
@@ -71,6 +75,11 @@ public class Main extends Application {
     }
 
     public static void main(String[] args) {
+        // get fast launch file
+        fastLaunch = null;
+        if (args.length > 0) fastLaunch = new File(args[0]);
+
+        // start
         launch(args);
     }
 
