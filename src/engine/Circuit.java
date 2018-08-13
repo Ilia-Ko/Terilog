@@ -6,18 +6,12 @@ import engine.components.arithmetic.*;
 import engine.components.logic.one_arg.NTI;
 import engine.components.logic.one_arg.PTI;
 import engine.components.logic.one_arg.STI;
-import engine.components.logic.path.Decoder_1_3;
-import engine.components.logic.path.Demux_1_3;
-import engine.components.logic.path.Mux_18_6;
-import engine.components.logic.path.Mux_3_1;
+import engine.components.logic.path.*;
 import engine.components.logic.two_arg.*;
 import engine.components.lumped.*;
+import engine.components.memory.Flat;
+import engine.components.memory.Linear;
 import engine.components.memory.Trigger;
-import engine.components.memory.flat.RAM_6_6;
-import engine.components.memory.linear.Dword;
-import engine.components.memory.linear.Triplet;
-import engine.components.memory.linear.Tryte;
-import engine.components.memory.linear.Word;
 import engine.components.mosfets.HardN;
 import engine.components.mosfets.HardP;
 import engine.components.mosfets.SoftN;
@@ -104,6 +98,7 @@ public class Circuit {
         pins = new HashSet<>();
         nodes = new HashSet<>();
     }
+    @SuppressWarnings("SpellCheckingInspection")
     public Circuit(ControlMain control, Element c) {
         this();
         name.setValue(c.getAttribute("name"));
@@ -184,21 +179,6 @@ public class Circuit {
                     case "equ":
                         add(new EQU(control, comp));
                         break;
-                    case "trytenand":
-                        add(new TryteNAND(control, comp));
-                        break;
-                    case "trytenor":
-                        add(new TryteNOR(control, comp));
-                        break;
-                    case "trytencon":
-                        add(new TryteNCON(control, comp));
-                        break;
-                    case "trytenany":
-                        add(new TryteNANY(control, comp));
-                        break;
-                    case "trytecmp":
-                        add(new TryteCMP(control, comp));
-                        break;
                     case "okey":
                         add(new OKEY(control, comp));
                         break;
@@ -206,33 +186,27 @@ public class Circuit {
                         add(new CKEY(control, comp));
                         break;
                     // logic.path
-                    case "decoder_1_3":
-                        add(new Decoder_1_3(control, comp));
+                    case "decodertrit":
+                        add(new DecoderTrit(control, comp));
                         break;
-                    case "mux_3_1":
-                        add(new Mux_3_1(control, comp));
+                    case "muxbytrit":
+                        add(new MuxByTrit(control, comp));
                         break;
-                    case "mux_18_6":
-                        add(new Mux_18_6(control, comp));
-                        break;
-                    case "demux_1_3":
-                        add(new Demux_1_3(control, comp));
+                    case "demuxbytrit":
+                        add(new DemuxByTrit(control, comp));
                         break;
                     // arithmetic
-                    case "halfadder":
-                        add(new HalfAdder(control, comp));
+                    case "addertrithalf":
+                        add(new AdderTritHalf(control, comp));
                         break;
-                    case "fulladder":
-                        add(new FullAdder(control, comp));
+                    case "addertritfull":
+                        add(new AdderTritFull(control, comp));
                         break;
-                    case "tryteadder":
-                        add(new TryteAdder(control, comp));
+                    case "adder":
+                        add(new Adder(control, comp));
                         break;
-                    case "wordadder":
-                        add(new WordAdder(control, comp));
-                        break;
-                    case "trytemultiplier":
-                        add(new TryteMultiplier(control, comp));
+                    case "multtryte":
+                        add(new MultTryte(control, comp));
                         break;
                     case "counter":
                         add(new Counter(control, comp));
@@ -241,22 +215,11 @@ public class Circuit {
                     case "trigger":
                         add(new Trigger(control, comp));
                         break;
-                    // memory.linear
-                    case "triplet":
-                        add(new Triplet(control, comp));
+                    case "linear":
+                        add(new Linear(control, comp));
                         break;
-                    case "tryte":
-                        add(new Tryte(control, comp));
-                        break;
-                    case "word":
-                        add(new Word(control, comp));
-                        break;
-                    case "dword":
-                        add(new Dword(control, comp));
-                        break;
-                    // memory.flat
-                    case "ram_6_6":
-                        add(new RAM_6_6(control, comp));
+                    case "flat":
+                        add(new Flat(control, comp));
                         break;
                     default:
                         System.out.printf("WARNING: unknown component of class %s.\n", attrClass);

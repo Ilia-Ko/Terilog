@@ -5,8 +5,8 @@ import engine.LogicLevel;
 import engine.components.Component;
 import engine.components.Pin;
 import engine.components.logic.one_arg.STI;
-import engine.components.logic.two_arg.CKEY;
-import engine.components.logic.two_arg.OKEY;
+import engine.components.logic.path.CKEY;
+import engine.components.logic.path.OKEY;
 import engine.connectivity.Selectable;
 import gui.Main;
 import gui.control.ControlMain;
@@ -49,7 +49,7 @@ public class Trigger extends Component {
     }
     @Override protected Pane loadContent() {
         try {
-            String location = "view/components/memory/trigger.fxml";
+            String location = "view/components/memory/Trigger.fxml";
             return FXMLLoader.load(Main.class.getResource(location));
         } catch (IOException e) {
             e.printStackTrace();

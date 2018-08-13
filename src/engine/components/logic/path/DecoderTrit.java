@@ -15,15 +15,15 @@ import java.util.HashSet;
 
 import static engine.LogicLevel.*;
 
-public class Decoder_1_3 extends Component {
+public class DecoderTrit extends Component {
 
     private Pin in, outNEGp, outNEGn, outNILp, outNILn, outPOSp, outPOSn;
 
     // initialization
-    public Decoder_1_3(ControlMain control) {
+    public DecoderTrit(ControlMain control) {
         super(control);
     }
-    public Decoder_1_3(ControlMain control, Element data) {
+    public DecoderTrit(ControlMain control, Element data) {
         super(control, data);
     }
     @Override protected Pane loadContent() {

@@ -2,6 +2,7 @@ package engine.components.logic.one_arg;
 
 import engine.Circuit;
 import engine.LogicLevel;
+import engine.components.lumped.Reconciliator;
 import engine.connectivity.Selectable;
 import gui.control.ControlMain;
 import javafx.beans.property.BooleanProperty;
@@ -62,18 +63,6 @@ public class STI extends Gate1to1 {
         return menu;
     }
 
-    @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
-        countdown(summary);
-        if (convertNILToZZZ.not().get()) {
-            summary.addResistor(1);
-            summary.addInput(LogicLevel.NIL, 1);
-        }
-    }
-    public static void countdown(Circuit.Summary summary) {
-        summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.P_CH, 1);
-        summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.N_CH, 1);
-    }
-
     // simulation
     @Override protected LogicLevel function(LogicLevel a) {
         int v = a.volts();
@@ -85,6 +74,16 @@ public class STI extends Gate1to1 {
         int v = a.volts();
         v *= -1;
         return LogicLevel.parseValue(v);
+    }
+
+    // countdown
+    @Override protected void singleCountdown(Circuit.Summary summary) {
+        countdown(summary);
+        if (convertNILToZZZ.not().get()) Reconciliator.countdown(summary);
+    }
+    public static void countdown(Circuit.Summary summary) {
+        summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.P_CH, 1);
+        summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.N_CH, 1);
     }
 
     // xml info

@@ -29,7 +29,9 @@ public class NANY extends Gate2to1 {
         v *= -1;
         return LogicLevel.parseValue(v);
     }
-    @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
+
+    // countdown
+    @Override protected void singleCountdown(Circuit.Summary summary) {
         countdown(summary);
     }
     public static void countdown(Circuit.Summary summary) {

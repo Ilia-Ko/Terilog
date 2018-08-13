@@ -6,11 +6,11 @@ import engine.components.Component;
 import engine.components.Pin;
 import engine.components.logic.one_arg.PTI;
 import engine.components.logic.one_arg.STI;
-import engine.components.logic.two_arg.CKEY;
+import engine.components.logic.path.CKEY;
 import engine.components.logic.two_arg.NAND;
 import engine.components.lumped.Reconciliator;
+import engine.components.memory.Flat;
 import engine.components.memory.Trigger;
-import engine.components.memory.flat.Flat;
 import engine.connectivity.Selectable;
 import gui.Main;
 import gui.control.ControlMain;
@@ -30,7 +30,7 @@ import static engine.LogicLevel.*;
 
 public class Counter extends Component {
 
-    public static final int MIN_VALUE = -364;
+    private static final int MIN_VALUE = -364;
 
     private Pin reset, clock;
     private Pin[] write, read;
@@ -63,7 +63,7 @@ public class Counter extends Component {
     }
     @Override protected Pane loadContent() {
         try {
-            String location = "view/components/arithmetic/counter.fxml";
+            String location = "view/components/arithmetic/Counter.fxml";
             return FXMLLoader.load(Main.class.getResource(location));
         } catch (IOException e) {
             e.printStackTrace();
@@ -128,7 +128,7 @@ public class Counter extends Component {
             Trigger.countdown(summary);
             CKEY.countdown(summary);
             STI.countdown(summary);
-            if (i % 2 == 0) HalfAdder.countdown(summary);
+            if (i % 2 == 0) AdderTritHalf.countdown(summary);
             if (i % 4 == 0) Reconciliator.countdown(summary);
             if (i % 6 == 0) NAND.countdown(summary);
         }

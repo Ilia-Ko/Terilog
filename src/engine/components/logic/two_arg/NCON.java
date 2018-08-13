@@ -17,9 +17,6 @@ public class NCON extends Gate2to1 {
 
     // simulation
     @Override LogicLevel function(LogicLevel a, LogicLevel b) {
-        return func(a, b);
-    }
-    static LogicLevel func(LogicLevel a, LogicLevel b) {
         int va = a.volts();
         int vb = b.volts();
         int v;
@@ -28,7 +25,9 @@ public class NCON extends Gate2to1 {
         v *= -1;
         return LogicLevel.parseValue(v);
     }
-    @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
+
+    // countdown
+    @Override protected void singleCountdown(Circuit.Summary summary) {
         countdown(summary);
     }
     public static void countdown(Circuit.Summary summary) {

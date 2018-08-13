@@ -5,9 +5,9 @@ import engine.LogicLevel;
 import engine.components.Component;
 import engine.components.Pin;
 import engine.components.logic.one_arg.STI;
+import engine.components.logic.path.OKEY;
 import engine.components.logic.two_arg.NANY;
 import engine.components.logic.two_arg.NCON;
-import engine.components.logic.two_arg.OKEY;
 import gui.Main;
 import gui.control.ControlMain;
 import javafx.beans.property.DoubleProperty;
@@ -23,13 +23,13 @@ import java.util.HashSet;
 import static engine.LogicLevel.ZZZ;
 import static engine.LogicLevel.parseValue;
 
-public class HalfAdder extends Component {
+public class AdderTritHalf extends Component {
 
     private Pin inA, inB; // inputs: trit A and trit B
     private Pin outS, outC; // outputs: trit Sum and trit Carry
 
     // initialization
-    public HalfAdder(ControlMain control) {
+    public AdderTritHalf(ControlMain control) {
         super(control);
         DoubleProperty right = new SimpleDoubleProperty(5.5);
 
@@ -41,14 +41,14 @@ public class HalfAdder extends Component {
         Label lblC = (Label) getRoot().lookup("#lblC");
         lblC.layoutXProperty().bind(right.subtract(lblC.widthProperty()));
     }
-    public HalfAdder(ControlMain control, Element data) {
+    public AdderTritHalf(ControlMain control, Element data) {
         this(control);
         confirm();
         readXML(data);
     }
     @Override protected Pane loadContent() {
         try {
-            String location = "view/components/arithmetic/halfadder.fxml";
+            String location = "view/components/arithmetic/AdderTritHalf.fxml";
             return FXMLLoader.load(Main.class.getResource(location));
         } catch (IOException e) {
             e.printStackTrace();

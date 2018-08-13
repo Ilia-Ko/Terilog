@@ -1,6 +1,6 @@
 package engine;
 
-import engine.components.memory.flat.Flat;
+import engine.components.memory.Flat;
 import gui.control.ControlMain;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

@@ -21,13 +21,13 @@ import java.util.HashSet;
 import static engine.LogicLevel.ZZZ;
 import static engine.LogicLevel.parseValue;
 
-public class FullAdder extends Component {
+public class AdderTritFull extends Component {
 
     private Pin inA, inB, inC; // input trits
     private Pin outS, outC; // output trits
 
     // initialization
-    public FullAdder(ControlMain control) {
+    public AdderTritFull(ControlMain control) {
         super(control);
 
         DoubleProperty right = new SimpleDoubleProperty(4.5);
@@ -40,14 +40,14 @@ public class FullAdder extends Component {
         Label lblC = (Label) getRoot().lookup("#lblC");
         lblC.layoutXProperty().bind(right.subtract(lblC.widthProperty()));
     }
-    public FullAdder(ControlMain control, Element data) {
+    public AdderTritFull(ControlMain control, Element data) {
         this(control);
         confirm();
         readXML(data);
     }
     @Override protected Pane loadContent() {
         try {
-            String location = "view/components/arithmetic/fulladder.fxml";
+            String location = "view/components/arithmetic/AdderTritFull.fxml";
             return FXMLLoader.load(Main.class.getResource(location));
         } catch (IOException e) {
             e.printStackTrace();
@@ -111,8 +111,8 @@ public class FullAdder extends Component {
         summary.addInput(LogicLevel.NEG, 5);
     }
     public static void countdown(Circuit.Summary summary) {
-        HalfAdder.countdown(summary);
-        HalfAdder.countdown(summary);
+        AdderTritHalf.countdown(summary);
+        AdderTritHalf.countdown(summary);
         NANY.countdown(summary);
         STI.countdown(summary);
         summary.addResistor(1);

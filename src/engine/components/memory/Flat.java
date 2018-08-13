@@ -1,18 +1,18 @@
-package engine.components.memory.flat;
+package engine.components.memory;
 
 import engine.Circuit;
 import engine.LogicLevel;
 import engine.TerilogIO;
+import engine.components.BusComponent;
 import engine.components.Component;
 import engine.components.Pin;
-import engine.components.arithmetic.Counter;
 import engine.connectivity.Selectable;
 import gui.Main;
 import gui.control.ControlMain;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import org.w3c.dom.Document;
@@ -20,77 +20,91 @@ import org.w3c.dom.Element;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashSet;
 
 import static engine.LogicLevel.NEG;
 import static engine.LogicLevel.POS;
 
-public abstract class Flat extends Component {
+public class Flat extends Component {
 
     // memory
-    private int addressLen, unitLength, memorySize;
+    private IntegerProperty addrCap, memCap;
+    private int memorySize;
     private long[] data;
     // pins
     private Pin control, fill, clock;
-    private Pin[] address, read, write;
+    private Pin addr, in, out;
     // io
     private File dataFile;
 
     // initialization
-    Flat(ControlMain control, int addressLength, int unitSize) {
+    public Flat(ControlMain control) {
         super(control);
-        addressLen = addressLength;
-        unitLength = unitSize;
-        memorySize = (int) Math.pow(3.0, addressLength);
+        addrCap = new SimpleIntegerProperty(6);
+        memCap = new SimpleIntegerProperty(6);
+        memorySize = (int) Math.pow(3.0, addrCap.doubleValue());
 
         data = new long[memorySize];
         dataFile = null;
 
-        getPins().addAll(makePins());
+        // label
+        Label lbl = (Label) getRoot().lookup("#name");
+        lbl.setText("RAM\n6x6");
+
+        addrCap.addListener((observable, oldValue, newValue) -> {
+            memorySize = (int) Math.pow(3.0, newValue.doubleValue());
+            data = new long[memorySize];
+            lbl.setText(String.format("RAM\n%dx%d", newValue.intValue(), memCap.get()));
+            getPins().clear();
+            getPins().addAll(initPins());
+        });
+        memCap.addListener((observable, oldValue, newValue) -> {
+            lbl.setText(String.format("RAM\n%dx%d", addrCap.get(), newValue.intValue()));
+            getPins().clear();
+            getPins().addAll(initPins());
+        });
     }
-    Flat(ControlMain control, Element data, int addressLength, int unitSize) {
-        this(control, addressLength, unitSize);
+    public Flat(ControlMain control, Element data) {
+        this(control);
         confirm();
         readXML(data);
     }
     @Override protected Pane loadContent() {
         try {
-            String location = "view/components/memory/flat/" + getClass().getSimpleName().toLowerCase() + ".fxml";
+            String location = "view/components/memory/flat/" + getClass().getSimpleName() + ".fxml";
             return FXMLLoader.load(Main.class.getResource(location));
         } catch (IOException e) {
             e.printStackTrace();
             return new Pane();
         }
     }
-    private HashSet<Pin> makePins() {
-        HashSet<Pin> pins = new HashSet<>();
+    @Override protected HashSet<Pin> initPins() {
+        int capAddr = (addrCap == null) ? 6 : addrCap.get();
+        int capMem = (memCap == null) ? 6 : memCap.get();
 
-        control = new Pin(this, true, 1, unitLength + unitLength / 3, 1);
-        fill = new Pin(this, true, 1, unitLength + unitLength / 3, 2);
-        clock = new Pin(this, true, 1, unitLength + unitLength / 3, addressLen + addressLen / 3 - 1);
+        control = new Pin(this, true, 1, 4, 1);
+        fill = new Pin(this, true, 1, 4, 2);
+        clock = new Pin(this, true, 1, 4, 3);
+        addr = new Pin(this, true, capAddr, 0, 2);
+        in = new Pin(this, true, capMem, 2, 0);
+        out = new Pin(this, false, capMem, 2, 4);
+
+        HashSet<Pin> pins = new HashSet<>();
         pins.add(control);
         pins.add(fill);
         pins.add(clock);
-
-        address = new Pin[addressLen];
-        for (int i = 0; i < addressLen; i++) {
-            address[i] = new Pin(this, true, 1, 0, i + 1 + i / 3);
-            pins.add(address[i]);
-        }
-
-        int r = unitLength + unitLength / 3 - 1;
-        write = new Pin[unitLength];
-        read = new Pin[unitLength];
-        for (int i = 0; i < unitLength; i++) {
-            write[i] = new Pin(this, true, 1, r - i - i / 3, 0);
-            read[i] = new Pin(this, false, 1, r - i - i / 3, addressLen + addressLen / 3);
-            pins.add(write[i]);
-            pins.add(read[i]);
-        }
-
+        pins.add(addr);
+        pins.add(in);
+        pins.add(out);
         return pins;
     }
     @Override protected ContextMenu buildContextMenu() {
+        // capacity
+        Menu menuAddrCap = BusComponent.makeCapMenu("Set address size", addrCap);
+        Menu menuMemCap = BusComponent.makeCapMenu("Set data unit size", memCap);
+
+        // load data
         MenuItem itemLoad = new MenuItem("Load data");
         itemLoad.setOnAction(action -> {
             // configure file chooser
@@ -103,14 +117,14 @@ public abstract class Flat extends Component {
             if (file != null && file.exists()) {
                 dataFile = file;
                 try {
-                    TerilogIO.loadFlatData(data, memorySize, unitLength, dataFile);
+                    TerilogIO.loadFlatData(data, memorySize, memCap.get(), dataFile);
                 } catch (IOException e) {
                     e.printStackTrace();
                     getControl().makeAlert(Alert.AlertType.WARNING, "Flat memory", "Failed to load data from file.").showAndWait();
                 }
             }
         });
-
+        // save data
         MenuItem itemSave = new MenuItem("Save data");
         itemSave.setOnAction(action -> {
             // configure file chooser
@@ -124,7 +138,7 @@ public abstract class Flat extends Component {
                 try {
                     if (file.exists() || file.createNewFile()) {
                         dataFile = file;
-                        TerilogIO.saveFlatData(data, memorySize, unitLength, dataFile);
+                        TerilogIO.saveFlatData(data, memorySize, memCap.get(), dataFile);
                     } else {
                         getControl().makeAlert(Alert.AlertType.WARNING, "Flat memory", "File not found.").showAndWait();
                     }
@@ -136,33 +150,29 @@ public abstract class Flat extends Component {
         });
 
         ContextMenu menu = super.buildContextMenu();
-        menu.getItems().add(0, itemLoad);
-        menu.getItems().add(0, itemSave);
+        menu.getItems().add(0, menuAddrCap);
+        menu.getItems().add(1, menuMemCap);
+        menu.getItems().add(2, itemLoad);
+        menu.getItems().add(3, itemSave);
         return menu;
     }
 
     // simulation
     @Override public void simulate() {
         LogicLevel ctrl = control.get()[0];
-        LogicLevel fill = this.fill.get()[0];
-        LogicLevel clck = clock.get()[0];
-        LogicLevel[] addr = new LogicLevel[addressLen];
-        LogicLevel[] in = new LogicLevel[unitLength];
+        LogicLevel[] base = new LogicLevel[addrCap.get()];
+        Arrays.fill(base, NEG);
+        int addr = (int) (encode(this.addr.get(), addrCap.get()) - encode(base, addrCap.get()));
 
-        for (int i = 0; i < addressLen; i++) addr[i] = address[i].get()[0];
-        int address = (int) encode(addr, addressLen) - Counter.MIN_VALUE;
-
-        if (clck == POS) {
+        if (clock.get()[0] == POS) {
             if (ctrl == POS) {
-                for (int i = 0; i < unitLength; i++) in[i] = write[i].get()[0];
-                data[address] = encode(in, unitLength);
+                data[addr] = encode(in.get(), memCap.get());
             } else if (ctrl == NEG) {
-                for (int i = 0; i < unitLength; i++) in[i] = fill;
-                data[address] = encode(in, unitLength);
+                Arrays.fill(in.get(), fill.get()[0]);
+                data[addr] = encode(in.get(), memCap.get());
             }
         }
-        LogicLevel[] out = decode(data[address], unitLength);
-        for (int i = 0; i < unitLength; i++) read[i].put(out[i]);
+        out.put(decode(data[addr], memCap.get()));
     }
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
         summary.takeRAMIntoAccount();
@@ -171,11 +181,26 @@ public abstract class Flat extends Component {
     // xml info
     @Override public Element writeXML(Document doc) {
         Element f = super.writeXML(doc);
+        f.setAttribute("addrCap", Integer.toString(addrCap.get()));
+        f.setAttribute("memCap", Integer.toString(memCap.get()));
         if (dataFile != null) f.setAttribute("data", dataFile.getAbsolutePath());
         return f;
     }
     @Override protected void readXML(Element comp) {
         super.readXML(comp);
+        // capacity
+        String capAddrAttr = comp.getAttribute("addrCap");
+        String capMemAttr = comp.getAttribute("memCap");
+        try {
+            int capAddr = Integer.parseInt(capAddrAttr);
+            int capMem = Integer.parseInt(capMemAttr);
+            memCap.setValue(capMem);
+            addrCap.setValue(capAddr);
+        } catch (NumberFormatException e) {
+            System.out.printf("WARNING: invalid RAM mode: '%sx%s'. Using default mode 6x6.\n", capAddrAttr, capMemAttr);
+        }
+
+        // data
         String dataAttr = comp.getAttribute("data");
         if (!dataAttr.isEmpty()) {
             dataFile = new File(dataAttr);
@@ -183,7 +208,7 @@ public abstract class Flat extends Component {
                 dataFile = null;
                 System.out.printf("WARNING: data file '%s' does not exist.", dataAttr);
             } else try {
-                TerilogIO.loadFlatData(data, memorySize, unitLength, dataFile);
+                TerilogIO.loadFlatData(data, memorySize, memCap.get(), dataFile);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -192,12 +217,9 @@ public abstract class Flat extends Component {
 
     @Override public Selectable copy() {
         Flat copy = (Flat) super.copy();
-        copy.addressLen = addressLen;
-        copy.unitLength = unitLength;
-        copy.memorySize = memorySize;
-        copy.data = new long[memorySize];
+        copy.memCap.setValue(memCap.get());
+        copy.addrCap.setValue(addrCap.get());
         copy.dataFile = null;
-        copy.getPins().addAll(copy.makePins());
         return copy;
     }
 

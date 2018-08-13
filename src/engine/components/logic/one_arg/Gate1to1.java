@@ -1,27 +1,28 @@
 package engine.components.logic.one_arg;
 
 import engine.LogicLevel;
-import engine.components.Component;
+import engine.components.BusComponent;
 import engine.components.Pin;
 import gui.Main;
 import gui.control.ControlMain;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.layout.Pane;
 import org.w3c.dom.Element;
 
 import java.io.IOException;
 import java.util.HashSet;
 
-abstract class Gate1to1 extends Component {
+abstract class Gate1to1 extends BusComponent {
 
     private Pin in, out;
 
     // initialization
     Gate1to1(ControlMain control) {
-        super(control);
+        super(control, false);
     }
     Gate1to1(ControlMain control, Element data) {
-        super(control, data);
+        super(control, false, data);
     }
     @Override protected Pane loadContent() {
         try {
@@ -39,13 +40,22 @@ abstract class Gate1to1 extends Component {
         pins.add(out);
         return pins;
     }
+    @Override protected ContextMenu buildContextMenu() {
+        ContextMenu menu = super.buildContextMenu();
+        menu.getItems().add(0, makeCapMenu("Set size", capacity));
+        return menu;
+    }
 
     // simulation
     @Override public void simulate() {
-        LogicLevel i = in.get()[0];
+        LogicLevel[] inp = in.get();
+        LogicLevel[] out = new LogicLevel[capacity.get()];
 
-        if (i.isUnstable()) out.put(i);
-        else out.put(function(i));
+        for (int i = 0; i < capacity.get(); i++) {
+            if (inp[i].isUnstable()) out[i] = inp[i];
+            else out[i] = function(inp[i]);
+        }
+        this.out.put(out);
     }
     abstract LogicLevel function(LogicLevel a);
 

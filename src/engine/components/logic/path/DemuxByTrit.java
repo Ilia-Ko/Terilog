@@ -1,48 +1,37 @@
 package engine.components.logic.path;
 
 import engine.Circuit;
-import engine.components.Component;
+import engine.LogicLevel;
 import engine.components.Pin;
 import engine.components.logic.one_arg.STI;
-import engine.components.logic.two_arg.CKEY;
 import engine.components.lumped.Reconciliator;
-import gui.Main;
 import gui.control.ControlMain;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.layout.Pane;
 import org.w3c.dom.Element;
 
-import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashSet;
 
 import static engine.LogicLevel.NIL;
 import static engine.LogicLevel.ZZZ;
 
-public class Demux_1_3 extends Component {
+public class DemuxByTrit extends GatePath {
 
     private Pin in, outNEG, outNIL, outPOS, sel;
 
     // initialization
-    public Demux_1_3(ControlMain control) {
+    public DemuxByTrit(ControlMain control) {
         super(control);
     }
-    public Demux_1_3(ControlMain control, Element data) {
+    public DemuxByTrit(ControlMain control, Element data) {
         super(control, data);
     }
-    @Override protected Pane loadContent() {
-        try {
-            return FXMLLoader.load(Main.class.getResource("view/components/logic/path/demux_1_3.fxml"));
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new Pane();
-        }
-    }
     @Override protected HashSet<Pin> initPins() {
-        in = new Pin(this, true, 1, 0, 2);
-        sel = new Pin(this, true, 1, 1, 4);
-        outNEG = new Pin(this, false, 1, 2, 1);
-        outNIL = new Pin(this, false, 1, 2, 2);
-        outPOS = new Pin(this, false, 1, 2, 3);
+        int cap = (capacity == null) ? 1 : capacity.get();
+        in = new Pin(this, true, cap, 0, 4);
+        sel = new Pin(this, true, 1, 1, 8);
+        outNEG = new Pin(this, false, cap, 2, 1);
+        outNIL = new Pin(this, false, cap, 2, 4);
+        outPOS = new Pin(this, false, cap, 2, 7);
 
         HashSet<Pin> pins = new HashSet<>();
         pins.add(in);
@@ -55,30 +44,41 @@ public class Demux_1_3 extends Component {
 
     // simulation
     @Override public void simulate() {
+        LogicLevel[] nils = new LogicLevel[capacity.get()];
+        LogicLevel[] zzzs = new LogicLevel[capacity.get()];
+        Arrays.fill(nils, NIL);
+        Arrays.fill(zzzs, ZZZ);
+
         switch (sel.get()[0]) {
             case NEG:
                 outNEG.put(in.get());
-                outNIL.put(NIL);
-                outPOS.put(NIL);
+                outNIL.put(nils);
+                outPOS.put(nils);
                 break;
             case NIL:
-                outNEG.put(NIL);
+                outNEG.put(nils);
                 outNIL.put(in.get());
-                outPOS.put(NIL);
+                outPOS.put(nils);
                 break;
             case POS:
-                outNEG.put(NIL);
-                outNIL.put(NIL);
+                outNEG.put(nils);
+                outNIL.put(nils);
                 outPOS.put(in.get());
                 break;
             default:
-                outNEG.put(ZZZ);
-                outNIL.put(ZZZ);
-                outPOS.put(ZZZ);
+                outNEG.put(zzzs);
+                outNIL.put(zzzs);
+                outPOS.put(zzzs);
                 break;
         }
     }
+
+    // countdown
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
+        super.itIsAFinalCountdown(summary);
+        DecoderTrit.countdown(summary);
+    }
+    @Override protected void singleCountdown(Circuit.Summary summary) {
         countdown(summary);
     }
     public static void countdown(Circuit.Summary summary) {
@@ -91,7 +91,6 @@ public class Demux_1_3 extends Component {
         Reconciliator.countdown(summary);
         Reconciliator.countdown(summary);
         Reconciliator.countdown(summary);
-        Decoder_1_3.countdown(summary);
     }
 
 }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.Rectangle?>
+<Pane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" prefHeight="4" prefWidth="4">
+
+    <Rectangle strokeWidth="0.1" stroke="black" fill="lightgray" width="4" height="4"/>
+    <Rectangle strokeWidth="0.05" stroke="black" fill="white" x="3.6" y="2.5" width="0.4" height="1.5"/>
+
+    <Label fx:id="name" layoutX="0.5" layoutY="0.5" minWidth="3" maxWidth="3" minHeight="3" maxHeight="3"
+           textFill="black" style="-fx-font-size: 1px" textAlignment="CENTER"/>
+
+</Pane>

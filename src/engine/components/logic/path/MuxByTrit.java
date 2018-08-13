@@ -2,45 +2,34 @@ package engine.components.logic.path;
 
 import engine.Circuit;
 import engine.LogicLevel;
-import engine.components.Component;
 import engine.components.Pin;
 import engine.components.logic.one_arg.STI;
-import engine.components.logic.two_arg.CKEY;
-import gui.Main;
 import gui.control.ControlMain;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.layout.Pane;
 import org.w3c.dom.Element;
 
-import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashSet;
 
-public class Mux_3_1 extends Component {
+import static engine.LogicLevel.ZZZ;
+
+public class MuxByTrit extends GatePath {
 
     private Pin inNEG, inNIL, inPOS, out, sel;
 
     // initialization
-    public Mux_3_1(ControlMain control) {
+    public MuxByTrit(ControlMain control) {
         super(control);
     }
-    public Mux_3_1(ControlMain control, Element data) {
+    public MuxByTrit(ControlMain control, Element data) {
         super(control, data);
     }
-    @Override protected Pane loadContent() {
-        try {
-            String location = "view/components/logic/path/mux_3_1.fxml";
-            return FXMLLoader.load(Main.class.getResource(location));
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new Pane();
-        }
-    }
     @Override protected HashSet<Pin> initPins() {
-        inNEG = new Pin(this, true, 1, 0, 1);
-        inNIL = new Pin(this, true, 1, 0, 2);
-        inPOS = new Pin(this, true, 1, 0, 3);
-        out = new Pin(this, false, 1, 2, 2);
-        sel = new Pin(this, true, 1, 1, 4);
+        int cap = (capacity == null) ? 1 : capacity.get();
+        inNEG = new Pin(this, true, cap, 0, 1);
+        inNIL = new Pin(this, true, cap, 0, 4);
+        inPOS = new Pin(this, true, cap, 0, 7);
+        out = new Pin(this, false, cap, 2, 4);
+        sel = new Pin(this, true, 1, 1, 8);
 
         HashSet<Pin> pins = new HashSet<>();
         pins.add(inNEG);
@@ -53,23 +42,32 @@ public class Mux_3_1 extends Component {
 
     // simulation
     @Override public void simulate() {
+        LogicLevel[] res;
         switch (sel.get()[0]) {
             case NEG:
-                out.put(STI.func(inNEG.get()[0]));
+                res = inNEG.get();
                 break;
             case NIL:
-                out.put(STI.func(inNIL.get()[0]));
+                res = inNIL.get();
                 break;
             case POS:
-                out.put(STI.func(inPOS.get()[0]));
+                res = inPOS.get();
                 break;
             default:
-                out.put(LogicLevel.ZZZ);
+                res = new LogicLevel[capacity.get()];
+                Arrays.fill(res, ZZZ);
         }
+        for (int i = 0; i < capacity.get(); i++) res[i] = STI.func(res[i]);
+        out.put(res);
     }
+
+    // countdown
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
+        super.itIsAFinalCountdown(summary);
+        DecoderTrit.countdown(summary);
+    }
+    @Override protected void singleCountdown(Circuit.Summary summary) {
         countdown(summary);
-        Decoder_1_3.countdown(summary);
     }
     public static void countdown(Circuit.Summary summary) {
         CKEY.countdown(summary);

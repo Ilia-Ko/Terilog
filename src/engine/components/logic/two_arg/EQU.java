@@ -18,11 +18,7 @@ public class EQU extends Gate2to1 {
         if (a == b) return LogicLevel.POS;
         return LogicLevel.NIL;
     }
-    @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
-        countdown(summary);
-    }
-    public static void countdown(Circuit.Summary summary) {
-        summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.P_CH, 5);
+    @Override protected void singleCountdown(Circuit.Summary summary) {summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.P_CH, 5);
         summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.N_CH, 4);
         summary.addMOSFET(Circuit.Summary.SOFT, Circuit.Summary.N_CH, 2);
         summary.addInput(LogicLevel.NEG, 1);

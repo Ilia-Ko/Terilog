@@ -1,42 +1,38 @@
 package engine.components.logic.two_arg;
 
 import engine.LogicLevel;
-import engine.components.Component;
+import engine.components.BusComponent;
 import engine.components.Pin;
-import gui.Main;
 import gui.control.ControlMain;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.layout.Pane;
+import javafx.scene.control.Label;
 import org.w3c.dom.Element;
 
-import java.io.IOException;
 import java.util.HashSet;
 
 import static engine.LogicLevel.ZZZ;
 
-abstract class Gate2to1 extends Component {
+abstract class Gate2to1 extends BusComponent {
 
-    Pin inA, inB, out;
+    private Pin inA, inB, out;
 
     // initialization
     Gate2to1(ControlMain control) {
-        super(control);
+        super(control, true);
+        // name
+        Label lbl = (Label) getRoot().lookup("#name");
+        lbl.setText(makeName(getClass(), capacity));
+        capacity.addListener((observable, oldValue, newValue) -> lbl.setText(makeName(getClass(), capacity)));
     }
     Gate2to1(ControlMain control, Element data) {
-        super(control, data);
-    }
-    @Override protected Pane loadContent() {
-        try {
-            String location = "view/components/logic/two_arg/" + getClass().getSimpleName().toLowerCase() + ".fxml";
-            return FXMLLoader.load(Main.class.getResource(location));
-        } catch (IOException e) {
-            return new Pane();
-        }
+        super(control, true);
+        readXML(data);
+        confirm();
     }
     @Override protected HashSet<Pin> initPins() {
-        inA = new Pin(this, true, 1, 0, 1);
-        inB = new Pin(this, true, 1, 0, 2);
-        out = new Pin(this, false, 1, 4, 1);
+        int cap = (capacity == null) ? 1 : capacity.get();
+        inA = new Pin(this, true, cap, 0, 2);
+        inB = new Pin(this, true, cap, 0, 8);
+        out = new Pin(this, false, cap, 4, 5);
         HashSet<Pin> pins = new HashSet<>();
         pins.add(inA);
         pins.add(inB);
@@ -46,13 +42,17 @@ abstract class Gate2to1 extends Component {
 
     // simulation
     @Override public void simulate() {
-        LogicLevel a = inA.get()[0];
-        LogicLevel b = inB.get()[0];
+        LogicLevel[] a = inA.get();
+        LogicLevel[] b = inB.get();
+        LogicLevel[] c = new LogicLevel[capacity.get()];
 
-        if (a.isUnstable() || b.isUnstable()) {
-            if (a == b) out.put(a);
-            else out.put(ZZZ);
-        } else out.put(function(a, b));
+        for (int i = 0; i < capacity.get(); i++) {
+            if (a[i].isUnstable() || b[i].isUnstable()) {
+                if (a == b) c[i] = a[i];
+                else c[i] = ZZZ;
+            } else c[i] = function(a[i], b[i]);
+        }
+        out.put(c);
     }
     abstract LogicLevel function(LogicLevel a, LogicLevel b);
 

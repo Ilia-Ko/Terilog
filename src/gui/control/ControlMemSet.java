@@ -1,8 +1,7 @@
 package gui.control;
 
 import engine.LogicLevel;
-import engine.components.memory.linear.Linear;
-import engine.components.memory.linear.MemCell;
+import engine.components.memory.Linear;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
@@ -23,14 +22,14 @@ public class ControlMemSet {
 
     // callback
     private Stage dialog;
-    private MemCell[] cells;
+    private LogicLevel[] memory;
 
     // initialization
     public void initialSetup(Stage dialog, Linear memory) {
         this.dialog = dialog;
-        this.cells = memory.getCells();
+        this.memory = memory.getMemory();
 
-        switch (cells.length) {
+        switch (this.memory.length) {
             case 3:
                 texts = new TextField[] {t00, t01, t02};
                 break;
@@ -63,13 +62,13 @@ public class ControlMemSet {
 
     // events
     @FXML private void btnConfirmClicked() {
-        for (int i = 0; i < cells.length; i++)
-            cells[i].memProperty().setValue(LogicLevel.parseDigit(texts[i].getText().charAt(0)));
+        for (int i = 0; i < memory.length; i++)
+            memory[i] = LogicLevel.parseDigit(texts[i].getText().charAt(0));
         dialog.close();
     }
     @FXML private void btnResetClicked() {
-        for (int i = 0; i < cells.length; i++)
-            texts[i].setText(String.valueOf(cells[i].memProperty().get().getDigitCharacter()));
+        for (int i = 0; i < memory.length; i++)
+            texts[i].setText(String.valueOf(memory[i].getDigitCharacter()));
     }
     @FXML private void btnClearClicked() {
         for (TextField txt : texts) txt.setText("0");

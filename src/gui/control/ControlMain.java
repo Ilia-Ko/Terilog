@@ -7,18 +7,12 @@ import engine.components.arithmetic.*;
 import engine.components.logic.one_arg.NTI;
 import engine.components.logic.one_arg.PTI;
 import engine.components.logic.one_arg.STI;
-import engine.components.logic.path.Decoder_1_3;
-import engine.components.logic.path.Demux_1_3;
-import engine.components.logic.path.Mux_18_6;
-import engine.components.logic.path.Mux_3_1;
+import engine.components.logic.path.*;
 import engine.components.logic.two_arg.*;
 import engine.components.lumped.*;
+import engine.components.memory.Flat;
+import engine.components.memory.Linear;
 import engine.components.memory.Trigger;
-import engine.components.memory.flat.RAM_6_6;
-import engine.components.memory.linear.Dword;
-import engine.components.memory.linear.Triplet;
-import engine.components.memory.linear.Tryte;
-import engine.components.memory.linear.Word;
 import engine.components.mosfets.HardN;
 import engine.components.mosfets.HardP;
 import engine.components.mosfets.SoftN;
@@ -585,31 +579,7 @@ public class ControlMain {
         flyComp = new EQU(this);
         holdingComp = true;
     }
-    @FXML private void menuTryteNAND() {
-        breakInsertion();
-        flyComp = new TryteNAND(this);
-        holdingComp = true;
-    }
-    @FXML private void menuTryteNOR() {
-        breakInsertion();
-        flyComp = new TryteNOR(this);
-        holdingComp = true;
-    }
-    @FXML private void menuTryteNCON() {
-        breakInsertion();
-        flyComp = new TryteNCON(this);
-        holdingComp = true;
-    }
-    @FXML private void menuTryteNANY() {
-        breakInsertion();
-        flyComp = new TryteNANY(this);
-        holdingComp = true;
-    }
-    @FXML private void menuTryteCMP() {
-        breakInsertion();
-        flyComp = new TryteCMP(this);
-        holdingComp = true;
-    }
+    // menu.add.path
     @FXML private void menuOKEY() {
         breakInsertion();
         flyComp = new OKEY(this);
@@ -620,51 +590,40 @@ public class ControlMain {
         flyComp = new CKEY(this);
         holdingComp = true;
     }
-    // menu.add.path
-    @FXML private void menuDecoder1to3() {
+    @FXML private void menuDecoderTrit() {
         breakInsertion();
-        flyComp = new Decoder_1_3(this);
+        flyComp = new DecoderTrit(this);
         holdingComp = true;
     }
-    @FXML private void menuMux3to1() {
+    @FXML private void menuMuxByTrit() {
         breakInsertion();
-        flyComp = new Mux_3_1(this);
+        flyComp = new MuxByTrit(this);
         holdingComp = true;
     }
-    @FXML private void menuMux18to6() {
+    @FXML private void menuDemuxByTrit() {
         breakInsertion();
-        flyComp = new Mux_18_6(this);
-        holdingComp = true;
-    }
-    @FXML private void menuDemux1to3() {
-        breakInsertion();
-        flyComp = new Demux_1_3(this);
+        flyComp = new DemuxByTrit(this);
         holdingComp = true;
     }
     // menu.add.arithmetic
-    @FXML private void menuHalfAdder() {
+    @FXML private void menuAdderTritHalf() {
         breakInsertion();
-        flyComp = new HalfAdder(this);
+        flyComp = new AdderTritHalf(this);
         holdingComp = true;
     }
-    @FXML private void menuFullAdder() {
+    @FXML private void menuAdderTritFull() {
         breakInsertion();
-        flyComp = new FullAdder(this);
+        flyComp = new AdderTritFull(this);
         holdingComp = true;
     }
-    @FXML private void menuTryteAdder() {
+    @FXML private void menuAdder() {
         breakInsertion();
-        flyComp = new TryteAdder(this);
+        flyComp = new Adder(this);
         holdingComp = true;
     }
-    @FXML private void menuWordAdder() {
+    @FXML private void menuMultTryte() {
         breakInsertion();
-        flyComp = new WordAdder(this);
-        holdingComp = true;
-    }
-    @FXML private void menuTryteMultiplier() {
-        breakInsertion();
-        flyComp = new TryteMultiplier(this);
+        flyComp = new MultTryte(this);
         holdingComp = true;
     }
     @FXML private void menuCounter() {
@@ -678,31 +637,14 @@ public class ControlMain {
         flyComp = new Trigger(this);
         holdingComp = true;
     }
-    // menu.add.memory.linear
-    @FXML private void menuTriplet() {
+    @FXML private void menuLinear() {
         breakInsertion();
-        flyComp = new Triplet(this);
+        flyComp = new Linear(this);
         holdingComp = true;
     }
-    @FXML private void menuTryte() {
+    @FXML private void menuFlat() {
         breakInsertion();
-        flyComp = new Tryte(this);
-        holdingComp = true;
-    }
-    @FXML private void menuWord() {
-        breakInsertion();
-        flyComp = new Word(this);
-        holdingComp = true;
-    }
-    @FXML private void menuDword() {
-        breakInsertion();
-        flyComp = new Dword(this);
-        holdingComp = true;
-    }
-    // menu.add.memory.flat
-    @FXML private void menuRAM6_6() {
-        breakInsertion();
-        flyComp = new RAM_6_6(this);
+        flyComp = new Flat(this);
         holdingComp = true;
     }
     // menu.add.wire

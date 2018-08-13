@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--suppress ALL -->
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.*?>
+<?import java.lang.*?>
+<Pane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" prefHeight="8" prefWidth="2">
+
+    <Polygon strokeWidth="0.1" stroke="black" fill="lightgray">
+        <points>
+            <Double fx:value="0"/><Double fx:value="0"/>
+            <Double fx:value="2"/><Double fx:value="2"/>
+            <Double fx:value="2"/><Double fx:value="6"/>
+            <Double fx:value="0"/><Double fx:value="8"/>
+            <Double fx:value="0"/><Double fx:value="6"/>
+            <Double fx:value="0.5"/><Double fx:value="5.5"/>
+            <Double fx:value="0"/><Double fx:value="5"/>
+            <Double fx:value="0"/><Double fx:value="3"/>
+            <Double fx:value="0.5"/><Double fx:value="2.5"/>
+            <Double fx:value="0"/><Double fx:value="2"/>
+            <Double fx:value="0"/><Double fx:value="0"/>
+        </points>
+    </Polygon>
+
+    <Line strokeWidth="0.1" stroke="black" startX="0.5" startY="3.5" endX="1.0" endY="4.0"/>
+    <Line strokeWidth="0.1" stroke="black" startX="1.0" startY="4.0" endX="0.5" endY="4.5"/>
+    <Line strokeWidth="0.1" stroke="black" startX="1.0" startY="3.5" endX="1.5" endY="4.0"/>
+    <Line strokeWidth="0.1" stroke="black" startX="1.5" startY="4.0" endX="1.0" endY="4.5"/>
+
+    <Rectangle strokeWidth="0.1" stroke="black" fill="deepskyblue" x="0" y="0.5" width="0.4" height="1"/>
+    <Rectangle strokeWidth="0.1" stroke="black" fill="forestgreen" x="0" y="3.5" width="0.4" height="1"/>
+    <Rectangle strokeWidth="0.1" stroke="black" fill="orangered" x="0" y="6.5" width="0.4" height="1"/>
+
+    <Line strokeWidth="0.1" stroke="black" startX="1" startY="7.5" endX="1" endY="8"/>
+
+</Pane>
