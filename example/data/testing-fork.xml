@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<circuit depth="60" name="Fork test">
+    <comp class="forktryte" mode="divergence" mx="1" my="1" rot="0" x="17" y="16"/>
+    <comp class="voltage" mx="1" my="1" rot="0" sig="HIGH" x="26" y="1"/>
+    <comp class="voltage" mx="1" my="1" rot="0" sig="HIGH" x="11" y="1"/>
+    <comp class="voltage" mx="1" my="1" rot="0" sig="MID" x="3" y="1"/>
+    <comp class="tryteadder" mx="1" my="1" rot="0" x="32" y="16"/>
+    <comp class="voltage" mx="1" my="1" rot="0" sig="MID" x="24" y="1"/>
+    <comp class="voltage" mx="1" my="1" rot="0" sig="HIGH" x="13" y="1"/>
+    <comp class="voltage" mx="1" my="1" rot="0" sig="MID" x="9" y="1"/>
+    <comp class="voltage" mx="1" my="1" rot="0" sig="MID" x="30" y="1"/>
+    <comp class="indicator" mx="1" my="1" rot="-90" x="43" y="3"/>
+    <comp class="voltage" mx="1" my="1" rot="0" sig="LOW" x="22" y="1"/>
+    <comp class="voltage" mx="1" my="1" rot="0" sig="LOW" x="7" y="1"/>
+    <comp class="voltage" mx="1" my="1" rot="0" sig="LOW" x="20" y="1"/>
+    <comp class="indicator" mx="1" my="1" rot="-90" x="53" y="3"/>
+    <comp class="indicator" mx="1" my="1" rot="-90" x="51" y="3"/>
+    <comp class="voltage" mx="1" my="1" rot="0" sig="LOW" x="28" y="1"/>
+    <comp class="forktryte" mode="convergence" mx="-1" my="1" rot="0" x="46" y="23"/>
+    <comp class="forktryte" mode="divergence" mx="1" my="1" rot="0" x="17" y="24"/>
+    <comp class="indicator" mx="1" my="1" rot="-90" x="49" y="3"/>
+    <comp class="forktryte" mode="convergence" mx="1" my="1" rot="-90" x="6" y="8"/>
+    <comp class="forktryte" mode="convergence" mx="1" my="1" rot="-90" x="23" y="8"/>
+    <comp class="voltage" mx="1" my="1" rot="0" sig="HIGH" x="5" y="1"/>
+    <comp class="forktryte" mode="divergence" mx="1" my="1" rot="-90" x="46" y="8"/>
+    <comp class="indicator" mx="1" my="1" rot="-90" x="45" y="3"/>
+    <comp class="indicator" mx="1" my="1" rot="-90" x="47" y="3"/>
+    <wire bus="1" x0="32" x1="22" y0="17" y1="17"/>
+    <wire bus="1" x0="20" x1="19" y0="28" y1="28"/>
+    <wire bus="1" x0="32" x1="19" y0="22" y1="22"/>
+    <wire bus="1" x0="21" x1="21" y0="18" y1="17"/>
+    <wire bus="1" x0="22" x1="19" y0="16" y1="16"/>
+    <wire bus="1" x0="22" x1="19" y0="30" y1="30"/>
+    <wire bus="1" x0="32" x1="19" y0="20" y1="20"/>
+    <wire bus="1" x0="20" x1="20" y0="19" y1="18"/>
+    <wire bus="1" x0="21" x1="21" y0="28" y1="29"/>
+    <wire bus="1" x0="32" x1="19" y0="25" y1="25"/>
+    <wire bus="1" x0="42" x1="42" y0="27" y1="28"/>
+    <wire bus="1" x0="32" x1="21" y0="18" y1="18"/>
+    <wire bus="1" x0="43" x1="43" y0="26" y1="27"/>
+    <wire bus="1" x0="22" x1="22" y0="17" y1="16"/>
+    <wire bus="1" x0="20" x1="19" y0="18" y1="18"/>
+    <wire bus="1" x0="41" x1="41" y0="28" y1="29"/>
+    <wire bus="1" x0="36" x1="42" y0="27" y1="27"/>
+    <wire bus="1" x0="32" x1="21" y0="28" y1="28"/>
+    <wire bus="1" x0="43" x1="44" y0="27" y1="27"/>
+    <wire bus="1" x0="42" x1="44" y0="28" y1="28"/>
+    <wire bus="1" x0="32" x1="20" y0="19" y1="19"/>
+    <wire bus="1" x0="41" x1="44" y0="29" y1="29"/>
+    <wire bus="1" x0="22" x1="22" y0="29" y1="30"/>
+    <wire bus="1" x0="32" x1="20" y0="27" y1="27"/>
+    <wire bus="1" x0="36" x1="41" y0="28" y1="28"/>
+    <wire bus="1" x0="21" x1="19" y0="29" y1="29"/>
+    <wire bus="1" x0="21" x1="19" y0="17" y1="17"/>
+    <wire bus="1" x0="20" x1="20" y0="27" y1="28"/>
+    <wire bus="1" x0="19" x1="32" y0="21" y1="21"/>
+    <wire bus="1" x0="19" x1="32" y0="24" y1="24"/>
+    <wire bus="1" x0="32" x1="22" y0="29" y1="29"/>
+    <wire bus="1" x0="36" x1="43" y0="26" y1="26"/>
+    <wire bus="1" x0="19" x1="32" y0="26" y1="26"/>
+    <wire bus="1" x0="44" x1="36" y0="23" y1="23"/>
+    <wire bus="1" x0="36" x1="44" y0="24" y1="24"/>
+    <wire bus="1" x0="44" x1="36" y0="25" y1="25"/>
+    <wire bus="1" x0="6" x1="4" y0="6" y1="6"/>
+    <wire bus="1" x0="4" x1="4" y0="6" y1="3"/>
+    <wire bus="1" x0="7" x1="6" y0="5" y1="5"/>
+    <wire bus="1" x0="7" x1="7" y0="6" y1="5"/>
+    <wire bus="1" x0="6" x1="6" y0="5" y1="3"/>
+    <wire bus="1" x0="10" x1="10" y0="3" y1="6"/>
+    <wire bus="1" x0="11" x1="12" y0="5" y1="5"/>
+    <wire bus="1" x0="11" x1="11" y0="6" y1="5"/>
+    <wire bus="1" x0="12" x1="12" y0="5" y1="3"/>
+    <wire bus="1" x0="12" x1="14" y0="6" y1="6"/>
+    <wire bus="1" x0="14" x1="14" y0="6" y1="3"/>
+    <wire bus="1" x0="25" x1="25" y0="6" y1="3"/>
+    <wire bus="1" x0="27" x1="27" y0="3" y1="6"/>
+    <wire bus="1" x0="28" x1="29" y0="5" y1="5"/>
+    <wire bus="1" x0="28" x1="28" y0="6" y1="5"/>
+    <wire bus="1" x0="29" x1="29" y0="5" y1="3"/>
+    <wire bus="1" x0="29" x1="31" y0="6" y1="6"/>
+    <wire bus="1" x0="31" x1="31" y0="6" y1="3"/>
+    <wire bus="1" x0="24" x1="23" y0="5" y1="5"/>
+    <wire bus="1" x0="24" x1="24" y0="6" y1="5"/>
+    <wire bus="1" x0="23" x1="23" y0="5" y1="3"/>
+    <wire bus="1" x0="23" x1="21" y0="6" y1="6"/>
+    <wire bus="1" x0="21" x1="21" y0="6" y1="3"/>
+    <wire bus="1" x0="48" x1="48" y0="6" y1="3"/>
+    <wire bus="1" x0="50" x1="50" y0="3" y1="6"/>
+    <wire bus="1" x0="51" x1="52" y0="5" y1="5"/>
+    <wire bus="1" x0="51" x1="51" y0="6" y1="5"/>
+    <wire bus="1" x0="52" x1="52" y0="5" y1="3"/>
+    <wire bus="1" x0="54" x1="52" y0="6" y1="6"/>
+    <wire bus="1" x0="54" x1="54" y0="3" y1="6"/>
+    <wire bus="1" x0="47" x1="46" y0="5" y1="5"/>
+    <wire bus="1" x0="47" x1="47" y0="6" y1="5"/>
+    <wire bus="1" x0="46" x1="46" y0="5" y1="3"/>
+    <wire bus="1" x0="44" x1="46" y0="6" y1="6"/>
+    <wire bus="1" x0="44" x1="44" y0="3" y1="6"/>
+    <wire bus="6" x0="46" x1="49" y0="26" y1="26"/>
+    <wire bus="6" x0="49" x1="49" y0="26" y1="8"/>
+    <wire bus="6" x0="17" x1="9" y0="27" y1="27"/>
+    <wire bus="6" x0="9" x1="9" y0="27" y1="8"/>
+    <wire bus="6" x0="17" x1="14" y0="19" y1="19"/>
+    <wire bus="6" x0="14" x1="14" y0="19" y1="13"/>
+    <wire bus="6" x0="14" x1="26" y0="13" y1="13"/>
+    <wire bus="6" x0="26" x1="26" y0="13" y1="8"/>
+    <wire bus="1" x0="8" x1="8" y0="6" y1="3"/>
+    <grid h="167" w="148"/>
+</circuit>

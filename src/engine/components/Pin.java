@@ -66,6 +66,9 @@ public class Pin extends Rectangle implements Connectible {
     public boolean hasLowImpedance() {
         return !highImpedance;
     }
+    public void setHighImpedance(boolean highImpedance) {
+        this.highImpedance = highImpedance;
+    }
     // parsing.stage1
     @Override public void inspect(Wire wire) {
         Point2D pos = owner.getRoot().localToParent(cx, cy);

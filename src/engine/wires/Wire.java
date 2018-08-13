@@ -112,11 +112,6 @@ public class Wire extends Region implements Connectible, Selectable {
         y1.unbind();
 
         ContextMenu menu = buildContextMenu();
-        setOnContextMenuRequested(mouse -> {
-            if (isSelected.not().get())
-                menu.show(this, mouse.getScreenX(), mouse.getScreenY());
-        });
-
         setOpacity(1.0);
         control.getCircuit().add(this);
 
@@ -269,6 +264,7 @@ public class Wire extends Region implements Connectible, Selectable {
     // xml info
     public Element writeXML(Document doc) {
         Element w = doc.createElement("wire");
+        w.setAttribute("bus", Integer.toString(length));
         w.setAttribute("x0", asInt(x0));
         w.setAttribute("y0", asInt(y0));
         w.setAttribute("x1", asInt(x1));
