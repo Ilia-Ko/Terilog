@@ -65,16 +65,16 @@ public abstract class Flat extends Component {
     private HashSet<Pin> makePins() {
         HashSet<Pin> pins = new HashSet<>();
 
-        control = new Pin(this, true, unitLength + unitLength / 3, 1);
-        fill = new Pin(this, true, unitLength + unitLength / 3, 2);
-        clock = new Pin(this, true, unitLength + unitLength / 3, addressLen + addressLen / 3 - 1);
+        control = new Pin(this, true, 1, unitLength + unitLength / 3, 1);
+        fill = new Pin(this, true, 1, unitLength + unitLength / 3, 2);
+        clock = new Pin(this, true, 1, unitLength + unitLength / 3, addressLen + addressLen / 3 - 1);
         pins.add(control);
         pins.add(fill);
         pins.add(clock);
 
         address = new Pin[addressLen];
         for (int i = 0; i < addressLen; i++) {
-            address[i] = new Pin(this, true, 0, i + 1 + i / 3);
+            address[i] = new Pin(this, true, 1, 0, i + 1 + i / 3);
             pins.add(address[i]);
         }
 
@@ -82,8 +82,8 @@ public abstract class Flat extends Component {
         write = new Pin[unitLength];
         read = new Pin[unitLength];
         for (int i = 0; i < unitLength; i++) {
-            write[i] = new Pin(this, true, r - i - i / 3, 0);
-            read[i] = new Pin(this, false, r - i - i / 3, addressLen + addressLen / 3);
+            write[i] = new Pin(this, true, 1, r - i - i / 3, 0);
+            read[i] = new Pin(this, false, 1, r - i - i / 3, addressLen + addressLen / 3);
             pins.add(write[i]);
             pins.add(read[i]);
         }
@@ -143,18 +143,18 @@ public abstract class Flat extends Component {
 
     // simulation
     @Override public void simulate() {
-        LogicLevel ctrl = control.get();
-        LogicLevel fill = this.fill.get();
-        LogicLevel clck = clock.get();
+        LogicLevel ctrl = control.get()[0];
+        LogicLevel fill = this.fill.get()[0];
+        LogicLevel clck = clock.get()[0];
         LogicLevel[] addr = new LogicLevel[addressLen];
         LogicLevel[] in = new LogicLevel[unitLength];
 
-        for (int i = 0; i < addressLen; i++) addr[i] = address[i].get();
+        for (int i = 0; i < addressLen; i++) addr[i] = address[i].get()[0];
         int address = (int) encode(addr, addressLen) - Counter.MIN_VALUE;
 
         if (clck == POS) {
             if (ctrl == POS) {
-                for (int i = 0; i < unitLength; i++) in[i] = write[i].get();
+                for (int i = 0; i < unitLength; i++) in[i] = write[i].get()[0];
                 data[address] = encode(in, unitLength);
             } else if (ctrl == NEG) {
                 for (int i = 0; i < unitLength; i++) in[i] = fill;

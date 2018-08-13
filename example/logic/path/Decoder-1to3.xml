@@ -1,27 +1,42 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <circuit depth="60" name="Decoder 1 to 3">
-    <comp class="reconciliator" mx="1" my="1" pull="MID" rot="0" x="26" y="20"/>
-    <comp class="indicator" mx="1" my="1" rot="0" x="30" y="8"/>
-    <comp class="indicator" mx="1" my="1" rot="0" x="30" y="26"/>
-    <comp class="voltage" mx="1" my="1" rot="0" sig="HIGH" x="25" y="12"/>
-    <comp class="voltage" mx="1" my="1" rot="0" sig="HIGH" x="19" y="2"/>
-    <comp class="diode" mx="1" my="1" rot="0" x="18" y="26"/>
-    <comp class="diode" mx="1" my="1" rot="0" x="18" y="20"/>
+    <comp class="hardn" mx="1" my="1" rot="-90" x="18" y="43"/>
+    <comp class="reconciliator" mx="1" my="1" pull="MID" rot="0" x="22" y="47"/>
     <comp class="indicator" mx="1" my="1" rot="0" x="30" y="20"/>
-    <comp class="reconciliator" mx="1" my="1" pull="MID" rot="0" x="24" y="26"/>
-    <comp class="softp" mx="-1" my="1" rot="-90" x="24" y="15"/>
-    <comp class="hardp" mx="-1" my="1" rot="-90" x="18" y="15"/>
-    <comp class="voltage" mx="1" my="1" rot="-90" sig="MID" x="9" y="20"/>
-    <comp class="hardp" mx="-1" my="1" rot="-90" x="18" y="5"/>
     <comp class="voltage" mx="1" my="1" rot="0" sig="HIGH" x="19" y="12"/>
-    <comp class="reconciliator" mx="1" my="1" pull="MID" rot="0" x="22" y="8"/>
+    <comp class="reconciliator" mx="1" my="1" pull="MID" rot="0" x="26" y="36"/>
+    <comp class="reconciliator" mx="1" my="1" pull="MID" rot="0" x="26" y="20"/>
+    <comp class="diode" mx="1" my="1" rot="0" x="18" y="26"/>
+    <comp class="indicator" mx="1" my="1" rot="0" x="30" y="32"/>
+    <comp class="voltage" mx="1" my="-1" rot="0" sig="LOW" x="19" y="46"/>
+    <comp class="voltage" mx="1" my="1" rot="-90" sig="MID" x="9" y="31"/>
+    <comp class="diode" mx="-1" my="1" rot="0" x="22" y="36"/>
+    <comp class="softp" mx="-1" my="1" rot="-90" x="24" y="15"/>
     <comp class="reconciliator" mx="1" my="1" pull="MID" rot="-90" x="21" y="19"/>
+    <comp class="hardn" mx="1" my="1" rot="-90" x="18" y="52"/>
+    <comp class="voltage" mx="1" my="-1" rot="0" sig="LOW" x="25" y="46"/>
+    <comp class="reconciliator" mx="1" my="1" pull="MID" rot="0" x="22" y="8"/>
+    <comp class="softn" mx="1" my="1" rot="-90" x="24" y="43"/>
+    <comp class="reconciliator" mx="1" my="1" pull="MID" rot="0" x="24" y="26"/>
+    <comp class="hardn" mx="1" my="1" rot="-90" x="18" y="52"/>
+    <comp class="voltage" mx="1" my="1" rot="0" sig="HIGH" x="19" y="2"/>
+    <comp class="hardp" mx="-1" my="1" rot="-90" x="18" y="15"/>
+    <comp class="voltage" mx="1" my="-1" rot="0" sig="LOW" x="19" y="55"/>
+    <comp class="indicator" mx="1" my="1" rot="0" x="30" y="36"/>
+    <comp class="indicator" mx="1" my="1" rot="0" x="30" y="26"/>
+    <comp class="indicator" mx="1" my="1" rot="0" x="30" y="47"/>
+    <comp class="reconciliator" mx="1" my="1" pull="MID" rot="0" x="24" y="32"/>
+    <comp class="reconciliator" mx="1" my="1" pull="MID" rot="90" x="23" y="39"/>
+    <comp class="diode" mx="-1" my="1" rot="0" x="22" y="32"/>
+    <comp class="diode" mx="1" my="1" rot="0" x="18" y="20"/>
+    <comp class="voltage" mx="1" my="1" rot="0" sig="HIGH" x="25" y="12"/>
+    <comp class="indicator" mx="1" my="1" rot="0" x="30" y="8"/>
+    <comp class="hardp" mx="-1" my="1" rot="-90" x="18" y="5"/>
     <wire x0="20" x1="20" y0="4" y1="5"/>
     <wire x0="22" x1="20" y0="9" y1="9"/>
     <wire x0="24" x1="30" y0="9" y1="9"/>
     <wire x0="18" x1="16" y0="7" y1="7"/>
     <wire x0="16" x1="16" y0="7" y1="19"/>
-    <wire x0="16" x1="11" y0="19" y1="19"/>
     <wire x0="18" x1="16" y0="17" y1="17"/>
     <wire x0="18" x1="16" y0="21" y1="21"/>
     <wire x0="16" x1="16" y0="21" y1="19"/>
@@ -36,5 +51,24 @@
     <wire x0="16" x1="16" y0="27" y1="21"/>
     <wire x0="22" x1="24" y0="27" y1="27"/>
     <wire x0="26" x1="30" y0="27" y1="27"/>
+    <wire x0="22" x1="20" y0="48" y1="48"/>
+    <wire x0="22" x1="24" y0="41" y1="41"/>
+    <wire x0="20" x1="22" y0="39" y1="39"/>
+    <wire x0="22" x1="22" y0="39" y1="37"/>
+    <wire x0="22" x1="24" y0="33" y1="33"/>
+    <wire x0="26" x1="26" y0="39" y1="37"/>
+    <wire x0="26" x1="30" y0="33" y1="33"/>
+    <wire x0="30" x1="28" y0="37" y1="37"/>
+    <wire x0="24" x1="30" y0="48" y1="48"/>
+    <wire x0="20" x1="20" y0="44" y1="43"/>
+    <wire x0="26" x1="26" y0="44" y1="43"/>
+    <wire x0="18" x1="16" y0="41" y1="41"/>
+    <wire x0="16" x1="16" y0="41" y1="27"/>
+    <wire x0="18" x1="16" y0="50" y1="50"/>
+    <wire x0="16" x1="16" y0="50" y1="41"/>
+    <wire x0="18" x1="16" y0="37" y1="37"/>
+    <wire x0="18" x1="16" y0="33" y1="33"/>
+    <wire x0="20" x1="20" y0="53" y1="52"/>
+    <wire x0="16" x1="11" y0="30" y1="30"/>
     <grid h="56" w="100"/>
 </circuit>

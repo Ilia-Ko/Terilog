@@ -17,7 +17,7 @@ import static engine.LogicLevel.*;
 
 public class Decoder_1_3 extends Component {
 
-    private Pin in, outNEG, outNIL, outPOS;
+    private Pin in, outNEGp, outNEGn, outNILp, outNILn, outPOSp, outPOSn;
 
     // initialization
     public Decoder_1_3(ControlMain control) {
@@ -36,41 +36,59 @@ public class Decoder_1_3 extends Component {
         }
     }
     @Override protected HashSet<Pin> initPins() {
-        in = new Pin(this, true, 0, 2);
-        outNEG = new Pin(this, false, 2, 1);
-        outNIL = new Pin(this, false, 2, 2);
-        outPOS = new Pin(this, false, 2, 3);
+        in = new Pin(this, true, 1, 0, 1);
+        outNEGp = new Pin(this, false, 1, 1, 0);
+        outNEGn = new Pin(this, false, 1, 1, 2);
+        outNILp = new Pin(this, false, 1, 2, 0);
+        outNILn = new Pin(this, false, 1, 2, 2);
+        outPOSp = new Pin(this, false, 1, 3, 0);
+        outPOSn = new Pin(this, false, 1, 3, 2);
 
         HashSet<Pin> pins = new HashSet<>();
         pins.add(in);
-        pins.add(outNEG);
-        pins.add(outNIL);
-        pins.add(outPOS);
+        pins.add(outNEGp);
+        pins.add(outNILp);
+        pins.add(outPOSp);
+        pins.add(outPOSn);
+        pins.add(outPOSn);
+        pins.add(outPOSn);
         return pins;
     }
 
     // simulation
     @Override public void simulate() {
-        switch (in.get()) {
+        switch (in.get()[0]) {
             case NEG:
-                outNEG.put(POS);
-                outNIL.put(NIL);
-                outPOS.put(NIL);
+                outNEGp.put(POS);
+                outNEGn.put(NEG);
+                outNILp.put(NIL);
+                outNILn.put(NIL);
+                outPOSp.put(NIL);
+                outPOSn.put(NIL);
                 break;
             case NIL:
-                outNEG.put(NIL);
-                outNIL.put(POS);
-                outPOS.put(NIL);
+                outNEGp.put(NIL);
+                outNEGn.put(NIL);
+                outNILp.put(POS);
+                outNILn.put(NEG);
+                outPOSp.put(NIL);
+                outPOSn.put(NIL);
                 break;
             case POS:
-                outNEG.put(NIL);
-                outNIL.put(NIL);
-                outPOS.put(POS);
+                outNEGp.put(NIL);
+                outNEGn.put(NIL);
+                outNILp.put(NIL);
+                outNILn.put(NIL);
+                outPOSp.put(POS);
+                outPOSn.put(NEG);
                 break;
             default:
-                outNEG.put(ZZZ);
-                outNIL.put(ZZZ);
-                outPOS.put(ZZZ);
+                outNEGp.put(ZZZ);
+                outNEGn.put(ZZZ);
+                outNEGp.put(ZZZ);
+                outNEGn.put(ZZZ);
+                outNILp.put(ZZZ);
+                outPOSn.put(ZZZ);
         }
     }
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
@@ -78,9 +96,11 @@ public class Decoder_1_3 extends Component {
     }
     public static void countdown(Circuit.Summary summary) {
         summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.P_CH, 2);
+        summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.N_CH, 2);
         summary.addMOSFET(Circuit.Summary.SOFT, Circuit.Summary.P_CH, 1);
-        summary.addDiode(2);
-        for (int i = 0; i < 4; i++) Reconciliator.countdown(summary);
+        summary.addMOSFET(Circuit.Summary.SOFT, Circuit.Summary.N_CH, 1);
+        summary.addDiode(4);
+        for (int i = 0; i < 8; i++) Reconciliator.countdown(summary);
     }
 
 }

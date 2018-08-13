@@ -47,6 +47,7 @@
                 <Menu text="Lumped">
 
                     <MenuItem text="Diode" accelerator="D" onAction="#menuDiode"/>
+                    <MenuItem text="Fork (tryte)" accelerator="F" onAction="#menuForkTryte"/>
                     <MenuItem text="Reconciliator" accelerator="R" onAction="#menuReconciliator"/>
                     <SeparatorMenuItem/>
                     <MenuItem text="Indicator" accelerator="I" onAction="#menuIndicator"/>
@@ -86,6 +87,7 @@
 
                     <MenuItem text="Decoder 1-3" onAction="#menuDecoder1to3"/>
                     <MenuItem text="Multiplexer 3-1" onAction="#menuMux3to1"/>
+                    <MenuItem text="Multiplexer 18-6" onAction="#menuMux18to6"/>
                     <MenuItem text="Demultiplexer 1-3" onAction="#menuDemux1to3"/>
 
                 </Menu>
@@ -95,6 +97,7 @@
                     <MenuItem text="Full Adder" onAction="#menuFullAdder"/>
                     <SeparatorMenuItem/>
                     <MenuItem text="Tryte Adder" onAction="#menuTryteAdder"/>
+                    <MenuItem text="Word Adder" onAction="#menuWordAdder"/>
                     <MenuItem text="Tryte Multiplier" onAction="#menuTryteMultiplier"/>
                     <SeparatorMenuItem/>
                     <MenuItem text="Counter" onAction="#menuCounter"/>

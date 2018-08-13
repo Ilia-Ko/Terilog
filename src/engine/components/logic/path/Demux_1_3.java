@@ -38,11 +38,11 @@ public class Demux_1_3 extends Component {
         }
     }
     @Override protected HashSet<Pin> initPins() {
-        in = new Pin(this, true, 0, 2);
-        sel = new Pin(this, true, 1, 4);
-        outNEG = new Pin(this, false, 2, 1);
-        outNIL = new Pin(this, false, 2, 2);
-        outPOS = new Pin(this, false, 2, 3);
+        in = new Pin(this, true, 1, 0, 2);
+        sel = new Pin(this, true, 1, 1, 4);
+        outNEG = new Pin(this, false, 1, 2, 1);
+        outNIL = new Pin(this, false, 1, 2, 2);
+        outPOS = new Pin(this, false, 1, 2, 3);
 
         HashSet<Pin> pins = new HashSet<>();
         pins.add(in);
@@ -55,7 +55,7 @@ public class Demux_1_3 extends Component {
 
     // simulation
     @Override public void simulate() {
-        switch (sel.get()) {
+        switch (sel.get()[0]) {
             case NEG:
                 outNEG.put(in.get());
                 outNIL.put(NIL);

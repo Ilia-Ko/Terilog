@@ -40,14 +40,14 @@ public class TryteCMP extends Component {
     @Override protected HashSet<Pin> initPins() {
         HashSet<Pin> pins = new HashSet<>();
 
-        out = new Pin(this, false, 4, 7);
+        out = new Pin(this, false, 1, 4, 7);
         pins.add(out);
 
         inA = new Pin[6];
         inB = new Pin[6];
         for (int i = 0; i < 6; i++) {
-            inA[i] = new Pin(this, true, 0, i + 1);
-            inB[i] = new Pin(this, true, 0, i + 8);
+            inA[i] = new Pin(this, true, 1, 0, i + 1);
+            inB[i] = new Pin(this, true, 1, 0, i + 8);
             pins.add(inA[i]);
             pins.add(inB[i]);
         }
@@ -58,7 +58,7 @@ public class TryteCMP extends Component {
     // simulation
     @Override public void simulate() {
         LogicLevel res = NIL;
-        for (int i = 5; i >= 0 && res == NIL; i--) res = CMP.func(inA[i].get(), inB[i].get());
+        for (int i = 5; i >= 0 && res == NIL; i--) res = CMP.func(inA[i].get()[0], inB[i].get()[0]);
         out.put(res);
     }
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {

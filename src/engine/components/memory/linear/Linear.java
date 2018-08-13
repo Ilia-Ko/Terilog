@@ -72,9 +72,9 @@ public abstract class Linear extends Component {
         HashSet<Pin> pins = new HashSet<>();
 
         // managing pins
-        control = new Pin(this, true, 0, 1);
-        fill = new Pin(this, true, 0, 2);
-        clock = new Pin(this, true, digits + digits / 3, 2);
+        control = new Pin(this, true, 1, 0, 1);
+        fill = new Pin(this, true, 1, 0, 2);
+        clock = new Pin(this, true, 1, digits + digits / 3, 2);
         pins.add(control);
         pins.add(fill);
         pins.add(clock);
@@ -84,9 +84,9 @@ public abstract class Linear extends Component {
 
     // simulation
     @Override public void simulate() {
-        LogicLevel ctrl = control.get();
-        LogicLevel fill = this.fill.get();
-        LogicLevel clck = clock.get();
+        LogicLevel ctrl = control.get()[0];
+        LogicLevel fill = this.fill.get()[0];
+        LogicLevel clck = clock.get()[0];
 
         for (MemCell cell : cells) cell.simulate(ctrl, fill, clck);
     }

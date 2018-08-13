@@ -8,6 +8,7 @@ import engine.components.logic.one_arg.PTI;
 import engine.components.logic.one_arg.STI;
 import engine.components.logic.path.Decoder_1_3;
 import engine.components.logic.path.Demux_1_3;
+import engine.components.logic.path.Mux_18_6;
 import engine.components.logic.path.Mux_3_1;
 import engine.components.logic.two_arg.*;
 import engine.components.lumped.*;
@@ -136,6 +137,9 @@ public class Circuit {
                     case "diode":
                         add(new Diode(control, comp));
                         break;
+                    case "forktryte":
+                        add(new ForkTryte(control, comp));
+                        break;
                     case "indicator":
                         add(new Indicator(control, comp));
                         break;
@@ -208,6 +212,9 @@ public class Circuit {
                     case "mux_3_1":
                         add(new Mux_3_1(control, comp));
                         break;
+                    case "mux_18_6":
+                        add(new Mux_18_6(control, comp));
+                        break;
                     case "demux_1_3":
                         add(new Demux_1_3(control, comp));
                         break;
@@ -220,6 +227,9 @@ public class Circuit {
                         break;
                     case "tryteadder":
                         add(new TryteAdder(control, comp));
+                        break;
+                    case "wordadder":
+                        add(new WordAdder(control, comp));
                         break;
                     case "trytemultiplier":
                         add(new TryteMultiplier(control, comp));
@@ -256,8 +266,16 @@ public class Circuit {
         // create wires
         list = c.getElementsByTagName("wire");
         if (list != null)
-            for (int i = 0; i < list.getLength(); i++)
-                wires.add(new Wire(control, (Element) list.item(i)));
+            for (int i = 0; i < list.getLength(); i++) {
+                Element w = (Element) list.item(i);
+                try {
+                    int busLength = Integer.parseInt(w.getAttribute("bus"));
+                    if (busLength <= 0) System.out.println("WARNING: wire bus length must be greater than zero.");
+                    else wires.add(new Wire(control, busLength, w));
+                } catch (NumberFormatException e) {
+                    wires.add(new Wire(control, 1, w));
+                }
+            }
     }
 
     // construction
@@ -286,6 +304,11 @@ public class Circuit {
         wires.clear();
         components.forEach(comp -> comp.delete(false));
         components.clear();
+    }
+    public int getBusLengthFor(int x, int y) {
+        for (Pin pin : pins) if (pin.inside(x, y)) return pin.length();
+        for (Wire wire : wires) if (wire.inside(x, y)) return wire.length();
+        return 1;
     }
 
     // selection
@@ -348,7 +371,7 @@ public class Circuit {
     private void parse() {
         // reset nodes
         nodes = new HashSet<>();
-        needsParsing = true; // if nodes were eliminated, parsing is needed
+        needsParsing = true; // nodes were eliminated, so that parsing is needed
         isStableStateFound = false;
 
         // reset wires & comps
@@ -369,7 +392,7 @@ public class Circuit {
         // parsing.stage2.a: nodify wires - O(n)
         for (Wire wire : wires)
             if (wire.isNodeFree()) {
-                Node node = new Node();
+                Node node = new Node(wire.length());
                 nodes.add(node);
                 wire.nodify(node);
             }
@@ -377,7 +400,7 @@ public class Circuit {
         // parsing.stage2.b: nodify pins - O(m)
         for (Pin pin : pins)
             if (pin.isNodeFree()) {
-                Node node = new Node();
+                Node node = new Node(pin.length());
                 nodes.add(node);
                 pin.nodify(node);
             }

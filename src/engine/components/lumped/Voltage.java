@@ -52,7 +52,7 @@ public class Voltage extends Component {
         readXML(data);
     }
     @Override protected HashSet<Pin> initPins() {
-        drain = new Pin(this, false, 1, 2);
+        drain = new Pin(this, false, 1, 1, 2);
         HashSet<Pin> pins = new HashSet<>();
         pins.add(drain);
         return pins;

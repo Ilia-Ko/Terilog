@@ -16,8 +16,8 @@ public class MemCell {
     MemCell(Linear owner, int pos, int digit) {
         // init pins
         int pinPos = pos / 3 + pos + 1;
-        write = new Pin(owner, true, pinPos, 0);
-        read = new Pin(owner, false, pinPos, 3);
+        write = new Pin(owner, true, 1, pinPos, 0);
+        read = new Pin(owner, false, 1, pinPos, 3);
         owner.getPins().add(write);
         owner.getPins().add(read);
 
@@ -35,7 +35,7 @@ public class MemCell {
         if (ctrl == ERR || clck == ERR) {
             mem.setValue(ERR);
         } else if (clck == POS) {
-            if (ctrl == POS) mem.setValue(write.get());
+            if (ctrl == POS) mem.setValue(write.get()[0]);
             else if (ctrl == NEG) mem.setValue(fill);
         }
         read.put(mem.get());

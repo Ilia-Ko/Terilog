@@ -21,9 +21,9 @@ public class CKEY extends Gate2to1 {
         super(control, data);
     }
     @Override protected HashSet<Pin> initPins() {
-        inA = new Pin(this, true, 0, 1);
-        inB = new Pin(this, true, 2, 2);
-        out = new Pin(this, false, 4, 1);
+        inA = new Pin(this, true, 1, 0, 1);
+        inB = new Pin(this, true, 1, 2, 2);
+        out = new Pin(this, false, 1, 4, 1);
         HashSet<Pin> pins = new HashSet<>();
         pins.add(inA);
         pins.add(inB);
@@ -33,7 +33,7 @@ public class CKEY extends Gate2to1 {
 
     // simulation
     @Override public void simulate() {
-        out.put(function(inA.get(), inB.get()));
+        out.put(function(inA.get()[0], inB.get()[0]));
     }
     @Override LogicLevel function(LogicLevel a, LogicLevel b) {
         if (b == POS) return a;

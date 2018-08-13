@@ -15,8 +15,9 @@ public interface Connectible {
     void nodify(Node node);
 
     void reset(boolean denodify);
-    void put(LogicLevel signal);
-    LogicLevel get();
+    void put(LogicLevel[] signal);
+    LogicLevel[] get();
+    int length();
     static void establishConnection(Connectible a, Connectible b) {
         a.connect(b);
         b.connect(a);

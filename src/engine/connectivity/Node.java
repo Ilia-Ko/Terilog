@@ -4,6 +4,7 @@ import engine.LogicLevel;
 import engine.components.Pin;
 import engine.wires.Wire;
 
+import java.util.Arrays;
 import java.util.HashSet;
 
 import static engine.LogicLevel.ERR;
@@ -13,11 +14,13 @@ public class Node {
 
     private HashSet<Wire> wires; // wires, included in this node
     private HashSet<Pin> pins; // pins, connected to this node
+    private int length;
+    private LogicLevel[] sigResult; // the current signal on the node
 
-    private LogicLevel sigResult; // the current signal on the node
-
-    public Node() {
-        sigResult = ZZZ;
+    public Node(int busLength) {
+        length = busLength;
+        sigResult = new LogicLevel[length];
+        Arrays.fill(sigResult, ZZZ);
 
         pins = new HashSet<>();
         wires = new HashSet<>();
@@ -25,33 +28,42 @@ public class Node {
 
     // connectivity
     public void add(Wire wire) {
+        assert wire.length() == length;
         wires.add(wire);
     }
     public void add(Pin pin) {
+        assert pin.length() == length;
         pins.add(pin);
     }
 
     // simulation
     public void reset() {
-        sigResult = ZZZ;
+        Arrays.fill(sigResult, ZZZ);
         update();
     }
-    public boolean isStable() { // return true if sigResult does not change
-        LogicLevel oldSig = sigResult;
-        sigResult = ZZZ;
+    public boolean isStable() {
+        // remember previous state
+        LogicLevel[] oldSig = new LogicLevel[length];
+        System.arraycopy(sigResult, 0, oldSig, 0, length);
+        Arrays.fill(sigResult, ZZZ);
+
+        // compute new state
         pins.forEach(pin -> {
             if (pin.hasLowImpedance()) {
-                LogicLevel pinSig = pin.get();
-                if (pinSig.conflicts(sigResult)) sigResult = ERR;
-                else if (pinSig.suppresses(sigResult)) sigResult = pinSig;
+                LogicLevel[] pinSig = pin.get();
+                for (int i = 0; i < length; i++) {
+                    if (pinSig[i].conflicts(sigResult[i])) sigResult[i] = ERR;
+                    else if (pinSig[i].suppresses(sigResult[i])) sigResult[i] = pinSig[i];
+                }
             }
         });
         update();
-        return oldSig == sigResult;
+
+        // return true if sigResult does not change
+        return Arrays.equals(oldSig, sigResult);
     }
     private void update() {
-        if (sigResult == ERR) pins.forEach(pin -> pin.put(ZZZ));
-        else pins.forEach(pin -> pin.put(sigResult));
+        pins.forEach(pin -> pin.put(sigResult));
         wires.forEach(wire -> wire.put(sigResult));
     }
 

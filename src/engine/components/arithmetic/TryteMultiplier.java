@@ -41,10 +41,10 @@ public class TryteMultiplier extends Component {
         inB = new Pin[6];
         out = new Pin[12];
         for (int i = 0; i < 6; i++) {
-            inA[i] = new Pin(this, true, 0, i + 1);
-            inB[i] = new Pin(this, true, 0, i + 8);
-            out[ i ] = new Pin(this, false, 4, i + 1);
-            out[i+6] = new Pin(this, false, 4, i + 7);
+            inA[i] = new Pin(this, true, 1, 0, i + 1);
+            inB[i] = new Pin(this, true, 1, 0, i + 8);
+            out[ i ] = new Pin(this, false, 1, 4, i + 1);
+            out[i+6] = new Pin(this, false, 1, 4, i + 7);
             pins.add(inA[i]);
             pins.add(inB[i]);
             pins.add(out[ i ]);
@@ -59,8 +59,8 @@ public class TryteMultiplier extends Component {
         LogicLevel[] numA = new LogicLevel[6];
         LogicLevel[] numB = new LogicLevel[6];
         for (int i = 0; i < 6; i++) {
-            numA[i] = inA[i].get();
-            numB[i] = inB[i].get();
+            numA[i] = inA[i].get()[0];
+            numB[i] = inB[i].get()[0];
         }
 
         long a = Flat.encode(numA, 6);

@@ -36,7 +36,7 @@ public class Clock extends Component {
         readXML(data);
     }
     @Override protected HashSet<Pin> initPins() {
-        drain = new Pin(this, false, 4, 2);
+        drain = new Pin(this, false, 1, 4, 2);
 
         HashSet<Pin> pins = new HashSet<>();
         pins.add(drain);

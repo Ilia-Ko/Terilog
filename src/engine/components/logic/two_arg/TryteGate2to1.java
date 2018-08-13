@@ -40,9 +40,9 @@ public abstract class TryteGate2to1 extends Component {
         inB = new Pin[6];
         out = new Pin[6];
         for (int i = 0; i < 6; i++) {
-            inA[i] = new Pin(this, true, 0, i + 1);
-            inB[i] = new Pin(this, true, 0, i + 8);
-            out[i] = new Pin(this, false, 4, i + 7);
+            inA[i] = new Pin(this, true, 1, 0, i + 1);
+            inB[i] = new Pin(this, true, 1, 0, i + 8);
+            out[i] = new Pin(this, false, 1, 4, i + 7);
             pins.add(inA[i]);
             pins.add(inB[i]);
             pins.add(out[i]);
@@ -53,7 +53,7 @@ public abstract class TryteGate2to1 extends Component {
 
     // simulation
     @Override public void simulate() {
-        for (int i = 0; i < 6; i++) out[i].put(function(inA[i].get(), inB[i].get()));
+        for (int i = 0; i < 6; i++) out[i].put(function(inA[i].get()[0], inB[i].get()[0]));
     }
     abstract LogicLevel function(LogicLevel a, LogicLevel b);
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {

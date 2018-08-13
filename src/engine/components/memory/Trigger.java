@@ -76,10 +76,10 @@ public class Trigger extends Component {
         return menu;
     }
     @Override protected HashSet<Pin> initPins() {
-        write0 = new Pin(this, true, 0, 1);
-        write1 = new Pin(this, true, 0, 3);
-        read = new Pin(this, false, 4, 2);
-        control = new Pin(this, true, 2, 4);
+        write0 = new Pin(this, true, 1, 0, 1);
+        write1 = new Pin(this, true, 1, 0, 3);
+        read = new Pin(this, false, 1, 4, 2);
+        control = new Pin(this, true, 1, 2, 4);
 
         HashSet<Pin> pins = new HashSet<>();
         pins.add(read);
@@ -91,13 +91,13 @@ public class Trigger extends Component {
 
     // simulation
     @Override public void simulate() {
-        LogicLevel c = control.get();
+        LogicLevel c = control.get()[0];
 
         if (c == ERR) {
             setMemory(ERR);
         } else {
-            if (c == POS) setMemory(write0.get());
-            else if (c == NEG) setMemory(write1.get());
+            if (c == POS) setMemory(write0.get()[0]);
+            else if (c == NEG) setMemory(write1.get()[0]);
         }
         read.put(trit.get());
     }

@@ -73,16 +73,16 @@ public class Counter extends Component {
     @Override protected HashSet<Pin> initPins() {
         HashSet<Pin> pins = new HashSet<>();
 
-        reset = new Pin(this, true, 0, 1);
-        clock = new Pin(this, true, 0, 2);
+        reset = new Pin(this, true, 1, 0, 1);
+        clock = new Pin(this, true, 1, 0, 2);
         pins.add(reset);
         pins.add(clock);
 
         write = new Pin[6];
         read = new Pin[6];
         for (int i = 0; i < 6; i++) {
-            write[i] = new Pin(this, true, 7 - i - i / 3, 0);
-            read[i] = new Pin(this, false, 7 - i - i / 3, 3);
+            write[i] = new Pin(this, true, 1, 7 - i - i / 3, 0);
+            read[i] = new Pin(this, false, 1, 7 - i - i / 3, 3);
             pins.add(write[i]);
             pins.add(read[i]);
         }
@@ -99,8 +99,8 @@ public class Counter extends Component {
     }
 
     @Override public void simulate() {
-        LogicLevel clck = clock.get();
-        LogicLevel rset = reset.get();
+        LogicLevel clck = clock.get()[0];
+        LogicLevel rset = reset.get()[0];
         // simulate
         if (clck == ERR || rset == ERR) {
             for (Pin pin : read) pin.put(ZZZ);
@@ -109,7 +109,7 @@ public class Counter extends Component {
                 nextValue = value.get() + 1;
             } else if (rset == POS) {
                 LogicLevel[] in = new LogicLevel[6];
-                for (int i = 0; i < 6; i++) in[i] = write[i].get();
+                for (int i = 0; i < 6; i++) in[i] = write[i].get()[0];
                 nextValue = (int) Flat.encode(in, 6);
             } else if (rset == NEG) {
                 nextValue = MIN_VALUE;

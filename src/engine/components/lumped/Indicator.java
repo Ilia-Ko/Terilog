@@ -57,7 +57,7 @@ public class Indicator extends Component {
         readXML(data);
     }
     @Override protected HashSet<Pin> initPins() {
-        source = new Pin(this, true, 0, 1);
+        source = new Pin(this, true, 1, 0, 1);
         HashSet<Pin> pins = new HashSet<>();
         pins.add(source);
         return pins;
@@ -69,7 +69,7 @@ public class Indicator extends Component {
         signal.setValue(LogicLevel.ZZZ);
     }
     @Override public void simulate() {
-        signal.setValue(source.get());
+        signal.setValue(source.get()[0]);
     }
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
         summary.addOutput();

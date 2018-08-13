@@ -6,9 +6,12 @@ import engine.connectivity.Node;
 import engine.connectivity.Selectable;
 import gui.control.ControlMain;
 import gui.control.HistoricalEvent;
+import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.*;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.layout.Region;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import org.w3c.dom.Document;
@@ -16,7 +19,9 @@ import org.w3c.dom.Element;
 
 import java.util.HashSet;
 
-public class Wire extends Line implements Connectible, Selectable {
+import static engine.LogicLevel.ZZZ;
+
+public class Wire extends Region implements Connectible, Selectable {
 
     // Wire is a line, connecting two points on the circuit grid.
     // For layout convenience, FlyWire class is created.
@@ -33,34 +38,59 @@ public class Wire extends Line implements Connectible, Selectable {
     private Node node;
     private BooleanProperty isSelected;
     private HistoricalEvent toBeOrNotToBe;
+    // layout
+    IntegerProperty x0, y0, x1, y1;
+    private int length;
+    private Line[] lines;
 
     // initialization
-    Wire(ControlMain control, IntegerProperty x0, IntegerProperty y0, IntegerProperty x1, IntegerProperty y1) {
+    private Wire(ControlMain control, int busLength) {
         this.control = control;
+        length = busLength;
+        x0 = new SimpleIntegerProperty();
+        y0 = new SimpleIntegerProperty();
+        x1 = new SimpleIntegerProperty();
+        y1 = new SimpleIntegerProperty();
         isSelected = new SimpleBooleanProperty(false);
         isSelected.addListener((observable, wasSelected, nowSelected) -> setEffect(nowSelected ? HIGHLIGHT : null));
+        
+        // create wire lines
+        DoubleProperty shift = new SimpleDoubleProperty(-0.1 * (length - 1) / 2.0);
+        DoubleBinding ex = (DoubleBinding) x1.subtract(x0).add(shift);
+        DoubleBinding ey = (DoubleBinding) y1.subtract(y0).add(shift);
+        lines = new Line[length];
+        for (int i = 0; i < lines.length; i++) {
+            double delta = i * 0.1;
+            Line line = new Line();
+            line.startXProperty().bind(shift.add(delta));
+            line.startYProperty().bind(shift.add(delta));
+            line.endXProperty().bind(ex.add(delta));
+            line.endYProperty().bind(ey.add(delta));
+            line.setStrokeWidth(0.08);
+            line.setStroke(ZZZ.colour());
+            lines[i] = line;
+        }
+        getChildren().addAll(lines);
 
-        // create wire in layout mode
-        startXProperty().bind(x0);
-        startYProperty().bind(y0);
-        endXProperty().bind(x1);
-        endYProperty().bind(y1);
-        setOpacity(0.4);
-        setStrokeWidth(0.1);
-        control.getParent().getChildren().add(this);
+        // place them
+        layoutXProperty().bind(x0);
+        layoutYProperty().bind(y0);
+        control.getParent().getChildren().addAll(this);
     }
-    public Wire(ControlMain control, Element w) {
-        this.control = control;
-        isSelected = new SimpleBooleanProperty(false);
-        isSelected.addListener((observable, wasSelected, nowSelected) -> setEffect(nowSelected ? HIGHLIGHT : null));
-
-        startXProperty().setValue(getInt(w, "x0"));
-        startYProperty().setValue(getInt(w, "y0"));
-        endXProperty().setValue(getInt(w, "x1"));
-        endYProperty().setValue(getInt(w, "y1"));
-        setStrokeWidth(0.1);
-        control.getParent().getChildren().add(this);
-
+    Wire(ControlMain control, int busLength, IntegerProperty ix0, IntegerProperty iy0, IntegerProperty ix1, IntegerProperty iy1) {
+        this(control, busLength);
+        x0.bind(ix0);
+        y0.bind(iy0);
+        x1.bind(ix1);
+        y1.bind(iy1);
+        setOpacity(0.4);
+    }
+    public Wire(ControlMain control, int busLength, Element w) {
+        this(control, busLength);
+        x0.setValue(getInt(w, "x0"));
+        y0.setValue(getInt(w, "y0"));
+        x1.setValue(getInt(w, "x1"));
+        y1.setValue(getInt(w, "y1"));
         confirm();
     }
     private ContextMenu buildContextMenu() {
@@ -76,10 +106,10 @@ public class Wire extends Line implements Connectible, Selectable {
 
     // layout mode
     public void confirm() {
-        startXProperty().unbind();
-        startYProperty().unbind();
-        endXProperty().unbind();
-        endYProperty().unbind();
+        x0.unbind();
+        y0.unbind();
+        x1.unbind();
+        y1.unbind();
 
         ContextMenu menu = buildContextMenu();
         setOnContextMenuRequested(mouse -> {
@@ -91,17 +121,19 @@ public class Wire extends Line implements Connectible, Selectable {
         control.getCircuit().add(this);
 
         // add squares
-        DoubleProperty a = new SimpleDoubleProperty(1.0 / 6.0);
-        double b = 1.0 / 3.0;
+        double b = 1.0 / 3.0 + (length - 1) * 0.1;
+        DoubleProperty a = new SimpleDoubleProperty(b / 2.0);
         r1 = new Rectangle(b, b);
-        r1.xProperty().bind(startXProperty().subtract(a));
-        r1.yProperty().bind(startYProperty().subtract(a));
-        r1.fillProperty().bind(strokeProperty());
+        r1.xProperty().bind(x0.subtract(a));
+        r1.yProperty().bind(y0.subtract(a));
+        r1.setFill(Color.BLACK);
+        r1.setOpacity(0.8);
         r1.setOnContextMenuRequested(mouse -> menu.show(this, mouse.getScreenX(), mouse.getScreenY()));
         r2 = new Rectangle(b, b);
-        r2.xProperty().bind(endXProperty().subtract(a));
-        r2.yProperty().bind(endYProperty().subtract(a));
-        r2.fillProperty().bind(strokeProperty());
+        r2.xProperty().bind(x1.subtract(a));
+        r2.yProperty().bind(y1.subtract(a));
+        r2.setFill(Color.BLACK);
+        r2.setOpacity(0.8);
         r2.setOnContextMenuRequested(mouse -> menu.show(this, mouse.getScreenX(), mouse.getScreenY()));
         control.getParent().getChildren().addAll(r1, r2);
 
@@ -142,22 +174,22 @@ public class Wire extends Line implements Connectible, Selectable {
 
         // move
         control.getParent().getChildren().removeAll(r1, r2);
-        IntegerProperty dStartX = new SimpleIntegerProperty(startXProperty().intValue() - control.getMouseX().get());
-        IntegerProperty dStartY = new SimpleIntegerProperty(startYProperty().intValue() - control.getMouseY().get());
-        IntegerProperty dEndX = new SimpleIntegerProperty(endXProperty().intValue() - control.getMouseX().get());
-        IntegerProperty dEndY = new SimpleIntegerProperty(endYProperty().intValue() - control.getMouseY().get());
-        startXProperty().bind(control.getMouseX().add(dStartX));
-        startYProperty().bind(control.getMouseY().add(dStartY));
-        endXProperty().bind(control.getMouseX().add(dEndX));
-        endYProperty().bind(control.getMouseY().add(dEndY));
+        IntegerProperty dStartX = new SimpleIntegerProperty(x0.intValue() - control.getMouseX().get());
+        IntegerProperty dStartY = new SimpleIntegerProperty(y0.intValue() - control.getMouseY().get());
+        IntegerProperty dEndX = new SimpleIntegerProperty(x1.intValue() - control.getMouseX().get());
+        IntegerProperty dEndY = new SimpleIntegerProperty(y1.intValue() - control.getMouseY().get());
+        x0.bind(control.getMouseX().add(dStartX));
+        y0.bind(control.getMouseY().add(dStartY));
+        x1.bind(control.getMouseX().add(dEndX));
+        y1.bind(control.getMouseY().add(dEndY));
     }
     @Override public Selectable copy() {
-        IntegerProperty x0 = new SimpleIntegerProperty(startXProperty().intValue());
-        IntegerProperty y0 = new SimpleIntegerProperty(startYProperty().intValue());
-        IntegerProperty x1 = new SimpleIntegerProperty(endXProperty().intValue());
-        IntegerProperty y1 = new SimpleIntegerProperty(endYProperty().intValue());
+        IntegerProperty ix0 = new SimpleIntegerProperty(x0.intValue());
+        IntegerProperty iy0 = new SimpleIntegerProperty(y0.intValue());
+        IntegerProperty ix1 = new SimpleIntegerProperty(x1.intValue());
+        IntegerProperty iy1 = new SimpleIntegerProperty(y1.intValue());
 
-        Wire copy = new Wire(control, x0, y0, x1, y1);
+        Wire copy = new Wire(control, length, ix0, iy0, ix1, iy1);
         copy.stop();
         return copy;
     }
@@ -172,39 +204,44 @@ public class Wire extends Line implements Connectible, Selectable {
             node = null;
             connectibles = new HashSet<>();
         }
-        put(LogicLevel.ZZZ);
+        for (Line line : lines) line.setStroke(ZZZ.colour());
     }
-    @Override public void put(LogicLevel signal) {
-        setStroke(signal.colour());
+    @Override public void put(LogicLevel[] signal) {
+        assert signal.length == length;
+        for (int i = 0; i < length; i++) lines[i].setStroke(signal[i].colour());
     }
-    @Override public LogicLevel get() {
+    @Override public LogicLevel[] get() {
         return null;
     }
+    @Override public int length() {
+        return length;
+    }
+
     // parsing.stage1
     @Override public void inspect(Wire wire) {
         int x0, y0, x1, y1;
 
         // check if this wire touches given one
-        x0 = this.startXProperty().intValue();
-        y0 = this.startYProperty().intValue();
-        x1 = this.endXProperty().intValue();
-        y1 = this.endYProperty().intValue();
+        x0 = this.x0.intValue();
+        y0 = this.y0.intValue();
+        x1 = this.x1.intValue();
+        y1 = this.y1.intValue();
         boolean a = wire.inside(x0, y0) || wire.inside(x1, y1);
 
         // check if given wire touches this one
-        x0 = wire.startXProperty().intValue();
-        y0 = wire.startYProperty().intValue();
-        x1 = wire.endXProperty().intValue();
-        y1 = wire.endYProperty().intValue();
+        x0 = wire.x0.intValue();
+        y0 = wire.y0.intValue();
+        x1 = wire.x1.intValue();
+        y1 = wire.y1.intValue();
         boolean b = this.inside(x0, y0) || this.inside(x1, y1);
 
         if (a || b) Connectible.establishConnection(this, wire);
     }
     @Override public boolean inside(int x, int y) {
-        int x0 = startXProperty().intValue();
-        int y0 = startYProperty().intValue();
-        int x1 = endXProperty().intValue();
-        int y1 = endYProperty().intValue();
+        int x0 = this.x0.intValue();
+        int y0 = this.y0.intValue();
+        int x1 = this.x1.intValue();
+        int y1 = this.y1.intValue();
 
         if (x0 == x1) return x == x0 && between(y, y0, y1);
         else if (y0 == y1) return y == y0 && between(x, x0, x1);
@@ -232,16 +269,16 @@ public class Wire extends Line implements Connectible, Selectable {
     // xml info
     public Element writeXML(Document doc) {
         Element w = doc.createElement("wire");
-        w.setAttribute("x0", asInt(startXProperty()));
-        w.setAttribute("y0", asInt(startYProperty()));
-        w.setAttribute("x1", asInt(endXProperty()));
-        w.setAttribute("y1", asInt(endYProperty()));
+        w.setAttribute("x0", asInt(x0));
+        w.setAttribute("y0", asInt(y0));
+        w.setAttribute("x1", asInt(x1));
+        w.setAttribute("y1", asInt(y1));
         return w;
     }
 
     // util
-    private static String asInt(DoubleProperty d) {
-        return Integer.toString(d.intValue());
+    private static String asInt(IntegerProperty i) {
+        return Integer.toString(i.intValue());
     }
     private static int getInt(Element from, String what) {
         return Integer.parseInt(from.getAttribute(what));
@@ -250,19 +287,21 @@ public class Wire extends Line implements Connectible, Selectable {
         return Math.abs(what - a) + Math.abs(what - b) == Math.abs(a - b);
     }
     public static Wire optimize(Wire w1, Wire w2) {
+        assert w1.length() == w2.length();
+        
         // intersecting
-        boolean s2in1 = w1.inside(w2.startXProperty().intValue(), w2.startYProperty().intValue());
-        boolean e2in1 = w1.inside(w2.endXProperty().intValue(), w2.endYProperty().intValue());
-        boolean s1in2 = w2.inside(w1.startXProperty().intValue(), w1.startYProperty().intValue());
-        boolean e1in2 = w2.inside(w1.endXProperty().intValue(), w1.endYProperty().intValue());
+        boolean s2in1 = w1.inside(w2.x0.intValue(), w2.y0.intValue());
+        boolean e2in1 = w1.inside(w2.x1.intValue(), w2.y1.intValue());
+        boolean s1in2 = w2.inside(w1.x0.intValue(), w1.y0.intValue());
+        boolean e1in2 = w2.inside(w1.x1.intValue(), w1.y1.intValue());
         // vertically parallel
-        boolean vPar = w1.startXProperty().intValue() == w1.endXProperty().intValue() &&
-                w1.endXProperty().intValue() == w2.startXProperty().intValue() &&
-                w2.startXProperty().intValue() == w2.endXProperty().intValue();
+        boolean vPar = w1.x0.intValue() == w1.x1.intValue() &&
+                w1.x1.intValue() == w2.x0.intValue() &&
+                w2.x0.intValue() == w2.x1.intValue();
         // horizontally parallel
-        boolean hPar = w1.startYProperty().intValue() == w1.endYProperty().intValue() &&
-                w1.endYProperty().intValue() == w2.startYProperty().intValue() &&
-                w2.startYProperty().intValue() == w2.endYProperty().intValue();
+        boolean hPar = w1.y0.intValue() == w1.y1.intValue() &&
+                w1.y1.intValue() == w2.y0.intValue() &&
+                w2.y0.intValue() == w2.y1.intValue();
 
         if ((s2in1 || e2in1) && (hPar || vPar)) {
             if (s2in1 && e2in1) { // w1 covers w2 completely
@@ -270,20 +309,20 @@ public class Wire extends Line implements Connectible, Selectable {
             } else if (s1in2 && e1in2) { // w2 covers w1 completely
                 return w1;
             } else if (s2in1 && e1in2) { // w1 overlaps w2
-                if (hPar) w1.endXProperty().setValue(w2.endXProperty().intValue());
-                else w1.endYProperty().setValue(w2.endYProperty().intValue());
+                if (hPar) w1.x1.setValue(w2.x1.intValue());
+                else w1.y1.setValue(w2.y1.intValue());
                 return w2;
             } else if (s1in2 && e2in1) { // w2 overlaps w1
-                if (hPar) w2.endXProperty().setValue(w1.endXProperty().intValue());
-                else w2.endYProperty().setValue(w1.endYProperty().intValue());
+                if (hPar) w2.x1.setValue(w1.x1.intValue());
+                else w2.y1.setValue(w1.y1.intValue());
                 return w1;
             } else if (s2in1 && s1in2) { // common start
-                if (hPar) w1.startXProperty().setValue(w2.endXProperty().intValue());
-                else w1.startYProperty().setValue(w2.endYProperty().intValue());
+                if (hPar) w1.x0.setValue(w2.x1.intValue());
+                else w1.y0.setValue(w2.y1.intValue());
                 return w2;
             } else if (e2in1&& e1in2) { // common end
-                if (hPar) w1.endXProperty().setValue(w2.startXProperty().intValue());
-                else w1.endYProperty().setValue(w2.startYProperty().intValue());
+                if (hPar) w1.x1.setValue(w2.x0.intValue());
+                else w1.y1.setValue(w2.y0.intValue());
                 return w2;
             }
         }

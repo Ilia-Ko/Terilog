@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--suppress JavaFxRedundantPropertyValue -->
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.*?>
+<Pane xmlns="http://javafx.com/javafx" prefHeight="6" prefWidth="2">
+
+    <!--bus-->
+    <Line strokeWidth="0.08" stroke="darkviolet" startX="0" startY="2.75" endX="1" endY="2.75"/>
+    <Line strokeWidth="0.08" stroke="darkviolet" startX="0" startY="2.85" endX="1" endY="2.85"/>
+    <Line strokeWidth="0.08" stroke="darkviolet" startX="0" startY="2.95" endX="1" endY="2.95"/>
+    <Line strokeWidth="0.08" stroke="darkviolet" startX="0" startY="3.05" endX="1" endY="3.05"/>
+    <Line strokeWidth="0.08" stroke="darkviolet" startX="0" startY="3.15" endX="1" endY="3.15"/>
+    <Line strokeWidth="0.08" stroke="darkviolet" startX="0" startY="3.25" endX="1" endY="3.25"/>
+
+    <!--singles-->
+    <Line strokeWidth="0.08" stroke="darkviolet" startX="1" startY="2.75" endX="1.5" endY="0"/>
+    <Line strokeWidth="0.08" stroke="darkviolet" startX="1" startY="2.85" endX="1.5" endY="1"/>
+    <Line strokeWidth="0.08" stroke="darkviolet" startX="1" startY="2.95" endX="1.5" endY="2"/>
+    <Line strokeWidth="0.08" stroke="darkviolet" startX="1" startY="3.05" endX="1.5" endY="4"/>
+    <Line strokeWidth="0.08" stroke="darkviolet" startX="1" startY="3.15" endX="1.5" endY="5"/>
+    <Line strokeWidth="0.08" stroke="darkviolet" startX="1" startY="3.25" endX="1.5" endY="6"/>
+    <Line strokeWidth="0.08" stroke="darkviolet" startX="1.5" startY="0" endX="2" endY="0"/>
+    <Line strokeWidth="0.08" stroke="darkviolet" startX="1.5" startY="1" endX="2" endY="1"/>
+    <Line strokeWidth="0.08" stroke="darkviolet" startX="1.5" startY="2" endX="2" endY="2"/>
+    <Line strokeWidth="0.08" stroke="darkviolet" startX="1.5" startY="4" endX="2" endY="4"/>
+    <Line strokeWidth="0.08" stroke="darkviolet" startX="1.5" startY="5" endX="2" endY="5"/>
+    <Line strokeWidth="0.08" stroke="darkviolet" startX="1.5" startY="6" endX="2" endY="6"/>
+
+    <!--zero flag-->
+    <Line strokeWidth="0.1" stroke="darkviolet" startX="1" startY="0" endX="2" endY="0"/>
+    <Rectangle strokeWidth="0.05" stroke="darkviolet" fill="red" x="1" y="0" width="0.3" height="0.5"/>
+
+</Pane>

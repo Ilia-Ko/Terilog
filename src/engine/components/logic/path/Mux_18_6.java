@@ -5,7 +5,6 @@ import engine.LogicLevel;
 import engine.components.Component;
 import engine.components.Pin;
 import engine.components.logic.one_arg.STI;
-import engine.components.logic.two_arg.CKEY;
 import gui.Main;
 import gui.control.ControlMain;
 import javafx.fxml.FXMLLoader;
@@ -15,20 +14,20 @@ import org.w3c.dom.Element;
 import java.io.IOException;
 import java.util.HashSet;
 
-public class Mux_3_1 extends Component {
+public class Mux_18_6 extends Component {
 
-    private Pin inNEG, inNIL, inPOS, out, sel;
+    private Pin inNEG[], inNIL[], inPOS[], out[], sel;
 
     // initialization
-    public Mux_3_1(ControlMain control) {
+    public Mux_18_6(ControlMain control) {
         super(control);
     }
-    public Mux_3_1(ControlMain control, Element data) {
+    public Mux_18_6(ControlMain control, Element data) {
         super(control, data);
     }
     @Override protected Pane loadContent() {
         try {
-            String location = "view/components/logic/path/mux_3_1.fxml";
+            String location = "view/components/logic/path/mux_18_6.fxml";
             return FXMLLoader.load(Main.class.getResource(location));
         } catch (IOException e) {
             e.printStackTrace();
@@ -36,48 +35,54 @@ public class Mux_3_1 extends Component {
         }
     }
     @Override protected HashSet<Pin> initPins() {
-        inNEG = new Pin(this, true, 1, 0, 1);
-        inNIL = new Pin(this, true, 1, 0, 2);
-        inPOS = new Pin(this, true, 1, 0, 3);
-        out = new Pin(this, false, 1, 2, 2);
-        sel = new Pin(this, true, 1, 1, 4);
-
         HashSet<Pin> pins = new HashSet<>();
-        pins.add(inNEG);
-        pins.add(inNIL);
-        pins.add(inPOS);
-        pins.add(out);
+
+        inNEG = new Pin[6];
+        inNIL = new Pin[6];
+        inPOS = new Pin[6];
+        out = new Pin[6];
+        for (int i = 0; i < 6; i++) {
+            inNEG[i] = new Pin(this, true, 1, 0, 1+i+i/3);
+            inNIL[i] = new Pin(this, true, 1, 0, 9+i+i/3);
+            inPOS[i] = new Pin(this, true, 1, 0, 17+i+i/3);
+            out[i] = new Pin(this, false, 1, 2, 9+i+i/3);
+            pins.add(inNEG[i]);
+            pins.add(inNIL[i]);
+            pins.add(inPOS[i]);
+            pins.add(out[i]);
+        }
+
+        sel = new Pin(this, true, 1, 1, 24);
         pins.add(sel);
+
         return pins;
     }
 
     // simulation
     @Override public void simulate() {
+        Pin[] src;
         switch (sel.get()[0]) {
             case NEG:
-                out.put(STI.func(inNEG.get()[0]));
+                src = inNEG;
                 break;
             case NIL:
-                out.put(STI.func(inNIL.get()[0]));
+                src = inNIL;
                 break;
             case POS:
-                out.put(STI.func(inPOS.get()[0]));
+                src = inPOS;
                 break;
             default:
-                out.put(LogicLevel.ZZZ);
+                src = null;
         }
+        if (src != null) for (int i = 0; i < 6; i++) out[i].put(STI.func(src[i].get()[0]));
+        else for (int i = 0; i < 6; i++) out[i].put(LogicLevel.ZZZ);
     }
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
         countdown(summary);
-        Decoder_1_3.countdown(summary);
     }
     public static void countdown(Circuit.Summary summary) {
-        CKEY.countdown(summary);
-        CKEY.countdown(summary);
-        CKEY.countdown(summary);
-        STI.countdown(summary);
-        STI.countdown(summary);
-        STI.countdown(summary);
+        for (int i = 0; i < 6; i++) Mux_3_1.countdown(summary);
+        Decoder_1_3.countdown(summary);
     }
 
 }

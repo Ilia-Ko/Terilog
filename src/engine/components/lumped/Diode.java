@@ -23,8 +23,8 @@ public class Diode extends Component {
         super(control, data);
     }
     @Override protected HashSet<Pin> initPins() {
-        anode = new Pin(this, false, 0, 1);
-        cathode = new Pin(this, false, 4, 1);
+        anode = new Pin(this, false, 1, 0, 1);
+        cathode = new Pin(this, false, 1, 4, 1);
         HashSet<Pin> pins = new HashSet<>();
         pins.add(anode);
         pins.add(cathode);
@@ -33,8 +33,8 @@ public class Diode extends Component {
 
     // simulation
     @Override public void simulate() {
-        LogicLevel a = anode.get();
-        LogicLevel c = cathode.get();
+        LogicLevel a = anode.get()[0];
+        LogicLevel c = cathode.get()[0];
 
         if (a == ZZZ && c == ZZZ || a == ERR || c == ERR) {
             // do nothing

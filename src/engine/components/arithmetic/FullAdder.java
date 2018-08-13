@@ -55,11 +55,11 @@ public class FullAdder extends Component {
         }
     }
     @Override protected HashSet<Pin> initPins() {
-        inA = new Pin(this, true, 0, 3);
-        inB = new Pin(this, true, 0, 5);
-        inC = new Pin(this, true, 0, 1);
-        outS = new Pin(this, false, 6, 2);
-        outC = new Pin(this, false, 6, 4);
+        inA = new Pin(this, true, 1, 0, 3);
+        inB = new Pin(this, true, 1, 0, 5);
+        inC = new Pin(this, true, 1, 0, 1);
+        outS = new Pin(this, false, 1, 6, 2);
+        outC = new Pin(this, false, 1, 6, 4);
         HashSet<Pin> pins = new HashSet<>();
         pins.add(inA);
         pins.add(inB);
@@ -71,9 +71,9 @@ public class FullAdder extends Component {
 
     // simulation
     @Override public void simulate() {
-        LogicLevel a = inA.get();
-        LogicLevel b = inB.get();
-        LogicLevel c = inC.get();
+        LogicLevel a = inA.get()[0];
+        LogicLevel b = inB.get()[0];
+        LogicLevel c = inC.get()[0];
 
         if (a.isUnstable() || b.isUnstable() || c.isUnstable()) {
             if (a == b && a == c) {

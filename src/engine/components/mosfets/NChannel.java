@@ -20,9 +20,9 @@ abstract class NChannel extends MOSFET {
     }
 
     @Override public void simulate() {
-        LogicLevel g = gate.get();
-        LogicLevel s = source.get();
-        LogicLevel d = drain.get();
+        LogicLevel g = gate.get()[0];
+        LogicLevel s = source.get()[0];
+        LogicLevel d = drain.get()[0];
         boolean opened = g.volts() - s.volts() >= vgsth;
 
         if (s == ZZZ && d == ZZZ || s == ERR || d == ERR) {

@@ -5,9 +5,9 @@
 <?import javafx.scene.shape.Rectangle?>
 <Pane xmlns="http://javafx.com/javafx" prefHeight="4" prefWidth="2">
 
-    <Rectangle strokeWidth="0.1" stroke="black" fill="lightgray" x="0" y="0" width="2" height="4"/>
-    <Rectangle strokeWidth="0.1" stroke="black" fill="deepskyblue" x="1.5" y="0.5" width="0.5" height="1"/>
-    <Rectangle strokeWidth="0.1" stroke="black" fill="forestgreen" x="1.5" y="1.5" width="0.5" height="1"/>
-    <Rectangle strokeWidth="0.1" stroke="black" fill="orangered" x="1.5" y="2.5" width="0.5" height="1"/>
+    <Rectangle strokeWidth="0.1" stroke="black" fill="lightgray" x="0" y="0" width="4" height="2"/>
+    <Rectangle strokeWidth="0.1" stroke="black" fill="deepskyblue" x="0.5" y="1.5" width="1" height="0.5"/>
+    <Rectangle strokeWidth="0.1" stroke="black" fill="forestgreen" x="1.5" y="0.75" width="1" height="0.5"/>
+    <Rectangle strokeWidth="0.1" stroke="black" fill="orangered" x="2.5" y="0" width="1" height="0.5"/>
 
 </Pane>

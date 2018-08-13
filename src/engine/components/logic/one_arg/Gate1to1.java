@@ -32,8 +32,8 @@ abstract class Gate1to1 extends Component {
         }
     }
     @Override protected HashSet<Pin> initPins() {
-        in = new Pin(this, true, 0, 1);
-        out = new Pin(this, false, 4, 1);
+        in = new Pin(this, true, 1, 0, 1);
+        out = new Pin(this, false, 1, 4, 1);
         HashSet<Pin> pins = new HashSet<>();
         pins.add(in);
         pins.add(out);
@@ -42,7 +42,7 @@ abstract class Gate1to1 extends Component {
 
     // simulation
     @Override public void simulate() {
-        LogicLevel i = in.get();
+        LogicLevel i = in.get()[0];
 
         if (i.isUnstable()) out.put(i);
         else out.put(function(i));

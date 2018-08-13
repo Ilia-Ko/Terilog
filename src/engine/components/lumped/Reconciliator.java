@@ -39,8 +39,8 @@ public class Reconciliator extends Component {
         readXML(data);
     }
     @Override protected HashSet<Pin> initPins() {
-        source = new Pin(this, true, 0, 1);
-        drain = new Pin(this, false, 2, 1);
+        source = new Pin(this, true, 1, 0, 1);
+        drain = new Pin(this, false, 1, 2, 1);
         HashSet<Pin> pins = new HashSet<>();
         pins.add(source);
         pins.add(drain);
@@ -70,7 +70,7 @@ public class Reconciliator extends Component {
 
     // simulation
     @Override public void simulate() {
-        LogicLevel s = source.get();
+        LogicLevel s = source.get()[0];
 
         if (s.isUnstable()) drain.put(pull.get());
         else drain.put(s);

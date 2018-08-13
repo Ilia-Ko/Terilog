@@ -9,6 +9,7 @@ import engine.components.logic.one_arg.PTI;
 import engine.components.logic.one_arg.STI;
 import engine.components.logic.path.Decoder_1_3;
 import engine.components.logic.path.Demux_1_3;
+import engine.components.logic.path.Mux_18_6;
 import engine.components.logic.path.Mux_3_1;
 import engine.components.logic.two_arg.*;
 import engine.components.lumped.*;
@@ -507,6 +508,11 @@ public class ControlMain {
         flyComp = new Diode(this);
         holdingComp = true;
     }
+    @FXML private void menuForkTryte() {
+        breakInsertion();
+        flyComp = new ForkTryte(this);
+        holdingComp = true;
+    }
     @FXML private void menuReconciliator() {
         breakInsertion();
         flyComp = new Reconciliator(this);
@@ -625,6 +631,11 @@ public class ControlMain {
         flyComp = new Mux_3_1(this);
         holdingComp = true;
     }
+    @FXML private void menuMux18to6() {
+        breakInsertion();
+        flyComp = new Mux_18_6(this);
+        holdingComp = true;
+    }
     @FXML private void menuDemux1to3() {
         breakInsertion();
         flyComp = new Demux_1_3(this);
@@ -644,6 +655,11 @@ public class ControlMain {
     @FXML private void menuTryteAdder() {
         breakInsertion();
         flyComp = new TryteAdder(this);
+        holdingComp = true;
+    }
+    @FXML private void menuWordAdder() {
+        breakInsertion();
+        flyComp = new WordAdder(this);
         holdingComp = true;
     }
     @FXML private void menuTryteMultiplier() {
@@ -692,7 +708,7 @@ public class ControlMain {
     // menu.add.wire
     @FXML private void menuWire() {
         breakInsertion();
-        flyWire = new FlyWire(this);
+        flyWire = new FlyWire(this, circuit.getBusLengthFor(mouseX.get(), mouseY.get()));
         holdingWire = true;
     }
 
