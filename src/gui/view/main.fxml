@@ -49,8 +49,8 @@
                     <MenuItem text="Diode" accelerator="D" onAction="#menuDiode"/>
                     <Menu text="Fork">
 
-                        <MenuItem text="1 to 2" accelerator="Ctrl+F" onAction="#menuForkTryte"/>
-                        <MenuItem text="1 to 6" accelerator="F" onAction="#menuForkTryte"/>
+                        <MenuItem text="1 to 6" accelerator="F" onAction="#menuFork6"/>
+                        <MenuItem text="1 to 2" accelerator="Ctrl+F" onAction="#menuFork2"/>
 
                     </Menu>
                     <MenuItem text="Reconciliator" accelerator="R" onAction="#menuReconciliator"/>

@@ -36,6 +36,12 @@ public class CKEY extends GatePath {
         pins.add(keyN);
         return pins;
     }
+    @Override protected HashSet<Pin> getDependentPins() {
+        HashSet<Pin> dep = new HashSet<>();
+        dep.add(in);
+        dep.add(out);
+        return dep;
+    }
 
     // simulation
     @Override public void simulate() {

@@ -18,12 +18,13 @@ public class Pin extends Rectangle implements Connectible {
     private Node node;
     private int length, cx, cy;
     private LogicLevel[] signal;
-    private boolean highImpedance;
+    private boolean highImpedance, isVertical;
 
     // initialization
     public Pin(Component owner, boolean highImpedance, int busLength, int xPosInOwner, int yPosInOwner) {
         this.owner = owner;
         this.highImpedance = highImpedance;
+        isVertical = true;
         length = busLength;
         cx = xPosInOwner;
         cy = yPosInOwner;
@@ -43,6 +44,7 @@ public class Pin extends Rectangle implements Connectible {
     public Pin(Component owner, boolean highImpedance, int busLength, int xPosInOwner, int yPosInOwner, boolean isVertical) {
         this.owner = owner;
         this.highImpedance = highImpedance;
+        this.isVertical = isVertical;
         length = busLength;
         cx = xPosInOwner;
         cy = yPosInOwner;
@@ -85,7 +87,7 @@ public class Pin extends Rectangle implements Connectible {
     @Override public LogicLevel[] get() {
         return signal;
     }
-    @Override public int length() {
+    @Override public int capacity() {
         return length;
     }
 
@@ -94,6 +96,19 @@ public class Pin extends Rectangle implements Connectible {
     }
     public void setHighImpedance(boolean highImpedance) {
         this.highImpedance = highImpedance;
+    }
+    public void setCapacity(int busLength) {
+        double b = 0.1 * (length + 3);
+        length = busLength;
+        signal = new LogicLevel[length];
+        double a = 0.1 * (length + 3);
+        if (isVertical) {
+            setY(getY() + b / 2.0 - a / 2.0);
+            setHeight(a);
+        } else {
+            setX(getX() + b / 2.0 - a / 2.0);
+            setWidth(a);
+        }
     }
     // parsing.stage1
     @Override public void inspect(Wire wire) {

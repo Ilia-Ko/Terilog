@@ -12,10 +12,7 @@ import gui.control.ControlMemSet;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import org.w3c.dom.Document;
@@ -32,11 +29,12 @@ public class Linear extends Component {
     private IntegerProperty capacity;
     private LogicLevel[] memory;
     private Pin control, fill, clock, in, out;
+    private Tooltip tooltip;
 
     // initialization
     public Linear(ControlMain control) {
         super(control);
-        this.capacity = new SimpleIntegerProperty(6);
+        this.capacity = new SimpleIntegerProperty();
         memory = new LogicLevel[6];
         Arrays.fill(memory, ZZZ);
 
@@ -49,9 +47,10 @@ public class Linear extends Component {
             memory = new LogicLevel[cap];
             Arrays.fill(memory, ZZZ);
             lbl.setText(String.format("x%d", cap));
-            getPins().clear();
-            getPins().addAll(initPins());
+            in.setCapacity(cap);
+            out.setCapacity(cap);
         });
+        capacity.setValue(6);
     }
     public Linear(ControlMain control, Element data) {
         this(control);
@@ -117,6 +116,11 @@ public class Linear extends Component {
         pins.add(out);
         return pins;
     }
+    @Override public void confirm() {
+        super.confirm();
+        tooltip = new Tooltip(memToString());
+        Tooltip.install(getRoot(), tooltip);
+    }
 
     // simulation
     @Override public void simulate() {
@@ -127,8 +131,13 @@ public class Linear extends Component {
         if (ctrl == ERR || clck == ERR) {
             Arrays.fill(memory, ERR);
         } else if (clck == POS) {
-            if (ctrl == POS) memory = in.get();
-            else if (ctrl == NEG) Arrays.fill(memory, fill);
+            if (ctrl == POS) {
+                memory = in.get();
+                tooltip.setText(memToString());
+            } else if (ctrl == NEG) {
+                Arrays.fill(memory, fill);
+                tooltip.setText(memToString());
+            }
         }
         out.put(memory);
     }

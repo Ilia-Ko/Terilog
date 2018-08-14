@@ -502,9 +502,14 @@ public class ControlMain {
         flyComp = new Diode(this);
         holdingComp = true;
     }
-    @FXML private void menuForkTryte() {
+    @FXML private void menuFork6() {
         breakInsertion();
         flyComp = new Fork6(this);
+        holdingComp = true;
+    }
+    @FXML private void menuFork2() {
+        breakInsertion();
+        flyComp = new Fork2(this);
         holdingComp = true;
     }
     @FXML private void menuReconciliator() {

@@ -121,12 +121,16 @@ public class Wire extends Region implements Connectible, Selectable {
         r1 = new Rectangle(b, b);
         r1.xProperty().bind(x0.subtract(a));
         r1.yProperty().bind(y0.subtract(a));
+        r1.setArcWidth(0.3);
+        r1.setArcHeight(0.3);
         r1.setFill(Color.BLACK);
         r1.setOpacity(0.8);
         r1.setOnContextMenuRequested(mouse -> menu.show(this, mouse.getScreenX(), mouse.getScreenY()));
         r2 = new Rectangle(b, b);
         r2.xProperty().bind(x1.subtract(a));
         r2.yProperty().bind(y1.subtract(a));
+        r2.setArcWidth(0.3);
+        r2.setArcHeight(0.3);
         r2.setFill(Color.BLACK);
         r2.setOpacity(0.8);
         r2.setOnContextMenuRequested(mouse -> menu.show(this, mouse.getScreenX(), mouse.getScreenY()));
@@ -208,7 +212,7 @@ public class Wire extends Region implements Connectible, Selectable {
     @Override public LogicLevel[] get() {
         return null;
     }
-    @Override public int length() {
+    @Override public int capacity() {
         return length;
     }
 
@@ -283,7 +287,7 @@ public class Wire extends Region implements Connectible, Selectable {
         return Math.abs(what - a) + Math.abs(what - b) == Math.abs(a - b);
     }
     public static Wire optimize(Wire w1, Wire w2) {
-        assert w1.length() == w2.length();
+        assert w1.capacity() == w2.capacity();
         
         // intersecting
         boolean s2in1 = w1.inside(w2.x0.intValue(), w2.y0.intValue());

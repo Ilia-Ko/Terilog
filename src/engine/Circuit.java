@@ -242,7 +242,7 @@ public class Circuit {
                 Element w = (Element) list.item(i);
                 try {
                     int busLength = Integer.parseInt(w.getAttribute("bus"));
-                    if (busLength <= 0) System.out.println("WARNING: wire bus length must be greater than zero.");
+                    if (busLength <= 0) System.out.println("WARNING: wire bus capacity must be greater than zero.");
                     else wires.add(new Wire(control, busLength, w));
                 } catch (NumberFormatException e) {
                     wires.add(new Wire(control, 1, w));
@@ -278,8 +278,8 @@ public class Circuit {
         components.clear();
     }
     public int getBusLengthFor(int x, int y) {
-        for (Pin pin : pins) if (pin.inside(x, y)) return pin.length();
-        for (Wire wire : wires) if (wire.inside(x, y)) return wire.length();
+        for (Pin pin : pins) if (pin.inside(x, y)) return pin.capacity();
+        for (Wire wire : wires) if (wire.inside(x, y)) return wire.capacity();
         return 1;
     }
 
@@ -364,7 +364,7 @@ public class Circuit {
         // parsing.stage2.a: nodify wires - O(n)
         for (Wire wire : wires)
             if (wire.isNodeFree()) {
-                Node node = new Node(wire.length());
+                Node node = new Node(wire.capacity());
                 nodes.add(node);
                 wire.nodify(node);
             }
@@ -372,7 +372,7 @@ public class Circuit {
         // parsing.stage2.b: nodify pins - O(m)
         for (Pin pin : pins)
             if (pin.isNodeFree()) {
-                Node node = new Node(pin.length());
+                Node node = new Node(pin.capacity());
                 nodes.add(node);
                 pin.nodify(node);
             }

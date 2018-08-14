@@ -28,11 +28,11 @@ public class Node {
 
     // connectivity
     public void add(Wire wire) {
-        assert wire.length() == length;
+        assert wire.capacity() == length;
         wires.add(wire);
     }
     public void add(Pin pin) {
-        assert pin.length() == length;
+        assert pin.capacity() == length;
         pins.add(pin);
     }
 

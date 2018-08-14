@@ -4,17 +4,21 @@ import engine.Circuit;
 import engine.LogicLevel;
 import engine.components.BusComponent;
 import engine.components.Pin;
+import gui.Main;
 import gui.control.ControlMain;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.Pane;
 import javafx.scene.shape.Polyline;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -40,6 +44,15 @@ public class Fork6 extends BusComponent {
         this(control);
         confirm();
         readXML(data);
+    }
+    @Override protected Pane loadContent() {
+        try {
+            String location = "view/components/lumped/fork6.fxml";
+            return FXMLLoader.load(Main.class.getResource(location));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new Pane();
+        }
     }
     @Override protected HashSet<Pin> initPins() {
         HashSet<Pin> pins = new HashSet<>();
@@ -76,6 +89,12 @@ public class Fork6 extends BusComponent {
         ContextMenu menu = super.buildContextMenu();
         menu.getItems().add(0, menuMode);
         return menu;
+    }
+    @Override protected HashSet<Pin> getDependentPins() {
+        bus.setCapacity(6 * capacity.get());
+        HashSet<Pin> dep = new HashSet<>(getPins());
+        dep.remove(bus);
+        return dep;
     }
 
     @Override public void simulate() {

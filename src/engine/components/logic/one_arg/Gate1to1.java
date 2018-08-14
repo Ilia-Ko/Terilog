@@ -6,7 +6,6 @@ import engine.components.Pin;
 import gui.Main;
 import gui.control.ControlMain;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.ContextMenu;
 import javafx.scene.layout.Pane;
 import org.w3c.dom.Element;
 
@@ -40,10 +39,8 @@ abstract class Gate1to1 extends BusComponent {
         pins.add(out);
         return pins;
     }
-    @Override protected ContextMenu buildContextMenu() {
-        ContextMenu menu = super.buildContextMenu();
-        menu.getItems().add(0, makeCapMenu("Set size", capacity));
-        return menu;
+    @Override protected HashSet<Pin> getDependentPins() {
+        return getPins();
     }
 
     // simulation

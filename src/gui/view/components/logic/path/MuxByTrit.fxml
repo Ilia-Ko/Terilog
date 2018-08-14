@@ -31,6 +31,6 @@
     <Rectangle strokeWidth="0.1" stroke="black" fill="forestgreen" x="0" y="3.5" width="0.4" height="1"/>
     <Rectangle strokeWidth="0.1" stroke="black" fill="orangered" x="0" y="6.5" width="0.4" height="1"/>
 
-    <Line strokeWidth="0.1" stroke="black" startX="1" startY="7.5" endX="1" endY="8"/>
+    <Line strokeWidth="0.1" stroke="black" startX="1" startY="7" endX="1" endY="8"/>
 
 </Pane>

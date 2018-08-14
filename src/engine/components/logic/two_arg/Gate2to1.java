@@ -4,7 +4,6 @@ import engine.LogicLevel;
 import engine.components.BusComponent;
 import engine.components.Pin;
 import gui.control.ControlMain;
-import javafx.scene.control.Label;
 import org.w3c.dom.Element;
 
 import java.util.HashSet;
@@ -18,10 +17,6 @@ abstract class Gate2to1 extends BusComponent {
     // initialization
     Gate2to1(ControlMain control) {
         super(control, true);
-        // name
-        Label lbl = (Label) getRoot().lookup("#name");
-        lbl.setText(makeName(getClass(), capacity));
-        capacity.addListener((observable, oldValue, newValue) -> lbl.setText(makeName(getClass(), capacity)));
     }
     Gate2to1(ControlMain control, Element data) {
         this(control);
@@ -38,6 +33,9 @@ abstract class Gate2to1 extends BusComponent {
         pins.add(inB);
         pins.add(out);
         return pins;
+    }
+    @Override protected HashSet<Pin> getDependentPins() {
+        return getPins();
     }
 
     // simulation

@@ -1,6 +1,7 @@
 package engine.components;
 
 import engine.Circuit;
+import engine.connectivity.Selectable;
 import gui.Main;
 import gui.control.ControlMain;
 import javafx.beans.property.IntegerProperty;
@@ -15,19 +16,18 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import java.io.IOException;
+import java.util.HashSet;
 
-public abstract class BusComponent extends Component{
+public abstract class BusComponent extends Component {
 
     protected IntegerProperty capacity;
+    private HashSet<Pin> dependent;
 
     // initialization
     protected BusComponent(ControlMain control, boolean isUnified) {
         super(control);
-        capacity = new SimpleIntegerProperty(1);
-        capacity.addListener((observable, oldValue, newValue) -> {
-            getPins().clear();
-            getPins().addAll(initPins());
-        });
+        dependent = getDependentPins();
+        capacity.addListener((observable, oldValue, newValue) -> dependent.forEach(pin -> pin.setCapacity(newValue.intValue())));
         if (isUnified) {
             Label lbl = (Label) getRoot().lookup("#name");
             capacity.addListener((observable, oldValue, newValue) -> lbl.setText(makeName(getClass(), capacity)));
@@ -47,9 +47,16 @@ public abstract class BusComponent extends Component{
         }
     }
     @Override protected ContextMenu buildContextMenu() {
+        capacity = new SimpleIntegerProperty(1);
         ContextMenu menu = super.buildContextMenu();
         menu.getItems().add(0, makeCapMenu("Set size", capacity));
         return menu;
+    }
+    protected abstract HashSet<Pin> getDependentPins();
+    @Override public Selectable copy() {
+        BusComponent copy = (BusComponent) super.copy();
+        copy.capacity.setValue(capacity.get());
+        return copy;
     }
 
     // countdown
@@ -91,7 +98,7 @@ public abstract class BusComponent extends Component{
         menuCap.getItems().addAll(itemCap1, itemCap3, itemCap6, itemCap12, itemCap24);
         return menuCap;
     }
-    protected static String makeName(Class cls, IntegerProperty capacity) {
+    private static String makeName(Class cls, IntegerProperty capacity) {
         // get class name
         String name = cls.getSimpleName().toUpperCase();
 
@@ -133,8 +140,9 @@ public abstract class BusComponent extends Component{
         }
         int l2 = cap.length() - len;
         for (int i = 0; i < l2; i++) {
+            res.append("  ");
             res.append(cap.charAt(len + i));
-            res.append("  \n");
+            res.append('\n');
         }
 
         return res.deleteCharAt(res.length() - 1).toString();

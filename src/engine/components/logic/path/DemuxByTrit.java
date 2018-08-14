@@ -41,6 +41,11 @@ public class DemuxByTrit extends GatePath {
         pins.add(outPOS);
         return pins;
     }
+    @Override protected HashSet<Pin> getDependentPins() {
+        HashSet<Pin> dep = new HashSet<>(getPins());
+        dep.remove(sel);
+        return dep;
+    }
 
     // simulation
     @Override public void simulate() {

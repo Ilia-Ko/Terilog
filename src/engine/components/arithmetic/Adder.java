@@ -41,6 +41,12 @@ public class Adder extends BusComponent {
 
         return pins;
     }
+    @Override protected HashSet<Pin> getDependentPins() {
+        HashSet<Pin> dep = new HashSet<>(getPins());
+        dep.remove(Cin);
+        dep.remove(Cout);
+        return dep;
+    }
 
     // simulation
     @Override public void simulate() {

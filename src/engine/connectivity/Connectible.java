@@ -17,7 +17,7 @@ public interface Connectible {
     void reset(boolean denodify);
     void put(LogicLevel[] signal);
     LogicLevel[] get();
-    int length();
+    int capacity();
     static void establishConnection(Connectible a, Connectible b) {
         a.connect(b);
         b.connect(a);

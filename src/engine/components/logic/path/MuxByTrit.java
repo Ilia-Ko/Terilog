@@ -39,6 +39,11 @@ public class MuxByTrit extends GatePath {
         pins.add(sel);
         return pins;
     }
+    @Override protected HashSet<Pin> getDependentPins() {
+        HashSet<Pin> dep = new HashSet<>(getPins());
+        dep.remove(sel);
+        return dep;
+    }
 
     // simulation
     @Override public void simulate() {
@@ -60,6 +65,7 @@ public class MuxByTrit extends GatePath {
         for (int i = 0; i < capacity.get(); i++) res[i] = STI.func(res[i]);
         out.put(res);
     }
+
 
     // countdown
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
