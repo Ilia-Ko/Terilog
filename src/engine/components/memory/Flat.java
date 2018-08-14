@@ -72,7 +72,7 @@ public class Flat extends Component {
     }
     @Override protected Pane loadContent() {
         try {
-            String location = "view/components/memory/flat/" + getClass().getSimpleName() + ".fxml";
+            String location = "view/components/memory/Flat.fxml";
             return FXMLLoader.load(Main.class.getResource(location));
         } catch (IOException e) {
             e.printStackTrace();
@@ -87,8 +87,8 @@ public class Flat extends Component {
         fill = new Pin(this, true, 1, 4, 2);
         clock = new Pin(this, true, 1, 4, 3);
         addr = new Pin(this, true, capAddr, 0, 2);
-        in = new Pin(this, true, capMem, 2, 0);
-        out = new Pin(this, false, capMem, 2, 4);
+        in = new Pin(this, true, capMem, 2, 0, false);
+        out = new Pin(this, false, capMem, 2, 4, false);
 
         HashSet<Pin> pins = new HashSet<>();
         pins.add(control);

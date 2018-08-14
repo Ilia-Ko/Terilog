@@ -19,12 +19,10 @@ import java.io.IOException;
 public abstract class BusComponent extends Component{
 
     protected IntegerProperty capacity;
-    private boolean isUnified;
 
     // initialization
     protected BusComponent(ControlMain control, boolean isUnified) {
         super(control);
-        this.isUnified = isUnified;
         capacity = new SimpleIntegerProperty(1);
         capacity.addListener((observable, oldValue, newValue) -> {
             getPins().clear();
@@ -37,27 +35,21 @@ public abstract class BusComponent extends Component{
     }
     protected BusComponent(ControlMain control, boolean isUnified, Element data) {
         this(control, isUnified);
-        readXML(data);
         confirm();
+        readXML(data);
     }
     @Override protected Pane loadContent() {
-        if (isUnified) {
-            try {
-                return FXMLLoader.load(Main.class.getResource("view/components/Universal.fxml"));
-            } catch (IOException e) {
-                e.printStackTrace();
-                return new Pane();
-            }
+        try {
+            return FXMLLoader.load(Main.class.getResource("view/components/Universal.fxml"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new Pane();
         }
-        return super.loadContent();
     }
     @Override protected ContextMenu buildContextMenu() {
-        if (isUnified) {
-            ContextMenu menu = super.buildContextMenu();
-            menu.getItems().add(0, makeCapMenu("Set size", capacity));
-            return menu;
-        }
-        return super.buildContextMenu();
+        ContextMenu menu = super.buildContextMenu();
+        menu.getItems().add(0, makeCapMenu("Set size", capacity));
+        return menu;
     }
 
     // countdown

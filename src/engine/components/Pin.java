@@ -20,7 +20,7 @@ public class Pin extends Rectangle implements Connectible {
     private LogicLevel[] signal;
     private boolean highImpedance;
 
-    // initialization (vertical version)
+    // initialization
     public Pin(Component owner, boolean highImpedance, int busLength, int xPosInOwner, int yPosInOwner) {
         this.owner = owner;
         this.highImpedance = highImpedance;
@@ -37,6 +37,32 @@ public class Pin extends Rectangle implements Connectible {
         setHeight(h);
         setArcWidth(0.1);
         setArcHeight(0.1);
+        setFill(ZZZ.colour());
+        owner.getRoot().getChildren().add(this);
+    }
+    public Pin(Component owner, boolean highImpedance, int busLength, int xPosInOwner, int yPosInOwner, boolean isVertical) {
+        this.owner = owner;
+        this.highImpedance = highImpedance;
+        length = busLength;
+        cx = xPosInOwner;
+        cy = yPosInOwner;
+        connectibles = new HashSet<>();
+        signal = new LogicLevel[length];
+
+        double a = 0.1 * (length + 3);
+        if (isVertical) {
+            setX(xPosInOwner - 0.2);
+            setY(yPosInOwner - a / 2.0);
+            setWidth(0.4);
+            setHeight(a);
+        } else {
+            setX(xPosInOwner - a / 2.0);
+            setY(yPosInOwner - 0.2);
+            setWidth(a);
+            setHeight(0.4);
+        }
+        setArcWidth(0.2);
+        setArcHeight(0.2);
         setFill(ZZZ.colour());
         owner.getRoot().getChildren().add(this);
     }

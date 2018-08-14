@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--suppress JavaFxRedundantPropertyValue -->
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.*?>
+<?import java.lang.*?>
+<Pane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" prefHeight="2" prefWidth="2">
+
+    <!--bus-->
+    <Line strokeWidth="0.08" stroke="darkviolet" startX="0" startY="2.95" endX="1" endY="0.95"/>
+    <Line strokeWidth="0.08" stroke="darkviolet" startX="0" startY="3.05" endX="1" endY="1.05"/>
+
+    <!--divergence-->
+    <Polyline strokeWidth="0.1" stroke="black" fx:id="div" visible="true">
+        <points>
+            <Double fx:value="0.5"/><Double fx:value="0"/>
+            <Double fx:value="0.8"/><Double fx:value="1"/>
+            <Double fx:value="0.5"/><Double fx:value="2"/>
+        </points>
+    </Polyline>
+
+    <!--convergence-->
+    <Polyline strokeWidth="0.1" stroke="black" fx:id="con" visible="false">
+        <points>
+            <Double fx:value="0.8"/><Double fx:value="0"/>
+            <Double fx:value="0.5"/><Double fx:value="1"/>
+            <Double fx:value="0.8"/><Double fx:value="2"/>
+        </points>
+    </Polyline>
+
+    <!--singles-->
+    <Line strokeWidth="0.08" stroke="darkviolet" startX="1" startY="0.95" endX="1.5" endY="0"/>
+    <Line strokeWidth="0.08" stroke="darkviolet" startX="1" startY="1.05" endX="1.5" endY="2"/>
+    <Line strokeWidth="0.08" stroke="darkviolet" startX="1.5" startY="0" endX="2" endY="0"/>
+    <Line strokeWidth="0.08" stroke="darkviolet" startX="1.5" startY="2" endX="2" endY="2"/>
+
+    <!--zero flag-->
+    <Line strokeWidth="0.1" stroke="darkviolet" startX="1" startY="0" endX="2" endY="0"/>
+    <Rectangle strokeWidth="0.05" stroke="darkviolet" fill="red" x="1" y="0" width="0.3" height="0.5"/>
+
+</Pane>

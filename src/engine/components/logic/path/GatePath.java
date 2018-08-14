@@ -23,8 +23,8 @@ public abstract class GatePath extends BusComponent {
     }
     GatePath(ControlMain control, Element data) {
         super(control, false);
-        readXML(data);
         confirm();
+        readXML(data);
     }
     @Override protected Pane loadContent() {
         try {

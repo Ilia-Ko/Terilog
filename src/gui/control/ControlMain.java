@@ -504,7 +504,7 @@ public class ControlMain {
     }
     @FXML private void menuForkTryte() {
         breakInsertion();
-        flyComp = new ForkTryte(this);
+        flyComp = new Fork6(this);
         holdingComp = true;
     }
     @FXML private void menuReconciliator() {

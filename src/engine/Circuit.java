@@ -132,8 +132,11 @@ public class Circuit {
                     case "diode":
                         add(new Diode(control, comp));
                         break;
-                    case "forktryte":
-                        add(new ForkTryte(control, comp));
+                    case "fork6":
+                        add(new Fork6(control, comp));
+                        break;
+                    case "fork2":
+                        add(new Fork2(control, comp));
                         break;
                     case "indicator":
                         add(new Indicator(control, comp));
@@ -174,6 +177,7 @@ public class Circuit {
                         add(new MUL(control, comp));
                         break;
                     case "cmp":
+                    case "trytecmp":
                         add(new CMP(control, comp));
                         break;
                     case "equ":
@@ -187,12 +191,15 @@ public class Circuit {
                         break;
                     // logic.path
                     case "decodertrit":
+                    case "decoder_1_3":
                         add(new DecoderTrit(control, comp));
                         break;
                     case "muxbytrit":
+                    case "mux_3_1":
                         add(new MuxByTrit(control, comp));
                         break;
                     case "demuxbytrit":
+                    case "demux_1_3":
                         add(new DemuxByTrit(control, comp));
                         break;
                     // arithmetic
@@ -216,9 +223,11 @@ public class Circuit {
                         add(new Trigger(control, comp));
                         break;
                     case "linear":
+                    case "tryte":
                         add(new Linear(control, comp));
                         break;
                     case "flat":
+                    case "ram_6_6":
                         add(new Flat(control, comp));
                         break;
                     default:

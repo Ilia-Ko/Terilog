@@ -106,8 +106,8 @@ public class Linear extends Component {
         control = new Pin(this, true, 1, 0, 1);
         fill = new Pin(this, true, 1, 4, 1);
         clock = new Pin(this, true, 1, 0, 2);
-        in = new Pin(this, true, cap, 2, 0);
-        out = new Pin(this, true, cap, 2, 3);
+        in = new Pin(this, true, cap, 2, 0, false);
+        out = new Pin(this, true, cap, 2, 3, false);
 
         HashSet<Pin> pins = new HashSet<>();
         pins.add(control);

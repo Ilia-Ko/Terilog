@@ -24,9 +24,9 @@ abstract class Gate2to1 extends BusComponent {
         capacity.addListener((observable, oldValue, newValue) -> lbl.setText(makeName(getClass(), capacity)));
     }
     Gate2to1(ControlMain control, Element data) {
-        super(control, true);
-        readXML(data);
+        this(control);
         confirm();
+        readXML(data);
     }
     @Override protected HashSet<Pin> initPins() {
         int cap = (capacity == null) ? 1 : capacity.get();
