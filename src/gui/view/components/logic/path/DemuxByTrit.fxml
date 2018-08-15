@@ -22,10 +22,10 @@
         </points>
     </Polygon>
 
-    <Line strokeWidth="0.1" stroke="black" startX="1.5" startY="3.5" endX="1.0" endY="4.0"/>
-    <Line strokeWidth="0.1" stroke="black" startX="1.0" startY="4.0" endX="1.5" endY="4.5"/>
-    <Line strokeWidth="0.1" stroke="black" startX="1.0" startY="3.5" endX="0.5" endY="4.0"/>
-    <Line strokeWidth="0.1" stroke="black" startX="0.5" startY="4.0" endX="1.0" endY="4.5"/>
+    <Line strokeWidth="0.1" stroke="black" startX="0.5" startY="3.5" endX="1.0" endY="4.0"/>
+    <Line strokeWidth="0.1" stroke="black" startX="1.0" startY="4.0" endX="0.5" endY="4.5"/>
+    <Line strokeWidth="0.1" stroke="black" startX="1.0" startY="3.5" endX="1.5" endY="4.0"/>
+    <Line strokeWidth="0.1" stroke="black" startX="1.5" startY="4.0" endX="1.0" endY="4.5"/>
 
     <Rectangle strokeWidth="0.1" stroke="black" fill="deepskyblue" x="1.6" y="0.5" width="0.4" height="1"/>
     <Rectangle strokeWidth="0.1" stroke="black" fill="forestgreen" x="1.6" y="3.5" width="0.4" height="1"/>

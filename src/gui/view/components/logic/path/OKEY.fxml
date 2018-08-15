@@ -10,6 +10,7 @@
     <Line stroke="black" strokeWidth="0.1" startX="0" startY="1" endX="0.5" endY="1"/>
     <Line stroke="black" strokeWidth="0.1" startX="3.5" startY="1" endX="4" endY="1"/>
     <Line stroke="black" strokeWidth="0.1" startX="2" startY="1.5" endX="2" endY="2"/>
+    <Line stroke="black" strokeWidth="0.1" startX="2" startY="0" endX="2" endY="0.5"/>
 
     <!--body-->
     <Path stroke="black" strokeWidth="0.1" fill="lightgray">

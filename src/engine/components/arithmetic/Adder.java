@@ -20,9 +20,11 @@ public class Adder extends BusComponent {
     // initialization
     public Adder(ControlMain control) {
         super(control, true);
+        capacity.setValue(6);
     }
     public Adder(ControlMain control, Element data) {
         super(control, true, data);
+        capacity.setValue(6);
     }
     @Override protected HashSet<Pin> initPins() {
         HashSet<Pin> pins = new HashSet<>();

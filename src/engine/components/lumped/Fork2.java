@@ -58,12 +58,12 @@ public class Fork2 extends BusComponent {
         HashSet<Pin> pins = new HashSet<>();
         int cap = (capacity == null) ? 1 : capacity.get();
 
-        bus = new Pin(this, true, 2 * cap, 0, 3);
+        bus = new Pin(this, true, 2 * cap, 0, 1);
         pins.add(bus);
 
-        singles = new Pin[6];
-        for (int i = 0; i < 6; i++) {
-            singles[i] = new Pin(this, false, cap, 2, i + i / 3);
+        singles = new Pin[2];
+        for (int i = 0; i < 2; i++) {
+            singles[i] = new Pin(this, false, cap, 2, i);
             pins.add(singles[i]);
         }
 

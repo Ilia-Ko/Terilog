@@ -12,11 +12,12 @@ import static engine.LogicLevel.ZZZ;
 
 abstract class Gate2to1 extends BusComponent {
 
-    private Pin inA, inB, out;
+    Pin inA, inB, out;
 
     // initialization
     Gate2to1(ControlMain control) {
         super(control, true);
+        capacity.setValue(6);
     }
     Gate2to1(ControlMain control, Element data) {
         this(control);

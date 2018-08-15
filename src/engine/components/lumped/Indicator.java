@@ -2,59 +2,67 @@ package engine.components.lumped;
 
 import engine.Circuit;
 import engine.LogicLevel;
-import engine.components.Component;
+import engine.components.BusComponent;
 import engine.components.Pin;
+import engine.components.memory.Linear;
+import gui.Main;
 import gui.control.ControlMain;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.CycleMethod;
-import javafx.scene.paint.RadialGradient;
-import javafx.scene.paint.Stop;
-import javafx.scene.shape.Circle;
+import javafx.scene.layout.Pane;
+import javafx.scene.shape.Rectangle;
 import org.w3c.dom.Element;
 
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashSet;
 
-public class Indicator extends Component {
+import static engine.LogicLevel.ZZZ;
 
-    private ObjectProperty<LogicLevel> signal;
+public class Indicator extends BusComponent {
+
+    private ObjectProperty<LogicLevel[]> signal;
     private Pin source;
 
     // initialization
     public Indicator(ControlMain control) {
-        super(control);
+        super(control, false);
 
         // init indication
-        Circle body = (Circle) getRoot().lookup("#body");
+        Rectangle body = (Rectangle) getRoot().lookup("#body");
         Label value = (Label) getRoot().lookup("#value");
-        DoubleProperty size = new SimpleDoubleProperty(2.0);
-        value.layoutXProperty().bind(size.subtract(value.widthProperty()).divide(2.0));
-        value.layoutYProperty().bind(size.subtract(value.heightProperty()).divide(2.0));
+        body.widthProperty().bind(capacity.add(1));
+        value.layoutXProperty().bind(body.widthProperty().subtract(value.widthProperty()).divide(2.0));
+        value.layoutYProperty().bind(body.heightProperty().subtract(value.heightProperty()).divide(2.0));
         value.rotateProperty().bind(getRotation().angleProperty().negate());
         value.scaleXProperty().bind(getScale().xProperty());
         value.scaleYProperty().bind(getScale().yProperty());
 
         // init signal
         signal = new SimpleObjectProperty<>();
-        signal.addListener((observable, oldSignal, newSignal) -> {
-            RadialGradient gradient = new RadialGradient(0, 0, 1, 1, 1,
-                    false, CycleMethod.NO_CYCLE,
-                    new Stop(0.0, newSignal.colour()),
-                    new Stop(1.0, Color.GRAY));
-            body.setFill(gradient);
-            body.setStroke(newSignal.colour());
-            value.setText(String.valueOf(newSignal.getDigitCharacter()));
+        signal.addListener((observable, oldSignal, newSignal) -> value.setText(Linear.memToString(signal.get())));
+        capacity.addListener((observable, oldValue, newValue) -> {
+            LogicLevel[] val = new LogicLevel[newValue.intValue()];
+            Arrays.fill(val, ZZZ);
+            signal.setValue(val);
         });
-        signal.setValue(LogicLevel.ZZZ);
+        capacity.setValue(1);
     }
     public Indicator(ControlMain control, Element data) {
         this(control);
         confirm();
         readXML(data);
+    }
+    @Override protected Pane loadContent() {
+        try {
+            String location = "view/components/lumped/indicator.fxml";
+            return FXMLLoader.load(Main.class.getResource(location));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new Pane();
+        }
     }
     @Override protected HashSet<Pin> initPins() {
         source = new Pin(this, true, 1, 0, 1);
@@ -62,16 +70,22 @@ public class Indicator extends Component {
         pins.add(source);
         return pins;
     }
+    @Override protected HashSet<Pin> getDependentPins() {
+        return getPins();
+    }
 
     // simulation
     @Override public void reset(boolean denodify) {
         super.reset(denodify);
-        signal.setValue(LogicLevel.ZZZ);
+        LogicLevel[] nil = new LogicLevel[capacity.get()];
+        Arrays.fill(nil, ZZZ);
+        signal.setValue(nil);
     }
     @Override public void simulate() {
-        signal.setValue(source.get()[0]);
+        signal.setValue(source.get());
     }
-    @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
+
+    @Override protected void singleCountdown(Circuit.Summary summary) {
         summary.addOutput();
     }
 

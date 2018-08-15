@@ -118,7 +118,7 @@ public class Linear extends Component {
     }
     @Override public void confirm() {
         super.confirm();
-        tooltip = new Tooltip(memToString());
+        tooltip = new Tooltip(memToString(memory));
         Tooltip.install(getRoot(), tooltip);
     }
 
@@ -133,10 +133,10 @@ public class Linear extends Component {
         } else if (clck == POS) {
             if (ctrl == POS) {
                 memory = in.get();
-                tooltip.setText(memToString());
+                tooltip.setText(memToString(memory));
             } else if (ctrl == NEG) {
                 Arrays.fill(memory, fill);
-                tooltip.setText(memToString());
+                tooltip.setText(memToString(memory));
             }
         }
         out.put(memory);
@@ -150,7 +150,7 @@ public class Linear extends Component {
     @Override public Element writeXML(Document doc) {
         Element l = super.writeXML(doc);
         l.setAttribute("cap", Integer.toString(capacity.get()));
-        l.setAttribute("mem", memToString());
+        l.setAttribute("mem", memToString(memory));
         return l;
     }
     @Override protected void readXML(Element comp) {
@@ -173,7 +173,7 @@ public class Linear extends Component {
     }
 
     // utils
-    private String memToString() {
+    public static String memToString(LogicLevel[] memory) {
         StringBuilder builder = new StringBuilder();
         int c = 0;
         for (LogicLevel sig : memory) {
@@ -183,7 +183,7 @@ public class Linear extends Component {
                 c = 0;
             }
         }
-        return builder.toString();
+        return builder.deleteCharAt(0).toString();
     }
     private void parseString(String str) {
         int c = capacity.get();

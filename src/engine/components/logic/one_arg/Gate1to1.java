@@ -19,6 +19,7 @@ abstract class Gate1to1 extends BusComponent {
     // initialization
     Gate1to1(ControlMain control) {
         super(control, false);
+        capacity.setValue(6);
     }
     Gate1to1(ControlMain control, Element data) {
         super(control, false, data);

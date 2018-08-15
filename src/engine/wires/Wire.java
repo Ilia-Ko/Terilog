@@ -10,6 +10,8 @@ import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.*;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -75,6 +77,11 @@ public class Wire extends Region implements Connectible, Selectable {
         // place them
         layoutXProperty().bind(x0);
         layoutYProperty().bind(y0);
+        double w = Math.abs(x1.get() - x0.get()) + 0.1;
+        double h = Math.abs(y1.get() - y0.get()) + 0.1;
+        setPrefWidth(w);
+        setPrefHeight(h);
+        setBackground(new Background(new BackgroundFill(Color.ROSYBROWN, null, null)));
         control.getParent().getChildren().addAll(this);
     }
     Wire(ControlMain control, int busLength, IntegerProperty ix0, IntegerProperty iy0, IntegerProperty ix1, IntegerProperty iy1) {
@@ -112,28 +119,27 @@ public class Wire extends Region implements Connectible, Selectable {
         y1.unbind();
 
         ContextMenu menu = buildContextMenu();
+        setOnContextMenuRequested(mouse -> menu.show(this, mouse.getScreenX(), mouse.getScreenY()));
         setOpacity(1.0);
         control.getCircuit().add(this);
 
         // add squares
-        double b = 1.0 / 3.0 + (length - 1) * 0.1;
+        double b = 1.0 / 3.0;
         DoubleProperty a = new SimpleDoubleProperty(b / 2.0);
         r1 = new Rectangle(b, b);
         r1.xProperty().bind(x0.subtract(a));
         r1.yProperty().bind(y0.subtract(a));
-        r1.setArcWidth(0.3);
-        r1.setArcHeight(0.3);
+        r1.setArcWidth(0.2);
+        r1.setArcHeight(0.2);
         r1.setFill(Color.BLACK);
         r1.setOpacity(0.8);
-        r1.setOnContextMenuRequested(mouse -> menu.show(this, mouse.getScreenX(), mouse.getScreenY()));
         r2 = new Rectangle(b, b);
         r2.xProperty().bind(x1.subtract(a));
         r2.yProperty().bind(y1.subtract(a));
-        r2.setArcWidth(0.3);
-        r2.setArcHeight(0.3);
+        r2.setArcWidth(0.2);
+        r2.setArcHeight(0.2);
         r2.setFill(Color.BLACK);
         r2.setOpacity(0.8);
-        r2.setOnContextMenuRequested(mouse -> menu.show(this, mouse.getScreenX(), mouse.getScreenY()));
         control.getParent().getChildren().addAll(r1, r2);
 
         // history
@@ -157,7 +163,9 @@ public class Wire extends Region implements Connectible, Selectable {
 
     // selection
     @Override public boolean checkSelection(Rectangle sel) {
-        isSelected.setValue(sel.getBoundsInParent().contains(getBoundsInParent()));
+        boolean one = sel.contains(x0.get(), y0.get());
+        boolean another = sel.contains(x1.get(), y1.get());
+        isSelected.setValue(one && another);
         return isSelected.get();
     }
     @Override public void breakSelection() {

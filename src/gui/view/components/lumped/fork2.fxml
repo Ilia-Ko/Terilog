@@ -7,8 +7,8 @@
 <Pane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" prefHeight="2" prefWidth="2">
 
     <!--bus-->
-    <Line strokeWidth="0.08" stroke="darkviolet" startX="0" startY="2.95" endX="1" endY="0.95"/>
-    <Line strokeWidth="0.08" stroke="darkviolet" startX="0" startY="3.05" endX="1" endY="1.05"/>
+    <Line strokeWidth="0.08" stroke="darkviolet" startX="0" startY="0.95" endX="1" endY="0.95"/>
+    <Line strokeWidth="0.08" stroke="darkviolet" startX="0" startY="1.05" endX="1" endY="1.05"/>
 
     <!--divergence-->
     <Polyline strokeWidth="0.1" stroke="black" fx:id="div" visible="true">
