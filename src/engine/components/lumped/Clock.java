@@ -8,7 +8,6 @@ import engine.connectivity.Selectable;
 import gui.control.ControlMain;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.shape.Polyline;
 import org.w3c.dom.Element;
 
 import java.util.HashSet;
@@ -19,15 +18,11 @@ public class Clock extends Component {
 
     private int level;
     private Pin outH, outL;
-    private Polyline curve;
 
     // initialization
     public Clock(ControlMain control) {
         super(control);
         level = 0;
-
-        curve = (Polyline) getRoot().lookup("#curve");
-        curve.setStroke(LogicLevel.NIL.colour());
     }
     public Clock(ControlMain control, Element data) {
         this(control);
@@ -54,7 +49,6 @@ public class Clock extends Component {
 
     // simulation
     public void nextImpulse() {
-        curve.setStroke(LogicLevel.parseValue(level).colour());
         level = 1 - level;
     }
     @Override public void simulate() {
@@ -69,8 +63,6 @@ public class Clock extends Component {
     @Override public Selectable copy() {
         Clock copy = (Clock) super.copy();
         copy.level = level;
-        copy.curve = (Polyline) copy.getRoot().lookup("#curve");
-        copy.curve.setStroke(LogicLevel.NIL.colour());
         return copy;
     }
 
