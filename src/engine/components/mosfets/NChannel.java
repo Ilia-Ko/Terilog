@@ -28,7 +28,6 @@ abstract class NChannel extends MOSFET {
         if (s == ZZZ && d == ZZZ || s == ERR || d == ERR) {
             // do nothing
         } else if (g == ERR || (g == ZZZ && (s.isStable() || d.isStable()))) {
-            source.put(ERR);
             drain.put(ERR);
         } else if (s.isStable() && (opened || s.volts() > NIL.volts())) {
             drain.put(s);

@@ -162,14 +162,14 @@ public class Flat extends Component {
         LogicLevel ctrl = control.get()[0];
         LogicLevel[] base = new LogicLevel[addrCap.get()];
         Arrays.fill(base, NEG);
-        int addr = (int) (encode(this.addr.get(), addrCap.get()) - encode(base, addrCap.get()));
+        int addr = (int) (-encode(this.addr.get(), addrCap.get()) - encode(base, addrCap.get()));
 
         if (clock.get()[0] == POS) {
             if (ctrl == POS) {
-                data[addr] = encode(in.get(), memCap.get());
+                data[addr] = -encode(in.get(), memCap.get());
             } else if (ctrl == NEG) {
                 Arrays.fill(in.get(), fill.get()[0]);
-                data[addr] = encode(in.get(), memCap.get());
+                data[addr] = -encode(in.get(), memCap.get());
             }
         }
         out.put(decode(data[addr], memCap.get()));

@@ -17,18 +17,17 @@ public class Clock extends Component {
 
     public static final double DEF_FREQUENCY = 0; // Hz (0 means as fast as possible)
 
-    private int phase, dir;
-    private Pin drain;
+    private int level;
+    private Pin outH, outL;
     private Polyline curve;
 
     // initialization
     public Clock(ControlMain control) {
         super(control);
-        phase = 1;
-        dir = 1;
+        level = 0;
 
         curve = (Polyline) getRoot().lookup("#curve");
-        curve.setStroke(LogicLevel.POS.colour());
+        curve.setStroke(LogicLevel.NIL.colour());
     }
     public Clock(ControlMain control, Element data) {
         this(control);
@@ -36,10 +35,12 @@ public class Clock extends Component {
         readXML(data);
     }
     @Override protected HashSet<Pin> initPins() {
-        drain = new Pin(this, false, 1, 4, 2);
+        outH = new Pin(this, false, 1, 4, 1);
+        outL = new Pin(this, false, 1, 4, 3);
 
         HashSet<Pin> pins = new HashSet<>();
-        pins.add(drain);
+        pins.add(outH);
+        pins.add(outL);
         return pins;
     }
     @Override protected ContextMenu buildContextMenu() {
@@ -52,18 +53,13 @@ public class Clock extends Component {
     }
 
     // simulation
-    private int compNext(int current) {
-        if (Math.abs(current) == 1) return 0;
-        else return dir;
-    }
     public void nextImpulse() {
-        if (Math.abs(phase) == 1) dir *= -1;
-        phase += dir;
-
-        curve.setStroke(LogicLevel.parseValue(compNext(phase)).colour());
+        curve.setStroke(LogicLevel.parseValue(level).colour());
+        level = 1 - level;
     }
     @Override public void simulate() {
-        drain.put(LogicLevel.parseValue(phase));
+        outH.put(LogicLevel.parseValue(level));
+        outL.put(LogicLevel.parseValue(1 - level));
     }
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {
         summary.takeClockIntoAccount();
@@ -72,10 +68,9 @@ public class Clock extends Component {
 
     @Override public Selectable copy() {
         Clock copy = (Clock) super.copy();
-        copy.phase = phase;
-        copy.dir = dir;
+        copy.level = level;
         copy.curve = (Polyline) copy.getRoot().lookup("#curve");
-        copy.curve.setStroke(LogicLevel.POS.colour());
+        copy.curve.setStroke(LogicLevel.NIL.colour());
         return copy;
     }
 
