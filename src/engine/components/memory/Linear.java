@@ -12,7 +12,10 @@ import gui.control.ControlMemSet;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.*;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import org.w3c.dom.Document;
@@ -29,7 +32,7 @@ public class Linear extends Component {
     private IntegerProperty capacity;
     private LogicLevel[] memory;
     private Pin control, fill, clock, in, out;
-    private Tooltip tooltip;
+    private Label val;
 
     // initialization
     public Linear(ControlMain control) {
@@ -41,6 +44,9 @@ public class Linear extends Component {
         // gui
         Label lbl = (Label) getRoot().lookup("#name");
         lbl.setText("x6");
+        val = (Label) getRoot().lookup("#value");
+        val.setText("??????");
+        val.visibleProperty().bind(capacity.isEqualTo(6));
 
         capacity.addListener((observable, oldValue, newValue) -> {
             int cap = newValue.intValue();
@@ -118,8 +124,6 @@ public class Linear extends Component {
     }
     @Override public void confirm() {
         super.confirm();
-        tooltip = new Tooltip(memToString(memory));
-        Tooltip.install(getRoot(), tooltip);
     }
 
     // simulation
@@ -133,10 +137,10 @@ public class Linear extends Component {
         } else if (clck == POS) {
             if (ctrl == POS) {
                 memory = in.get();
-                tooltip.setText(memToString(memory));
+                val.setText(memToString(memory));
             } else if (ctrl == NEG) {
                 Arrays.fill(memory, fill);
-                tooltip.setText(memToString(memory));
+                val.setText(memToString(memory));
             }
         }
         out.put(memory);
@@ -175,15 +179,8 @@ public class Linear extends Component {
     // utils
     public static String memToString(LogicLevel[] memory) {
         StringBuilder builder = new StringBuilder();
-        int c = 0;
-        for (LogicLevel sig : memory) {
-            builder.insert(0, sig.getDigitCharacter());
-            if (c++ == 2) {
-                builder.insert(0, '\'');
-                c = 0;
-            }
-        }
-        return builder.deleteCharAt(0).toString();
+        for (LogicLevel sig : memory) builder.insert(0, sig.getDigitCharacter());
+        return builder.toString();
     }
     private void parseString(String str) {
         int c = capacity.get();
@@ -195,9 +192,18 @@ public class Linear extends Component {
             else
                 memory[--c] = sig;
         }
+        val.setText(memToString(memory));
     }
     public LogicLevel[] getMemory() {
         return memory;
+    }
+    public void setMemory(LogicLevel[] mem) {
+        assert mem.length == capacity.get();
+        System.arraycopy(mem, 0, memory, 0, capacity.get());
+        val.setText(memToString(memory));
+    }
+    public int getSize() {
+        return capacity.get();
     }
 
 }

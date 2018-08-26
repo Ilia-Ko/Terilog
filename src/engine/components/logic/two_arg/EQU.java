@@ -16,7 +16,7 @@ public class EQU extends Gate2to1 {
 
     @Override LogicLevel function(LogicLevel a, LogicLevel b) {
         if (a == b) return LogicLevel.POS;
-        return LogicLevel.NIL;
+        return LogicLevel.NEG;
     }
     @Override protected void singleCountdown(Circuit.Summary summary) {summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.P_CH, 5);
         summary.addMOSFET(Circuit.Summary.HARD, Circuit.Summary.N_CH, 4);

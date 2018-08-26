@@ -22,14 +22,14 @@ public class ControlMemSet {
 
     // callback
     private Stage dialog;
-    private LogicLevel[] memory;
+    private Linear mem;
 
     // initialization
     public void initialSetup(Stage dialog, Linear memory) {
         this.dialog = dialog;
-        this.memory = memory.getMemory();
+        mem = memory;
 
-        switch (this.memory.length) {
+        switch (mem.getSize()) {
             case 3:
                 texts = new TextField[] {t00, t01, t02};
                 break;
@@ -62,11 +62,14 @@ public class ControlMemSet {
 
     // events
     @FXML private void btnConfirmClicked() {
+        LogicLevel[] memory = new LogicLevel[mem.getSize()];
         for (int i = 0; i < memory.length; i++)
             memory[i] = LogicLevel.parseDigit(texts[i].getText().charAt(0));
+        mem.setMemory(memory);
         dialog.close();
     }
     @FXML private void btnResetClicked() {
+        LogicLevel[] memory = mem.getMemory();
         for (int i = 0; i < memory.length; i++)
             texts[i].setText(String.valueOf(memory[i].getDigitCharacter()));
     }

@@ -22,7 +22,9 @@ public class CMP extends Gate2to1 {
     }
     @Override protected HashSet<Pin> initPins() {
         HashSet<Pin> pins = super.initPins();
+        pins.remove(out);
         out = new Pin(this, false, 1, 4, 5);
+        pins.add(out);
         return pins;
     }
     @Override protected HashSet<Pin> getDependentPins() {

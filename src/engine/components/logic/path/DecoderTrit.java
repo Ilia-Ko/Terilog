@@ -28,7 +28,7 @@ public class DecoderTrit extends Component {
     }
     @Override protected Pane loadContent() {
         try {
-            String location = "view/components/logic/path/decoder_1_3.fxml";
+            String location = "view/components/logic/path/DecoderTrit.fxml";
             return FXMLLoader.load(Main.class.getResource(location));
         } catch (IOException e) {
             e.printStackTrace();

@@ -8,7 +8,9 @@
     <Rectangle strokeWidth="0.1" stroke="black" fill="lightgray" width="4" height="3"/>
     <Rectangle strokeWidth="0.05" stroke="black" fill="white" y="1.5" width="0.4" height="1.5"/>
 
-    <Label fx:id="name" layoutX="0.5" layoutY="0.5" minWidth="3" maxWidth="3" minHeight="2" maxHeight="2"
-           textFill="black" style="-fx-font-size: 1px" textAlignment="CENTER"/>
+    <Label fx:id="name" minWidth="3" maxWidth="3" minHeight="1" maxHeight="1" layoutX="0.5" layoutY="0.5"
+           textFill="black" style="-fx-font-size: 1px"/>
+    <Label fx:id="value" minWidth="3" maxWidth="3" minHeight="1" maxHeight="1" layoutX="0.5" layoutY="1.5"
+           textFill="black" style="-fx-font-size: 0.8px"/>
 
 </Pane>
