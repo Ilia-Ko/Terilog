@@ -25,8 +25,9 @@ abstract class PChannel extends MOSFET {
         LogicLevel d = drain.get()[0];
         boolean opened = s.volts() - g.volts() >= vgsth;
 
-        if (s == ZZZ && d == ZZZ || s == ERR || d == ERR) {
+        if (s == ZZZ && d == ZZZ || s == ERR) {
             // do nothing
+            source.put(ZZZ);
         } else if (g == ERR || (g == ZZZ && (s.isStable() || d.isStable()))) {
             drain.put(ERR);
         } else if (s.isStable() && (opened || s.volts() < NIL.volts())) {

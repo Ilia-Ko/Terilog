@@ -31,7 +31,7 @@ public class Linear extends Component {
 
     private IntegerProperty capacity;
     private LogicLevel[] memory;
-    private Pin control, fill, clock, in, out;
+    private Pin control, clock, in, out;
     private Label val;
 
     // initialization
@@ -52,6 +52,7 @@ public class Linear extends Component {
             int cap = newValue.intValue();
             memory = new LogicLevel[cap];
             Arrays.fill(memory, ZZZ);
+            val.setText("??????");
             lbl.setText(String.format("x%d", cap));
             in.setCapacity(cap);
             out.setCapacity(cap);
@@ -109,14 +110,12 @@ public class Linear extends Component {
     @Override protected HashSet<Pin> initPins() {
         int cap = (capacity == null) ? 1 : capacity.get();
         control = new Pin(this, true, 1, 0, 1);
-        fill = new Pin(this, true, 1, 4, 1);
         clock = new Pin(this, true, 1, 0, 2);
         in = new Pin(this, true, cap, 2, 0, false);
         out = new Pin(this, false, cap, 2, 3, false);
 
         HashSet<Pin> pins = new HashSet<>();
         pins.add(control);
-        pins.add(fill);
         pins.add(clock);
         pins.add(in);
         pins.add(out);
@@ -129,20 +128,14 @@ public class Linear extends Component {
     // simulation
     @Override public void simulate() {
         LogicLevel ctrl = control.get()[0];
-        LogicLevel fill = this.fill.get()[0];
         LogicLevel clck = clock.get()[0];
 
         if (ctrl == ERR || clck == ERR) {
             Arrays.fill(memory, ERR);
-        } else if (clck == POS) {
-            if (ctrl == POS) {
-                memory = in.get();
-                val.setText(memToString(memory));
-            } else if (ctrl == NEG) {
-                Arrays.fill(memory, fill);
-                val.setText(memToString(memory));
-            }
+        } else if (clck == POS && ctrl == POS) {
+            System.arraycopy(in.get(), 0, memory, 0, capacity.get());
         }
+        val.setText(memToString(memory));
         out.put(memory);
     }
     @Override public void itIsAFinalCountdown(Circuit.Summary summary) {

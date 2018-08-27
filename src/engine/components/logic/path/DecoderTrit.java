@@ -47,10 +47,10 @@ public class DecoderTrit extends Component {
         HashSet<Pin> pins = new HashSet<>();
         pins.add(in);
         pins.add(outNEGp);
+        pins.add(outNEGn);
         pins.add(outNILp);
+        pins.add(outNILn);
         pins.add(outPOSp);
-        pins.add(outPOSn);
-        pins.add(outPOSn);
         pins.add(outPOSn);
         return pins;
     }

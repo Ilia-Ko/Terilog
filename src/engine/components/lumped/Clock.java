@@ -22,7 +22,7 @@ public class Clock extends Component {
     // initialization
     public Clock(ControlMain control) {
         super(control);
-        level = 0;
+        level = 1;
     }
     public Clock(ControlMain control, Element data) {
         this(control);

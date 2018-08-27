@@ -595,6 +595,11 @@ public class ControlMain {
         flyComp = new CKEY(this);
         holdingComp = true;
     }
+    @FXML private void menuZeroSign() {
+        breakInsertion();
+        flyComp = new ZeroSign(this);
+        holdingComp = true;
+    }
     @FXML private void menuDecoderTrit() {
         breakInsertion();
         flyComp = new DecoderTrit(this);

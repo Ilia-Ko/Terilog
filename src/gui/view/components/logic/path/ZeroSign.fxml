@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.Rectangle?>
+<Pane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" prefHeight="1" prefWidth="2">
+
+    <Rectangle strokeWidth="0.1" stroke="black" fill="lightgray" y="-0.5" width="2" height="1"/>
+    <Rectangle fx:id="sign" stroke="transparent" fill="orangered" x="1.5" y="-0.5" width="0.5" height="1"/>
+
+</Pane>

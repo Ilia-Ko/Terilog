@@ -33,7 +33,7 @@ public class Flat extends Component {
     private int memorySize;
     private long[] data;
     // pins
-    private Pin control, fill, clock;
+    private Pin control, clock;
     private Pin addr, in, out;
     // io
     private File dataFile;
@@ -84,7 +84,6 @@ public class Flat extends Component {
         int capMem = (memCap == null) ? 6 : memCap.get();
 
         control = new Pin(this, true, 1, 4, 1);
-        fill = new Pin(this, true, 1, 4, 2);
         clock = new Pin(this, true, 1, 4, 3);
         addr = new Pin(this, true, capAddr, 0, 2);
         in = new Pin(this, true, capMem, 2, 0, false);
@@ -92,7 +91,6 @@ public class Flat extends Component {
 
         HashSet<Pin> pins = new HashSet<>();
         pins.add(control);
-        pins.add(fill);
         pins.add(clock);
         pins.add(addr);
         pins.add(in);
@@ -159,18 +157,12 @@ public class Flat extends Component {
 
     // simulation
     @Override public void simulate() {
-        LogicLevel ctrl = control.get()[0];
         LogicLevel[] base = new LogicLevel[addrCap.get()];
         Arrays.fill(base, NEG);
         int addr = (int) (-encode(this.addr.get(), addrCap.get()) - encode(base, addrCap.get()));
 
-        if (clock.get()[0] == POS) {
-            if (ctrl == POS) {
-                data[addr] = -encode(in.get(), memCap.get());
-            } else if (ctrl == NEG) {
-                Arrays.fill(in.get(), fill.get()[0]);
-                data[addr] = -encode(in.get(), memCap.get());
-            }
+        if (clock.get()[0] == POS && control.get()[0] == POS) {
+            data[addr] = -encode(in.get(), memCap.get());
         }
         out.put(decode(data[addr], memCap.get()));
     }

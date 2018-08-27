@@ -21,12 +21,11 @@ import java.util.HashSet;
 public abstract class BusComponent extends Component {
 
     protected IntegerProperty capacity;
-    private HashSet<Pin> dependent;
 
     // initialization
     protected BusComponent(ControlMain control, boolean isUnified) {
         super(control);
-        dependent = getDependentPins();
+        HashSet<Pin> dependent = getDependentPins();
         capacity.addListener((observable, oldValue, newValue) -> dependent.forEach(pin -> pin.setCapacity(newValue.intValue())));
         if (isUnified) {
             Label lbl = (Label) getRoot().lookup("#name");

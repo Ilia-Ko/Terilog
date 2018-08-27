@@ -56,19 +56,19 @@ public class DemuxByTrit extends GatePath {
 
         switch (sel.get()[0]) {
             case NEG:
-                outNEG.put(in.get());
+                outNEG.put(invert(in.get()));
                 outNIL.put(nils);
                 outPOS.put(nils);
                 break;
             case NIL:
                 outNEG.put(nils);
-                outNIL.put(in.get());
+                outNIL.put(invert(in.get()));
                 outPOS.put(nils);
                 break;
             case POS:
                 outNEG.put(nils);
                 outNIL.put(nils);
-                outPOS.put(in.get());
+                outPOS.put(invert(in.get()));
                 break;
             default:
                 outNEG.put(zzzs);
@@ -96,6 +96,13 @@ public class DemuxByTrit extends GatePath {
         Reconciliator.countdown(summary);
         Reconciliator.countdown(summary);
         Reconciliator.countdown(summary);
+    }
+
+    // utils
+    private static LogicLevel[] invert(LogicLevel[] val) {
+        LogicLevel[] res = new LogicLevel[val.length];
+        for (int i = 0; i < val.length; i++) res[i] = STI.func(val[i]);
+        return res;
     }
 
 }

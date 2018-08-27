@@ -202,6 +202,9 @@ public class Circuit {
                     case "demux_1_3":
                         add(new DemuxByTrit(control, comp));
                         break;
+                    case "zerosign":
+                        add(new ZeroSign(control, comp));
+                        break;
                     // arithmetic
                     case "addertrithalf":
                         add(new AdderTritHalf(control, comp));

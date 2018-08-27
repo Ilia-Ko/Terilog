@@ -21,14 +21,18 @@ public class CMP extends Gate2to1 {
         super(control, data);
     }
     @Override protected HashSet<Pin> initPins() {
-        HashSet<Pin> pins = super.initPins();
-        pins.remove(out);
+        int cap = (capacity == null) ? 1 : capacity.get();
+        inA = new Pin(this, true, cap, 0, 2);
+        inB = new Pin(this, true, cap, 0, 8);
         out = new Pin(this, false, 1, 4, 5);
+        HashSet<Pin> pins = new HashSet<>();
+        pins.add(inA);
+        pins.add(inB);
         pins.add(out);
         return pins;
     }
     @Override protected HashSet<Pin> getDependentPins() {
-        HashSet<Pin> dep = getPins();
+        HashSet<Pin> dep = new HashSet<>(getPins());
         dep.remove(out);
         return dep;
     }

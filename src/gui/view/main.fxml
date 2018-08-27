@@ -85,7 +85,9 @@
                     <MenuItem text="CKEY" onAction="#menuCKEY"/>
                     <MenuItem text="OKEY" onAction="#menuOKEY"/>
                     <SeparatorMenuItem/>
+                    <MenuItem text="Zero Sign" onAction="#menuZeroSign"/>
                     <MenuItem text="Decoder Trit" onAction="#menuDecoderTrit"/>
+                    <SeparatorMenuItem/>
                     <MenuItem text="Mux 3-1" onAction="#menuMuxByTrit"/>
                     <MenuItem text="Demux 1-3" onAction="#menuDemuxByTrit"/>
 
