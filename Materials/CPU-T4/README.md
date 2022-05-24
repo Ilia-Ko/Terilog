@@ -10,3 +10,5 @@ Image 'cpu-4-details.jpg' depicts structural parts of the CPU:
 7) Jump unit
 8) Clock
 9) Instruction decoder
+
+File 'multiply.asm' is a simple programme for T4, written in ternary assembly. It multiplies two distinct trytes and leaves the result in CPU registers.
